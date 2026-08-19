@@ -134,6 +134,12 @@ namespace SETUNA.Main
         public void AddScrapFromCache(Cache.CacheItem cacheItem, Action addFinished = null)
         {
             var image = cacheItem.ReadImage();
+            if (image == null)
+            {
+                addFinished?.Invoke();
+                return;
+            }
+
             var pos = cacheItem.Position;
             var style = cacheItem.Style;
 

@@ -3,8 +3,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows.Media.Imaging;
 using Svg;
 
@@ -60,7 +58,10 @@ namespace SETUNA.Main
                     switch (imageType)
                     {
                         case ImageType.PNG:
-                            bitmap = new Bitmap(stream);
+                            using (var source = new Bitmap(stream))
+                            {
+                                bitmap = new Bitmap(source);
+                            }
                             break;
                         case ImageType.WEBP:
                             using (var webp = new WebPWrapper.WebP())
@@ -90,7 +91,10 @@ namespace SETUNA.Main
                             }
                             break;
                         default:
-                            bitmap = new Bitmap(stream);
+                            using (var source = new Bitmap(stream))
+                            {
+                                bitmap = new Bitmap(source);
+                            }
                             break;
                     }
 
@@ -116,30 +120,65 @@ namespace SETUNA.Main
         {
             var filePath = Path.Combine(Cache.CacheManager.Path, string.Format("TEMP_{0}_{1}.png", DateTime.Now.Ticks, Math.Abs(url.GetHashCode())));
             var client = new WebClient();
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
             client.DownloadFileCompleted += (s, e) =>
             {
                 Bitmap bitmap = null;
 
-                if (e.Error == null)
+                try
                 {
-                    try
+                    if (e.Cancelled)
+                    {
+                        Console.WriteLine("Image download was cancelled: " + url);
+                    }
+                    else if (e.Error != null)
+                    {
+                        Console.WriteLine("Image download failed: " + e.Error);
+                    }
+                    else
                     {
                         bitmap = BitmapUtils.FromPath(filePath);
                     }
-                    catch { }
                 }
-
-                try
+                catch (Exception ex)
                 {
-                    File.Delete(filePath);
+                    Console.WriteLine("Downloaded image could not be read: " + ex);
                 }
-                catch { }
+                finally
+                {
+                    DeleteTemporaryFile(filePath);
+                    client.Dispose();
+                }
 
                 finished?.Invoke(bitmap);
             };
             client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36";
-            client.DownloadFileAsync(new Uri(url), filePath);
+
+            try
+            {
+                client.DownloadFileAsync(new Uri(url), filePath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Image download could not be started: " + ex);
+                DeleteTemporaryFile(filePath);
+                client.Dispose();
+                finished?.Invoke(null);
+            }
+        }
+
+        private static void DeleteTemporaryFile(string filePath)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Temporary image file could not be deleted: " + ex);
+            }
         }
 
         public static Bitmap ToBitmap(this BitmapSource source)
@@ -150,22 +189,13 @@ namespace SETUNA.Main
                 BitmapEncoder enc = new BmpBitmapEncoder();
                 enc.Frames.Add(BitmapFrame.Create(source));
                 enc.Save(outStream);
-                bitmap = new Bitmap(outStream);
+                outStream.Position = 0;
+                using (var image = new Bitmap(outStream))
+                {
+                    bitmap = new Bitmap(image);
+                }
             }
             return bitmap;
-        }
-    }
-
-    static class NetUtils
-    {
-        public static void Init()
-        {
-            ServicePointManager.ServerCertificateValidationCallback += RemoteCertificateValidate;
-        }
-
-        static bool RemoteCertificateValidate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
-        {
-            return true;
         }
     }
 

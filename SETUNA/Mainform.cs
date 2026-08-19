@@ -41,8 +41,6 @@ namespace SETUNA
             SetSubMenu();
 
             Text = $"SETUNA {Application.ProductVersion}";
-
-            NetUtils.Init();
         }
 
         // Token: 0x17000055 RID: 85

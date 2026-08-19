@@ -62,100 +62,72 @@ namespace com.clearunit
             httpWebRequest.Method = "POST";
             httpWebRequest.ContentType = "application/x-www-form-urlencoded";
             httpWebRequest.ContentLength = bytes.Length;
-            var requestStream = httpWebRequest.GetRequestStream();
-            requestStream.Write(bytes, 0, bytes.Length);
-            requestStream.Close();
-            HttpWebResponse httpWebResponse;
+
             try
             {
-                httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var requestStream = httpWebRequest.GetRequestStream())
+                {
+                    requestStream.Write(bytes, 0, bytes.Length);
+                }
+
+                using (var httpWebResponse = GetResponse(httpWebRequest))
+                {
+                    if (httpWebResponse == null)
+                    {
+                        LoginErrorCode = PicasaLoginError.ConnectionError;
+                        return false;
+                    }
+
+                    var text3 = ReadResponseBody(httpWebResponse, utf);
+                    if (httpWebResponse.StatusCode == HttpStatusCode.OK)
+                    {
+                        var array = text3.Split(new string[]
+                        {
+                            "\n"
+                        }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var text4 in array)
+                        {
+                            var array3 = text4.Split(new char[]
+                            {
+                                '='
+                            });
+                            if (array3.Length >= 2 && array3[0] == "Auth")
+                            {
+                                Auth = array3[1];
+                                result = true;
+                            }
+                        }
+                    }
+                    else if (httpWebResponse.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        var array4 = text3.Split(new string[]
+                        {
+                            "\n"
+                        }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var text5 in array4)
+                        {
+                            var array6 = text5.Split(new char[]
+                            {
+                                '='
+                            });
+                            if (array6.Length >= 2 && array6[0] == "Error")
+                            {
+                                LoginErrorCode = GetLoginError(array6[1]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        LoginErrorCode = PicasaLoginError.ConnectionError;
+                    }
+                }
             }
             catch (WebException ex)
             {
-                httpWebResponse = (HttpWebResponse)ex.Response;
-                Console.WriteLine(ex.ToString());
-            }
-            var responseStream = httpWebResponse.GetResponseStream();
-            var streamReader = new StreamReader(responseStream, utf);
-            var text3 = streamReader.ReadToEnd();
-            streamReader.Close();
-            responseStream.Close();
-            if (httpWebResponse.StatusCode == HttpStatusCode.OK)
-            {
-                var array = text3.Split(new string[]
-                {
-                    "\n"
-                }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var text4 in array)
-                {
-                    var array3 = text4.Split(new char[]
-                    {
-                        '='
-                    });
-                    if (array3.Length >= 2 && array3[0] == "Auth")
-                    {
-                        Auth = array3[1];
-                        result = true;
-                    }
-                }
-            }
-            else if (httpWebResponse.StatusCode == HttpStatusCode.Forbidden)
-            {
-                var array4 = text3.Split(new string[]
-                {
-                    "\n"
-                }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var text5 in array4)
-                {
-                    var array6 = text5.Split(new char[]
-                    {
-                        '='
-                    });
-                    if (array6.Length > 2 && array6[0] == "Error")
-                    {
-                        if (array6[1] == "BadAuthentication")
-                        {
-                            LoginErrorCode = PicasaLoginError.BadAuthentication;
-                        }
-                        else if (array6[1] == "NotVerified")
-                        {
-                            LoginErrorCode = PicasaLoginError.NotVerified;
-                        }
-                        else if (array6[1] == "TermsNotAgreed")
-                        {
-                            LoginErrorCode = PicasaLoginError.TermsNotAgreed;
-                        }
-                        else if (array6[1] == "CaptchaRequired")
-                        {
-                            LoginErrorCode = PicasaLoginError.CaptchaRequired;
-                        }
-                        else if (array6[1] == "AccountDeleted")
-                        {
-                            LoginErrorCode = PicasaLoginError.AccountDeleted;
-                        }
-                        else if (array6[1] == "AccountDisabled")
-                        {
-                            LoginErrorCode = PicasaLoginError.AccountDisabled;
-                        }
-                        else if (array6[1] == "ServiceDisabled")
-                        {
-                            LoginErrorCode = PicasaLoginError.ServiceDisabled;
-                        }
-                        else if (array6[1] == "ServiceUnavailable")
-                        {
-                            LoginErrorCode = PicasaLoginError.ServiceUnavailable;
-                        }
-                        else
-                        {
-                            LoginErrorCode = PicasaLoginError.Unknown;
-                        }
-                    }
-                }
-            }
-            else
-            {
+                Console.WriteLine("Picasa login failed: " + ex);
                 LoginErrorCode = PicasaLoginError.ConnectionError;
             }
+
             return result;
         }
 
@@ -192,8 +164,6 @@ namespace com.clearunit
         private string CreateAlbum(XmlDocument document)
         {
             var result = "";
-            var utf = Encoding.UTF8;
-            new Hashtable();
             var s = document.InnerXml.Replace("-xmlc-", ":");
             var bytes = Encoding.UTF8.GetBytes(s);
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(Url);
@@ -201,30 +171,35 @@ namespace com.clearunit
             httpWebRequest.ContentType = "application/atom+xml";
             httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, "GoogleLogin auth=" + Auth);
             httpWebRequest.ContentLength = bytes.Length;
-            var requestStream = httpWebRequest.GetRequestStream();
-            requestStream.Write(bytes, 0, bytes.Length);
-            requestStream.Close();
-            HttpWebResponse httpWebResponse;
+
             try
             {
-                httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var requestStream = httpWebRequest.GetRequestStream())
+                {
+                    requestStream.Write(bytes, 0, bytes.Length);
+                }
+
+                using (var httpWebResponse = GetResponse(httpWebRequest))
+                {
+                    if (httpWebResponse == null)
+                    {
+                        return result;
+                    }
+
+                    var xml = ReadResponseBody(httpWebResponse, Encoding.UTF8);
+                    if (httpWebResponse.StatusCode == HttpStatusCode.Created)
+                    {
+                        var xmlDocument = new XmlDocument();
+                        xmlDocument.LoadXml(xml);
+                        result = xmlDocument["entry"]["gphoto:id"].InnerText;
+                    }
+                }
             }
             catch (WebException ex)
             {
-                httpWebResponse = (HttpWebResponse)ex.Response;
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine("Picasa album creation failed: " + ex);
             }
-            var responseStream = httpWebResponse.GetResponseStream();
-            var streamReader = new StreamReader(responseStream, utf);
-            var xml = streamReader.ReadToEnd();
-            streamReader.Close();
-            responseStream.Close();
-            if (httpWebResponse.StatusCode == HttpStatusCode.Created)
-            {
-                var xmlDocument = new XmlDocument();
-                xmlDocument.LoadXml(xml);
-                result = xmlDocument["entry"]["gphoto:id"].InnerText;
-            }
+
             return result;
         }
 
@@ -235,39 +210,41 @@ namespace com.clearunit
             {
                 throw new Exception("您还没有登录Picasa服务。");
             }
-            var utf = Encoding.UTF8;
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(AlbumFeedUrl);
             httpWebRequest.Method = "GET";
             httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, "GoogleLogin auth=" + Auth);
-            HttpWebResponse httpWebResponse;
+
             try
             {
-                httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            }
-            catch (WebException ex)
-            {
-                httpWebResponse = (HttpWebResponse)ex.Response;
-                Console.WriteLine(ex.ToString());
-            }
-            var responseStream = httpWebResponse.GetResponseStream();
-            var streamReader = new StreamReader(responseStream, utf);
-            var xml = streamReader.ReadToEnd();
-            streamReader.Close();
-            responseStream.Close();
-            if (httpWebResponse.StatusCode == HttpStatusCode.OK)
-            {
-                var xmlDocument = new XmlDocument();
-                xmlDocument.LoadXml(xml);
-                var elementsByTagName = xmlDocument["feed"].GetElementsByTagName("entry");
-                foreach (var obj in elementsByTagName)
+                using (var httpWebResponse = GetResponse(httpWebRequest))
                 {
-                    var xmlElement = (XmlElement)obj;
-                    if (xmlElement["title"].InnerText == albumname)
+                    if (httpWebResponse == null)
                     {
-                        return xmlElement["gphoto:id"].InnerText;
+                        return "";
+                    }
+
+                    var xml = ReadResponseBody(httpWebResponse, Encoding.UTF8);
+                    if (httpWebResponse.StatusCode == HttpStatusCode.OK)
+                    {
+                        var xmlDocument = new XmlDocument();
+                        xmlDocument.LoadXml(xml);
+                        var elementsByTagName = xmlDocument["feed"].GetElementsByTagName("entry");
+                        foreach (var obj in elementsByTagName)
+                        {
+                            var xmlElement = (XmlElement)obj;
+                            if (xmlElement["title"].InnerText == albumname)
+                            {
+                                return xmlElement["gphoto:id"].InnerText;
+                            }
+                        }
                     }
                 }
             }
+            catch (WebException ex)
+            {
+                Console.WriteLine("Picasa album lookup failed: " + ex);
+            }
+
             return "";
         }
 
@@ -275,88 +252,152 @@ namespace com.clearunit
         public bool UploadPhoto(string album, string imgfile, BackgroundWorker bgw, int progress)
         {
             var result = false;
-            var utf = Encoding.UTF8;
-            var s = "";
-            Encoding.ASCII.GetBytes(s);
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(UploadUrl + album);
             httpWebRequest.Method = "POST";
             httpWebRequest.ContentType = "image/jpg";
             httpWebRequest.Headers.Add("Slug: " + Path.GetFileName(imgfile));
             httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, "GoogleLogin auth=" + Auth);
-            var fileStream = new FileStream(imgfile, FileMode.Open, FileAccess.Read);
-            httpWebRequest.ContentLength = fileStream.Length;
-            var requestStream = httpWebRequest.GetRequestStream();
-            var array = new byte[4096];
-            var num = 100 - progress;
-            var num2 = 0;
-            for (; ; )
-            {
-                var num3 = fileStream.Read(array, 0, array.Length);
-                if (num3 == 0)
-                {
-                    break;
-                }
-                requestStream.Write(array, 0, num3);
-                num2 += (int)(num3 / (float)httpWebRequest.ContentLength * num);
-                bgw.ReportProgress(num2);
-            }
-            fileStream.Close();
-            requestStream.Close();
-            bgw.ReportProgress(100);
-            HttpWebResponse httpWebResponse;
+
             try
             {
-                httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var fileStream = new FileStream(imgfile, FileMode.Open, FileAccess.Read))
+                {
+                    httpWebRequest.ContentLength = fileStream.Length;
+                    using (var requestStream = httpWebRequest.GetRequestStream())
+                    {
+                        var array = new byte[4096];
+                        var num = 100 - progress;
+                        var num2 = 0;
+                        for (; ; )
+                        {
+                            var num3 = fileStream.Read(array, 0, array.Length);
+                            if (num3 == 0)
+                            {
+                                break;
+                            }
+                            requestStream.Write(array, 0, num3);
+                            num2 += (int)(num3 / (float)httpWebRequest.ContentLength * num);
+                            bgw.ReportProgress(num2);
+                        }
+                    }
+                }
+
+                bgw.ReportProgress(100);
+                using (var httpWebResponse = GetResponse(httpWebRequest))
+                {
+                    if (httpWebResponse == null)
+                    {
+                        UploadErrorCode = PicasaUploadError.Unknown;
+                        return false;
+                    }
+
+                    ReadResponseBody(httpWebResponse, Encoding.UTF8);
+                    if (httpWebResponse.StatusCode == HttpStatusCode.Created || httpWebResponse.StatusCode == HttpStatusCode.OK)
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        var statusCode = httpWebResponse.StatusCode;
+                        switch (statusCode)
+                        {
+                            case HttpStatusCode.BadRequest:
+                                UploadErrorCode = PicasaUploadError.BadRequest;
+                                return result;
+                            case HttpStatusCode.Unauthorized:
+                                UploadErrorCode = PicasaUploadError.UnAuthorized;
+                                return result;
+                            case HttpStatusCode.PaymentRequired:
+                                break;
+                            case HttpStatusCode.Forbidden:
+                                UploadErrorCode = PicasaUploadError.Forbidden;
+                                return result;
+                            case HttpStatusCode.NotFound:
+                                UploadErrorCode = PicasaUploadError.NotFound;
+                                return result;
+                            default:
+                                if (statusCode == HttpStatusCode.Conflict)
+                                {
+                                    UploadErrorCode = PicasaUploadError.Conflict;
+                                    return result;
+                                }
+                                if (statusCode == HttpStatusCode.InternalServerError)
+                                {
+                                    UploadErrorCode = PicasaUploadError.InternalServerError;
+                                    return result;
+                                }
+                                break;
+                        }
+                        UploadErrorCode = PicasaUploadError.Unknown;
+                    }
+                }
             }
             catch (WebException ex)
             {
-                httpWebResponse = (HttpWebResponse)ex.Response;
-                Console.WriteLine(ex.ToString());
-            }
-            var responseStream = httpWebResponse.GetResponseStream();
-            var streamReader = new StreamReader(responseStream, utf);
-            streamReader.ReadToEnd();
-            streamReader.Close();
-            responseStream.Close();
-            if (httpWebResponse.StatusCode == HttpStatusCode.Created || httpWebResponse.StatusCode == HttpStatusCode.OK)
-            {
-                result = true;
-            }
-            else
-            {
-                var statusCode = httpWebResponse.StatusCode;
-                switch (statusCode)
-                {
-                    case HttpStatusCode.BadRequest:
-                        UploadErrorCode = PicasaUploadError.BadRequest;
-                        return result;
-                    case HttpStatusCode.Unauthorized:
-                        UploadErrorCode = PicasaUploadError.UnAuthorized;
-                        return result;
-                    case HttpStatusCode.PaymentRequired:
-                        break;
-                    case HttpStatusCode.Forbidden:
-                        UploadErrorCode = PicasaUploadError.Forbidden;
-                        return result;
-                    case HttpStatusCode.NotFound:
-                        UploadErrorCode = PicasaUploadError.NotFound;
-                        return result;
-                    default:
-                        if (statusCode == HttpStatusCode.Conflict)
-                        {
-                            UploadErrorCode = PicasaUploadError.Conflict;
-                            return result;
-                        }
-                        if (statusCode == HttpStatusCode.InternalServerError)
-                        {
-                            UploadErrorCode = PicasaUploadError.InternalServerError;
-                            return result;
-                        }
-                        break;
-                }
+                Console.WriteLine("Picasa upload failed: " + ex);
                 UploadErrorCode = PicasaUploadError.Unknown;
             }
+
             return result;
+        }
+
+        private static HttpWebResponse GetResponse(HttpWebRequest request)
+        {
+            try
+            {
+                return (HttpWebResponse)request.GetResponse();
+            }
+            catch (WebException ex)
+            {
+                var response = ex.Response as HttpWebResponse;
+                if (response == null)
+                {
+                    throw;
+                }
+                Console.WriteLine("Picasa request returned an error response: " + ex);
+                return response;
+            }
+        }
+
+        private static string ReadResponseBody(HttpWebResponse response, Encoding encoding)
+        {
+            using (var responseStream = response.GetResponseStream())
+            {
+                if (responseStream == null)
+                {
+                    return "";
+                }
+
+                using (var streamReader = new StreamReader(responseStream, encoding))
+                {
+                    return streamReader.ReadToEnd();
+                }
+            }
+        }
+
+        private static PicasaLoginError GetLoginError(string error)
+        {
+            switch (error)
+            {
+                case "BadAuthentication":
+                    return PicasaLoginError.BadAuthentication;
+                case "NotVerified":
+                    return PicasaLoginError.NotVerified;
+                case "TermsNotAgreed":
+                    return PicasaLoginError.TermsNotAgreed;
+                case "CaptchaRequired":
+                    return PicasaLoginError.CaptchaRequired;
+                case "AccountDeleted":
+                    return PicasaLoginError.AccountDeleted;
+                case "AccountDisabled":
+                    return PicasaLoginError.AccountDisabled;
+                case "ServiceDisabled":
+                    return PicasaLoginError.ServiceDisabled;
+                case "ServiceUnavailable":
+                    return PicasaLoginError.ServiceUnavailable;
+                default:
+                    return PicasaLoginError.Unknown;
+            }
         }
 
         // Token: 0x04000238 RID: 568

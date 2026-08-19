@@ -74,15 +74,26 @@ namespace SETUNA.Main.Cache
         public Image ReadImage()
         {
             var fullPath = Path.Combine(FolderPath, ImageFileName);
-            if (File.Exists(fullPath))
+            if (!File.Exists(fullPath))
             {
-                using (var fs = new FileStream(fullPath, FileMode.Open))
-                {
-                    return Image.FromStream(fs);
-                }
+                return null;
             }
 
-            return null;
+            try
+            {
+                using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    using (var source = Image.FromStream(fs, true, true))
+                    {
+                        return new Bitmap(source);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cached image could not be read: " + ex);
+                return null;
+            }
         }
 
         public void SaveImage(Image image)
