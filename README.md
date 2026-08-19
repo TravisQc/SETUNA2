@@ -24,7 +24,7 @@ A best screenshot small tool (support high dpi screenshots)
   
     - ###### 查看Win10系统版本：设置 -> 系统 -> 关于 -> Windows 规格详情页里的 操作系统版本
   
-  - 安装 .Net Framework 4.7 组件
+  - 安装 .NET Framework 4.8 组件
 - **SETUNA 2.x 版本的运行要求**（停止维护）([最后一版 2.x 下载链接](https://github.com/tylearymf/SETUNA2/releases/tag/2.6.0))
   
   - 安装 .Net Framework 2.0 组件
@@ -71,6 +71,25 @@ A best screenshot small tool (support high dpi screenshots)
   - ###### 从网站拖拽图片到某个截图中会自动创建截图（该功能需要联网，因为需要下载对应的网站图片）
   
 - 支持从图片格式 **JPEG**、**PNG**、**PSD** 、**GIF**、**BMP**、**ICO**、**TIFF**、**WEBP**、**SVG**、**TGA**、**SVG** 中创建截图
+
+---
+
+## 构建
+
+构建环境：Visual Studio 2022（包含“.NET 桌面生成工具”工作负载）和 .NET Framework 4.8 targeting pack。在 Developer PowerShell for VS 2022 中执行：
+
+```powershell
+msbuild SETUNA.sln /restore
+msbuild SETUNA.sln /t:Rebuild /p:Configuration=Debug /p:Platform=x64
+```
+
+解决方案支持 `Debug`/`Release` 与 `x86`/`x64` 组合。普通构建不需要 7-Zip；发布 ZIP 通过显式目标生成：
+
+```powershell
+msbuild SETUNA\SETUNA.csproj /restore /t:CreateReleasePackage /p:Configuration=Release /p:Platform=x64
+```
+
+产物写入 `publish` 目录。
 
 ---
 
