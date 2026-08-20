@@ -54,6 +54,23 @@ namespace SETUNA.Main.Runtime.Tests
             }
         }
 
+        [TestMethod]
+        public void HotKeysAreRegisteredAfterTaskbarModeChangesAndRestoredWithTheHandle()
+        {
+            var repositoryRoot = RepositoryPath.FindRoot();
+            var mainFormSource = File.ReadAllText(Path.Combine(repositoryRoot, "SETUNA", "Mainform.cs"));
+
+            var optionApplyStart = mainFormSource.IndexOf("private void OptionApply()", StringComparison.Ordinal);
+            var taskbarModeChange = mainFormSource.IndexOf("base.ShowInTaskbar = false;", optionApplyStart, StringComparison.Ordinal);
+            var hotKeyRegistration = mainFormSource.IndexOf("RegisterHotKeys(true);", optionApplyStart, StringComparison.Ordinal);
+
+            Assert.IsTrue(optionApplyStart >= 0);
+            Assert.IsTrue(taskbarModeChange > optionApplyStart);
+            Assert.IsTrue(hotKeyRegistration > taskbarModeChange);
+            StringAssert.Contains(mainFormSource, "protected override void OnHandleCreated(EventArgs e)");
+            StringAssert.Contains(mainFormSource, "RegisterHotKeys(false);");
+        }
+
         private static string GetWinFormsSetting(XmlDocument config, string key)
         {
             var settings = config.SelectNodes("/configuration/System.Windows.Forms.ApplicationConfigurationSection/add");

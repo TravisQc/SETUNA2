@@ -225,22 +225,6 @@ namespace SETUNA
                     optSetuna = optionForm.Option;
                     OptionApply();
                 }
-                if (!optSetuna.RegistHotKey(base.Handle, HotKeyID.Capture))
-                {
-                    optSetuna.ScrapHotKeyEnable = false;
-                    new HotkeyMsg
-                    {
-                        HotKey = optSetuna.ScrapHotKeys[(int)HotKeyID.Capture]
-                    }.ShowDialog();
-                }
-                if (!optSetuna.RegistHotKey(base.Handle, HotKeyID.Function1))
-                {
-                    optSetuna.ScrapHotKeyEnable = false;
-                    new HotkeyMsg
-                    {
-                        HotKey = optSetuna.ScrapHotKeys[(int)HotKeyID.Function1]
-                    }.ShowDialog();
-                }
                 if (optionForm.DialogResult == DialogResult.OK)
                 {
                     SaveOption();
@@ -260,6 +244,7 @@ namespace SETUNA
         // Token: 0x060001F9 RID: 505 RVA: 0x0000AB90 File Offset: 0x00008D90
         private void OptionApply()
         {
+            _isApplyingOptions = true;
             try
             {
                 keyBook = optSetuna.GetKeyItemBook();
@@ -270,22 +255,6 @@ namespace SETUNA
                 else
                 {
                     scrapBook.DustBoxCapacity = 0;
-                }
-                if (!optSetuna.RegistHotKey(base.Handle, HotKeyID.Capture))
-                {
-                    optSetuna.ScrapHotKeyEnable = false;
-                    new HotkeyMsg
-                    {
-                        HotKey = optSetuna.ScrapHotKeys[(int)HotKeyID.Capture]
-                    }.ShowDialog();
-                }
-                if (!optSetuna.RegistHotKey(base.Handle, HotKeyID.Function1))
-                {
-                    optSetuna.ScrapHotKeyEnable = false;
-                    new HotkeyMsg
-                    {
-                        HotKey = optSetuna.ScrapHotKeys[(int)HotKeyID.Function1]
-                    }.ShowDialog();
                 }
                 if (optSetuna.Setuna.AppType == SetunaOption.SetunaOptionData.ApplicationType.ApplicationMode)
                 {
@@ -302,6 +271,10 @@ namespace SETUNA
                     base.WindowState = FormWindowState.Normal;
                     base.Visible = optSetuna.Setuna.ShowMainWindow;
                 }
+
+                _hotKeysInitialized = true;
+                RegisterHotKeys(true);
+
                 subMenu.Items.Clear();
                 foreach (var num in optSetuna.Scrap.SubMenuStyles)
                 {
@@ -352,6 +325,45 @@ namespace SETUNA
             catch (Exception ex)
             {
                 Console.WriteLine("Mainform OptionApply Exception:" + ex.Message);
+            }
+            finally
+            {
+                _isApplyingOptions = false;
+            }
+        }
+
+        private void RegisterHotKeys(bool showError)
+        {
+            if (!optSetuna.RegistHotKey(base.Handle, HotKeyID.Capture))
+            {
+                DisableHotKeys(HotKeyID.Capture, showError);
+            }
+
+            if (!optSetuna.RegistHotKey(base.Handle, HotKeyID.Function1))
+            {
+                DisableHotKeys(HotKeyID.Function1, showError);
+            }
+        }
+
+        private void DisableHotKeys(HotKeyID hotKeyId, bool showError)
+        {
+            optSetuna.ScrapHotKeyEnable = false;
+            if (showError)
+            {
+                new HotkeyMsg
+                {
+                    HotKey = optSetuna.ScrapHotKeys[(int)hotKeyId]
+                }.ShowDialog();
+            }
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+
+            if (_hotKeysInitialized && !_isApplyingOptions)
+            {
+                RegisterHotKeys(false);
             }
         }
 
@@ -975,6 +987,10 @@ namespace SETUNA
 
         // Token: 0x040000EB RID: 235
         private bool _isstart;
+
+        private bool _hotKeysInitialized;
+
+        private bool _isApplyingOptions;
 
         // Token: 0x02000041 RID: 65
         // (Invoke) Token: 0x0600026A RID: 618
