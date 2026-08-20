@@ -17,6 +17,18 @@ namespace SETUNA
     // Token: 0x02000037 RID: 55
     public sealed partial class Mainform : BaseForm, IScrapKeyPressEventListener, IScrapAddedListener, IScrapRemovedListener, IScrapStyleListener, IScrapMenuListener, ISingletonForm
     {
+        private const int DefaultMainWindowWidth = 415;
+        private const int DefaultMainWindowHeight = 180;
+        private const int MaximumMainWindowWidth = 640;
+        private const int MaximumMainWindowHeight = 360;
+
+        // Smallest outer size that still shows both action labels, measured on a
+        // 175% display; MinimumMainWindowDpi is the DPI it was measured at so the
+        // same physical size can be recreated on any other monitor.
+        private const int MinimumMainWindowWidth = 260;
+        private const int MinimumMainWindowHeight = 160;
+        private const int MinimumMainWindowDpi = 168;
+
         public static Mainform Instance { private set; get; }
 
         // Token: 0x060001EE RID: 494 RVA: 0x0000A4C4 File Offset: 0x000086C4
@@ -427,6 +439,51 @@ namespace SETUNA
             }
         }
 
+        // WinForms shrinks MinimumSize when the window moves to a monitor with a
+        // lower DPI but never scales it back up, so the bound is re-derived from
+        // the measured baseline whenever the DPI changes.
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            base.OnDpiChanged(e);
+            ApplyMinimumWindowSize(e.DeviceDpiNew);
+        }
+
+        private void ApplyMinimumWindowSize(int dpi)
+        {
+            if (dpi <= 0)
+            {
+                return;
+            }
+
+            MinimumSize = new Size(
+                MinimumMainWindowWidth * dpi / MinimumMainWindowDpi,
+                MinimumMainWindowHeight * dpi / MinimumMainWindowDpi);
+        }
+
+        private void RestoreMainWindowSize()
+        {
+            if (optSetuna == null || optSetuna.MainWindowWidth <= 0 || optSetuna.MainWindowHeight <= 0)
+            {
+                ClientSize = new Size(DefaultMainWindowWidth, DefaultMainWindowHeight);
+                return;
+            }
+
+            var width = Math.Max(MinimumSize.Width, Math.Min(MaximumMainWindowWidth, optSetuna.MainWindowWidth));
+            var height = Math.Max(MinimumSize.Height, Math.Min(MaximumMainWindowHeight, optSetuna.MainWindowHeight));
+            Size = new Size(width, height);
+        }
+
+        private void SaveMainWindowSize()
+        {
+            if (optSetuna == null)
+            {
+                return;
+            }
+
+            optSetuna.MainWindowWidth = Math.Max(MinimumSize.Width, Math.Min(MaximumMainWindowWidth, Size.Width));
+            optSetuna.MainWindowHeight = Math.Max(MinimumSize.Height, Math.Min(MaximumMainWindowHeight, Size.Height));
+        }
+
         // Token: 0x060001FF RID: 511 RVA: 0x0000AF58 File Offset: 0x00009158
         private void LoadOption()
         {
@@ -616,6 +673,8 @@ namespace SETUNA
         // Token: 0x06000210 RID: 528 RVA: 0x0000B314 File Offset: 0x00009514
         private void Mainform_FormClosing(object sender, FormClosingEventArgs e)
         {
+            SaveMainWindowSize();
+            SaveOption();
             foreach (HotKeyID item in Enum.GetValues(typeof(HotKeyID)))
             {
                 optSetuna.UnregistHotKey(Handle, item);
@@ -627,6 +686,8 @@ namespace SETUNA
         {
             base.Visible = false;
             LoadOption();
+            ApplyMinimumWindowSize(DeviceDpi);
+            RestoreMainWindowSize();
             OptionApply();
             SaveOption();
             if (optSetuna.Setuna.ShowSplashWindow)

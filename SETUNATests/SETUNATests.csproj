@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Main\Layer\LayerManagerTests.cs" />
     <Compile Include="Main\Runtime\RuntimeModernizationTests.cs" />
+    <Compile Include="Main\Window\MainWindowLayoutTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

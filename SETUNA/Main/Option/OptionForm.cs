@@ -25,7 +25,7 @@ namespace SETUNA.Main.Option
             linkLabel1.LinkClicked += LinkLabel1_LinkClicked;
             toolTip1.SetToolTip(linkLabel1, URLUtils.OriginURL);
 
-            linkLabel2.Text = $"优化版本 by tylearymf. Version: {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
+            linkLabel2.Text = $"优化版本 by TravisQc. Version: {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
             linkLabel2.Links.Add(0, linkLabel2.Text.Length, URLUtils.NewURL);
             linkLabel2.LinkClicked += LinkLabel2_LinkClicked;
             toolTip1.SetToolTip(linkLabel2, URLUtils.NewURL);

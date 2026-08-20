@@ -18,6 +18,7 @@
 		{
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Mainform));
+            this.mainActionLayout = new System.Windows.Forms.TableLayoutPanel();
             this.button1 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.timPool = new System.Windows.Forms.Timer(this.components);
@@ -29,19 +30,31 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.delayInitTimer = new System.Windows.Forms.Timer(this.components);
             this.subMenu.SuspendLayout();
+            this.mainActionLayout.SuspendLayout();
             this.SuspendLayout();
+            //
+            // mainActionLayout
+            //
+            this.mainActionLayout.ColumnCount = 2;
+            this.mainActionLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.mainActionLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.mainActionLayout.Controls.Add(this.button1, 0, 0);
+            this.mainActionLayout.Controls.Add(this.button4, 1, 0);
+            this.mainActionLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainActionLayout.Location = new System.Drawing.Point(0, 0);
+            this.mainActionLayout.Name = "mainActionLayout";
+            this.mainActionLayout.RowCount = 1;
+            this.mainActionLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.mainActionLayout.Size = new System.Drawing.Size(415, 180);
+            this.mainActionLayout.TabIndex = 0;
             // 
             // button1
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Font = new System.Drawing.Font("微软雅黑", 14F);
+            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button1.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.button1.ForeColor = System.Drawing.Color.Gray;
             this.button1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.button1.Location = new System.Drawing.Point(0, 0);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(253, 54);
             this.button1.TabIndex = 0;
             this.button1.Text = "截取";
             this.button1.UseVisualStyleBackColor = true;
@@ -49,13 +62,11 @@
             // 
             // button4
             // 
-            this.button4.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button4.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.button4.ForeColor = System.Drawing.Color.Gray;
             this.button4.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.button4.Location = new System.Drawing.Point(252, 0);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(44, 54);
             this.button4.TabIndex = 4;
             this.button4.Text = "选项";
             this.button4.UseVisualStyleBackColor = true;
@@ -117,13 +128,13 @@
             // Mainform
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(296, 54);
+            this.ClientSize = new System.Drawing.Size(415, 180);
             this.ContextMenuStrip = this.setunaIconMenu;
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.mainActionLayout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(100, 60);
+            this.MaximumSize = new System.Drawing.Size(640, 360);
+            this.MinimumSize = new System.Drawing.Size(260, 160);
             this.Name = "Mainform";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SETUNA";
@@ -132,6 +143,7 @@
             this.Load += new System.EventHandler(this.Mainform_Load);
             this.Shown += new System.EventHandler(this.Mainform_Shown);
             this.subMenu.ResumeLayout(false);
+            this.mainActionLayout.ResumeLayout(false);
             this.ResumeLayout(false);
 
 		}
@@ -141,6 +153,8 @@
 
 		// Token: 0x040000D9 RID: 217
 		private global::System.Windows.Forms.Button button1;
+
+		private global::System.Windows.Forms.TableLayoutPanel mainActionLayout;
 
 		// Token: 0x040000DA RID: 218
 		private global::System.Windows.Forms.Button button4;

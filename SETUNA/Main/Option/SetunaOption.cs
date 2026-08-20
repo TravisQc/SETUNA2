@@ -756,7 +756,9 @@ namespace SETUNA.Main.Option
                 hkScrap = hkScrap,
                 blHotKey = blHotKey,
                 Setuna = Setuna,
-                Scrap = Scrap
+                Scrap = Scrap,
+                MainWindowWidth = MainWindowWidth,
+                MainWindowHeight = MainWindowHeight
             };
             for (var i = 0; i < Styles.Count; i++)
             {
@@ -800,6 +802,10 @@ namespace SETUNA.Main.Option
 
         // Token: 0x04000100 RID: 256
         public List<CStyle> Styles;
+
+        public int MainWindowWidth;
+
+        public int MainWindowHeight;
 
         // Token: 0x0200003D RID: 61
         public class ScrapOptionData
