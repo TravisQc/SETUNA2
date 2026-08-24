@@ -46,8 +46,12 @@ namespace SETUNA.Main.Layer
 
         public void DeInit()
         {
+            // 必须与 Init/DelayInit 建立的订阅一一对应：以前漏了 Showed 和 Closed，
+            // DeInit 之后再有窗体显示/关闭就会访问已被置为 null 的 formDic。
             WindowManager.WindowActived -= WindowManager_WindowActived;
             WindowManager.TopMostChanged -= WindowManager_TopMostChanged;
+            FormManager.Showed -= FormManager_Showed;
+            FormManager.Closed -= FormManager_Closed;
             FormManager.Activated -= FormManager_Activated;
             FormManager.Deactivated -= FormManager_Deactivated;
 
@@ -98,27 +102,7 @@ namespace SETUNA.Main.Layer
 
         public void OptimizeLayerCounter()
         {
-            var forms = new List<FormData>(formDic.Values);
-            forms.Sort((x, y) => x.SortingOrder.CompareTo(y.SortingOrder));
-
-            var noDuplicates = new List<FormData>(forms);
-            for (var i = 0; i < noDuplicates.Count; i++)
-            {
-                var item = noDuplicates[i];
-                var removeCount = noDuplicates.RemoveAll(x => x.SortingOrder == item.SortingOrder && x != item);
-            }
-            maxSortingOrder = noDuplicates.Count - 1;
-
-            var sortingValueDic = new Dictionary<int, int>(noDuplicates.Count);
-            for (var i = 0; i < noDuplicates.Count; i++)
-            {
-                sortingValueDic.Add(noDuplicates[i].SortingOrder, i);
-            }
-
-            foreach (var item in forms)
-            {
-                item.SortingOrder = sortingValueDic[item.SortingOrder];
-            }
+            maxSortingOrder = LayerSorting.Compact(new List<FormData>(formDic.Values));
         }
 
         void WindowManager_WindowActived(object sender, WindowInfo windowInfo)
@@ -167,7 +151,8 @@ namespace SETUNA.Main.Layer
                 var hasIntersect = false;
                 foreach (var item in formDic.Values)
                 {
-                    var childInfo = item.WindowInfo;
+                    // 只需要 Rect，跳过 Z 序枚举。
+                    var childInfo = item.GetWindowInfo(false);
 
                     // 当前项目的所有打开的窗体 与 其他Windows程序 比较 相交性
                     if (childInfo.Rect.IntersectsWith(windowInfo.Rect))
@@ -290,17 +275,21 @@ namespace SETUNA.Main.Layer
             get => Form.TopMost;
         }
 
-        public WindowInfo WindowInfo
-        {
-            get
-            {
-                if (Form == null || Form.IsDisposed)
-                {
-                    return WindowInfo.Empty;
-                }
+        public WindowInfo WindowInfo => GetWindowInfo(true);
 
-                return WindowManager.Instance.GetWindowInfo(Form.Handle);
+        /// <summary>
+        /// <paramref name="includeZOrder"/> 为 false 时跳过 Z 序获取。
+        /// <c>CheckRefreshLayer</c> 的相交性检查只用 Rect，而 Z 序获取是一次
+        /// 全局窗口枚举——每个周期为每个窗体各做一次会把开销放大到 O(窗体数 × 窗口数)。
+        /// </summary>
+        public WindowInfo GetWindowInfo(bool includeZOrder)
+        {
+            if (Form == null || Form.IsDisposed)
+            {
+                return WindowInfo.Empty;
             }
+
+            return WindowManager.Instance.GetWindowInfo(Form.Handle, includeZOrder);
         }
 
 

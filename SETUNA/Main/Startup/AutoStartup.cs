@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
@@ -8,73 +8,104 @@ namespace SETUNA.Main.Startup
     {
         private static string Key = "SETUNA_AutoStartup";
 
+        const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+
         public static bool Set(bool enabled)
         {
-            var registryKey = GetRegistryKey();
-
             try
             {
-                if (enabled)
+                using (var registryKey = GetRegistryKey())
                 {
-                    registryKey.SetValue(Key, Application.ExecutablePath.ToString());
-                }
-                else
-                {
-                    var value = registryKey.GetValue(Key, null);
-                    if (value != null)
+                    if (registryKey == null)
                     {
-                        registryKey.DeleteValue(Key);
+                        // 打开 Run 键失败（权限或策略）。按失败处理，
+                        // 不再靠 catch 兜住一个空引用异常。
+                        ShowFailure("无法访问开机启动项的注册表位置。");
+                        return false;
                     }
+
+                    if (enabled)
+                    {
+                        registryKey.SetValue(Key, QuoteExecutablePath(Application.ExecutablePath));
+                    }
+                    else
+                    {
+                        if (registryKey.GetValue(Key, null) != null)
+                        {
+                            registryKey.DeleteValue(Key);
+                        }
+                    }
+
+                    return true;
                 }
-                return true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                // 记录细节给开发者，呈现给用户的是可理解的说明而不是堆栈跟踪。
+                Console.WriteLine("AutoStartup.Set failed: " + ex);
+                ShowFailure(enabled ? "无法设置开机启动。" : "无法取消开机启动。");
                 return false;
-            }
-            finally
-            {
-                if (registryKey != null)
-                {
-                    registryKey.Close();
-                }
             }
         }
 
         public static bool IsSetup()
         {
-            var registryKey = GetRegistryKey();
-
             try
             {
-                var valueNames = registryKey.GetValueNames();
-                foreach (var item in valueNames)
+                using (var registryKey = GetRegistryKey())
                 {
-                    if (item.Equals(Key, StringComparison.OrdinalIgnoreCase))
+                    if (registryKey == null)
                     {
-                        return true;
+                        return false;
                     }
+
+                    foreach (var item in registryKey.GetValueNames())
+                    {
+                        if (item.Equals(Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
                 }
-                return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine("AutoStartup.IsSetup failed: " + ex);
                 return false;
             }
-            finally
+        }
+
+        /// <summary>
+        /// Run 键的值由 Windows 按命令行解析：路径含空格时必须加引号，
+        /// 否则 <c>C:\Program Files\SETUNA\SETUNA.exe</c> 会被当成
+        /// <c>C:\Program</c> 加参数 <c>Files\SETUNA\SETUNA.exe</c>。
+        /// </summary>
+        public static string QuoteExecutablePath(string executablePath)
+        {
+            if (string.IsNullOrEmpty(executablePath))
             {
-                if (registryKey != null)
-                {
-                    registryKey.Close();
-                }
+                return executablePath;
             }
+
+            if (executablePath.StartsWith("\"", StringComparison.Ordinal)
+                && executablePath.EndsWith("\"", StringComparison.Ordinal))
+            {
+                return executablePath;
+            }
+
+            return "\"" + executablePath + "\"";
         }
 
         public static RegistryKey GetRegistryKey()
         {
-            return Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            return Registry.CurrentUser.OpenSubKey(RunKeyPath, true);
+        }
+
+        static void ShowFailure(string message)
+        {
+            MessageBox.Show(message, "SETUNA2", MessageBoxButtons.OK, MessageBoxIcon.Hand);
         }
     }
 }

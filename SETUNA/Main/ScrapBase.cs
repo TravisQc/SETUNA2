@@ -173,9 +173,19 @@ namespace SETUNA.Main
         }
 
         // Token: 0x06000052 RID: 82 RVA: 0x000037B8 File Offset: 0x000019B8
-        ~ScrapBase()
+        protected override void DisposeOwnedResources()
         {
+            base.DisposeOwnedResources();
+
             ImageAllDispose();
+
+            if (StyleApplyTimer != null)
+            {
+                StyleApplyTimer.Stop();
+                StyleApplyTimer.Tick -= ApplyStyleItem;
+                StyleApplyTimer.Dispose();
+                StyleApplyTimer = null;
+            }
         }
 
         // Token: 0x06000054 RID: 84 RVA: 0x000039BE File Offset: 0x00001BBE
@@ -392,10 +402,6 @@ namespace SETUNA.Main
             {
                 ImageAllDispose();
                 imgView = (Image)value.Clone();
-                if (imgView == null)
-                {
-                    Console.WriteLine("ScrapBase Image : unll");
-                }
                 Scale = Scale;
                 Refresh();
 
@@ -418,30 +424,33 @@ namespace SETUNA.Main
         public Image GetThumbnail()
         {
             var bitmap = new Bitmap(230, 150, PixelFormat.Format24bppRgb);
-            var graphics = Graphics.FromImage(bitmap);
-            graphics.FillRectangle(Brushes.DarkGray, 0, 0, bitmap.Width, bitmap.Height);
-            if (imgView.Width <= bitmap.Width - 1 || imgView.Height <= bitmap.Height - 1)
+            using (var graphics = Graphics.FromImage(bitmap))
             {
-                graphics.DrawImageUnscaled(imgView, 1, 1);
-            }
-            else
-            {
-                var size = new Size(imgView.Width - 1, imgView.Height - 1);
-                double num;
-                if (size.Width - bitmap.Width - 1 <= size.Height - bitmap.Height - 1)
+                graphics.FillRectangle(Brushes.DarkGray, 0, 0, bitmap.Width, bitmap.Height);
+                if (imgView.Width <= bitmap.Width - 1 || imgView.Height <= bitmap.Height - 1)
                 {
-                    num = (bitmap.Width - 1) / (double)(size.Width - 1);
+                    graphics.DrawImageUnscaled(imgView, 1, 1);
                 }
                 else
                 {
-                    num = (bitmap.Height - 1) / (double)(size.Height - 1);
+                    var size = new Size(imgView.Width - 1, imgView.Height - 1);
+                    double num;
+                    if (size.Width - bitmap.Width - 1 <= size.Height - bitmap.Height - 1)
+                    {
+                        num = (bitmap.Width - 1) / (double)(size.Width - 1);
+                    }
+                    else
+                    {
+                        num = (bitmap.Height - 1) / (double)(size.Height - 1);
+                    }
+                    size.Width = (int)(size.Width * num);
+                    size.Height = (int)(size.Height * num);
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graphics.DrawImage(imgView, 1, 1, size.Width, size.Height);
                 }
-                size.Width = (int)(size.Width * num);
-                size.Height = (int)(size.Height * num);
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.DrawImage(imgView, 1, 1, size.Width, size.Height);
+                graphics.DrawRectangle(Pens.Black, 0, 0, bitmap.Width - 1, bitmap.Height - 1);
             }
-            graphics.DrawRectangle(Pens.Black, 0, 0, bitmap.Width - 1, bitmap.Height - 1);
+
             return bitmap;
         }
 
@@ -461,19 +470,22 @@ namespace SETUNA.Main
             e.Graphics.InterpolationMode = _interpolationmode;
             //e.Graphics.DrawImage(imgView, all, all, width, height);
 
+            // 两种背景模式使用同一套目标区域：客户区尺寸减去两侧边距。
+            // 非透明分支以前传的是 Width/Height（未扣边距），边距非 0 时
+            // 图像被放大到 Width+2*all 的效果，右下角被裁掉。
+            var destination = ScrapGeometry.ImageDestination(Width, Height, all);
+
             if (Mainform.Instance.optSetuna.Setuna.BackgroundTransparentEnabled)
             {
                 e.Graphics.Clear(Color.Green);
                 TransparencyKey = Color.Green;
-
-                e.Graphics.DrawImage(imgView, all, all, Width - all * 2, Height - all * 2);
             }
             else
             {
                 e.Graphics.Clear(Color.White);
-
-                e.Graphics.DrawImage(imgView, all, all, Width, Height);
             }
+
+            e.Graphics.DrawImage(imgView, destination);
 
             if (!_solidframe)
             {
@@ -607,17 +619,12 @@ namespace SETUNA.Main
             get => _scale;
             set
             {
-                _scale = value;
-                if (_scale < -200)
-                {
-                    _scale = -200;
-                }
-                if (_scale > 200)
-                {
-                    _scale = 200;
-                }
-                base.Width = (int)(imgView.Width * (_scale / 100f)) + Padding.All * 2;
-                base.Height = (int)(imgView.Height * (_scale / 100f)) + Padding.All * 2;
+                // 下界原本是 -200：负比例会算出负的宽高。
+                _scale = ScrapGeometry.ClampScale(value);
+
+                var outerSize = ScrapGeometry.ScaledOuterSize(imgView.Size, _scale, Padding.All);
+                base.Width = outerSize.Width;
+                base.Height = outerSize.Height;
                 Refresh();
             }
         }
@@ -838,15 +845,33 @@ namespace SETUNA.Main
             styleItems.RemoveAll(x => !StyleItemDictionary.CanRestore(x.GetType()));
 
             _applyFinished = applyFinished;
-            ApplyStyles(style.StyleID, styleItems.ToArray(), clickpoint);
+
+            if (!ApplyStyles(style.StyleID, styleItems.ToArray(), clickpoint))
+            {
+                // 无法启动样式应用（该截图已在应用样式中）。以前这里静默返回，
+                // 于是 applyFinished 永不触发，整条缓存恢复链停滞、IsInit 永不置位、
+                // delayInitTimer 无限轮询。现在立即推进。
+                CompleteApply();
+            }
+        }
+
+        // 保证 _applyFinished 恰好触发一次，触发后即清空。
+        void CompleteApply()
+        {
+            var applyFinished = _applyFinished;
+            _applyFinished = null;
+            applyFinished?.Invoke();
         }
 
         // Token: 0x06000087 RID: 135 RVA: 0x0000467C File Offset: 0x0000287C
-        public void ApplyStyles(int styleID, CStyleItem[] styleItems, Point clickpoint)
+        /// <summary>
+        /// 启动样式应用。返回是否真正启动——已在应用样式时返回 false。
+        /// </summary>
+        public bool ApplyStyles(int styleID, CStyleItem[] styleItems, Point clickpoint)
         {
             if (IsStyleApply)
             {
-                return;
+                return false;
             }
             _styleClickPoint = clickpoint;
             IsStyleApply = true;
@@ -863,6 +888,8 @@ namespace SETUNA.Main
             }
             StyleApplyTimer.Interval = 1;
             StyleApplyTimer.Start();
+
+            return true;
         }
 
         // Token: 0x06000088 RID: 136 RVA: 0x000046FC File Offset: 0x000028FC
@@ -893,13 +920,16 @@ namespace SETUNA.Main
                 {
                     Console.WriteLine("ScrapBase ApplyStyleItem Exception:" + ex.ToString());
                     IsStyleApply = false;
+
+                    // 样式应用在此中止。以前这条分支不触发 _applyFinished，
+                    // 于是一个样式项抛异常就会让整条缓存恢复链停滞。
+                    CompleteApply();
                     goto IL_AD;
                 }
             }
             else
             {
-                _applyFinished?.Invoke();
-                _applyFinished = null;
+                CompleteApply();
 
                 if (ScrapStyleAppliedEvent != null)
                 {
@@ -916,6 +946,13 @@ namespace SETUNA.Main
 
         public void RemoveStyle(Type styleItemType)
         {
+            // 防御性判空：当前所有到达路径都保证先执行过 ApplyStyles，
+            // 因此不是活跃缺陷，但这里没有理由依赖调用顺序。
+            if (_styleItems == null)
+            {
+                return;
+            }
+
             if (_styleItems.Count > 0)
             {
                 _styleItems.RemoveAll(x => x.GetType() == styleItemType);
@@ -978,10 +1015,9 @@ namespace SETUNA.Main
         {
             base.OnLocationChanged(e);
 
-            if (ScrapLocationChangedEvent != null)
-            {
-                ScrapLocationChangedEvent(e, new ScrapEventArgs(this));
-            }
+            // 以前这里把 EventArgs 当 sender 传（ScrapLocationChangedEvent(e, ...)）。
+            // 复用已有的触发方法，事件源统一为截图窗口自身。
+            fireScrapLocationChangedEvent();
         }
 
 

@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace SETUNA.Main
 {
     // Token: 0x0200002F RID: 47
-    public class ScrapBook
+    public class ScrapBook : IDisposable
     {
         // Token: 0x1700004C RID: 76
         // (get) Token: 0x060001B2 RID: 434 RVA: 0x00009A1A File Offset: 0x00007C1A
@@ -68,22 +68,18 @@ namespace SETUNA.Main
         }
 
         // Token: 0x060001BE RID: 446 RVA: 0x00009B40 File Offset: 0x00007D40
-        ~ScrapBook()
+        // 以前是终结器：在终结器线程上关闭窗体，是错误的线程。
+        // 改为确定性释放，由 Mainform 在自身释放路径中调用，关闭发生在 UI 线程。
+        public void Dispose()
         {
-            try
+            foreach (var obj in _scraps)
             {
-                foreach (var obj in _scraps)
-                {
-                    var scrapBase = (ScrapBase)obj;
-                    scrapBase.ScrapClose();
-                }
-                _scraps.Clear();
-                EraseDustBox();
+                var scrapBase = (ScrapBase)obj;
+                scrapBase.ScrapClose();
             }
-            finally
-            {
 
-            }
+            _scraps.Clear();
+            EraseDustBox();
         }
 
         // Token: 0x060001BF RID: 447 RVA: 0x00009BC0 File Offset: 0x00007DC0
@@ -151,24 +147,23 @@ namespace SETUNA.Main
             };
             scrapBase.SetBounds(pos.X, pos.Y, image.Width, image.Height, BoundsSpecified.All);
 
-            var cstyle = _mainform.optSetuna.FindStyle(style.ID);
-            if (cstyle != null)
-            {
-                scrapBase.ApplyStylesFromCache(cstyle, style.ClickPoint, () =>
-                {
-                    AddScrapThenDo(scrapBase, scrapBase.GetVisibleFlag());
-                    addFinished?.Invoke();
-                });
-            }
-
-            // 设置所有参数再设置缓存对象
+            // 缓存对象必须在应用样式之前设好：ApplyStylesFromCache 在无法启动时
+            // 会同步回调，此时 AddScrapThenDo 已经需要读到 CacheItem。
             scrapBase.CacheItem = cacheItem;
 
+            var cstyle = _mainform.optSetuna.FindStyle(style.ID);
             if (cstyle == null)
             {
                 AddScrapThenDo(scrapBase);
                 addFinished?.Invoke();
+                return;
             }
+
+            scrapBase.ApplyStylesFromCache(cstyle, style.ClickPoint, () =>
+            {
+                AddScrapThenDo(scrapBase, scrapBase.GetVisibleFlag());
+                addFinished?.Invoke();
+            });
         }
 
         // Token: 0x060001C3 RID: 451 RVA: 0x00009CCD File Offset: 0x00007ECD

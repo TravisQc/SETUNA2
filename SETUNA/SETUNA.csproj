@@ -137,6 +137,7 @@
     </Compile>
     <Compile Include="Main\Cache\CacheItem.cs" />
     <Compile Include="Main\Cache\CacheManager.cs" />
+    <Compile Include="Main\Cache\RestoreChain.cs" />
     <Compile Include="Main\CaptureForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -159,6 +160,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Main\Common\Utils.cs" />
+    <Compile Include="Main\Common\AtomicFile.cs" />
     <Compile Include="Main\HotKeyID.cs" />
     <Compile Include="Main\Magnifier.cs">
       <SubType>Form</SubType>
@@ -166,11 +168,13 @@
     <Compile Include="Main\Magnifier.Designer.cs">
       <DependentUpon>Magnifier.cs</DependentUpon>
     </Compile>
+    <Compile Include="Main\ScrapGeometry.cs" />
     <Compile Include="Main\ScrapSourceUrl.cs" />
     <Compile Include="Main\Style\CPasteStyle.cs" />
     <Compile Include="Main\Style\CDustScrapStyle.cs" />
     <Compile Include="Main\ToolStripEx.cs" />
     <Compile Include="Main\Window\WindowManager.cs" />
+    <Compile Include="Main\Window\MainWindowGeometry.cs" />
     <Compile Include="Main\ContextStyleMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -208,6 +212,7 @@
     <Compile Include="Main\Layer\WindowsFilter.cs" />
     <Compile Include="Main\Layer\IWindowFilter.cs" />
     <Compile Include="Main\Layer\LayerManager.cs" />
+    <Compile Include="Main\Layer\LayerSorting.cs" />
     <Compile Include="Main\Window\FormManager.cs" />
     <Compile Include="Main\Option\OptionForm.cs">
       <SubType>Form</SubType>

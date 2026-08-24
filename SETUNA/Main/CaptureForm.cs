@@ -62,9 +62,10 @@ namespace SETUNA.Main
         [DllImport("Gdi32.dll")]
         private static extern IntPtr CreateDC(string Display, string c, object b, object a);
 
-        // Token: 0x06000297 RID: 663
-        [DllImport("Gdi32.dll")]
-        private static extern bool DeleteDC(IntPtr handle);
+        // 这里刻意不声明 DeleteDC：本类取得的是屏幕 DC（GetDC），按 API 约定
+        // 只能用 ReleaseDC 交还。实测 Windows 11 上 DeleteDC 对屏幕 DC 也能成功释放，
+        // 但这不是契约保证的行为——GetDC(hwnd) 取得的窗口 DC 来自公共缓存，
+        // DeleteDC 对它无效。不留这个声明，避免再被误用。
 
         // Token: 0x1700006C RID: 108
         // (get) Token: 0x06000298 RID: 664 RVA: 0x0000DE7C File Offset: 0x0000C07C
@@ -313,56 +314,56 @@ namespace SETUNA.Main
         // Token: 0x060002A0 RID: 672 RVA: 0x0000E6F0 File Offset: 0x0000C8F0
         public static bool CopyFromScreen(Image img, Point location)
         {
-            var result = true;
-            var intPtr = IntPtr.Zero;
-            Graphics graphics = null;
+            var screenDC = IntPtr.Zero;
             try
             {
-                intPtr = CaptureForm.GetDC(IntPtr.Zero);
-                graphics = Graphics.FromImage(img);
+                screenDC = CaptureForm.GetDC(IntPtr.Zero);
+
+                // using 让「未创建成功的 Graphics 不会进入清理路径」成为结构上的保证，
+                // 而不是靠 finally 里的额外判空维持。
+                using (var graphics = Graphics.FromImage(img))
                 {
-                    var intPtr2 = IntPtr.Zero;
+                    var targetDC = IntPtr.Zero;
                     try
                     {
-                        intPtr2 = graphics.GetHdc();
-                        CaptureForm.BitBlt(intPtr2, 0, 0, img.Width, img.Height, intPtr, location.X, location.Y, 1087111200);
+                        targetDC = graphics.GetHdc();
+
+                        // CAPTUREBLT 是为了把分层/半透明窗口一起截到，不能省。
+                        CaptureForm.BitBlt(targetDC, 0, 0, img.Width, img.Height, screenDC, location.X, location.Y, CaptureForm.SRCCOPY | CaptureForm.CAPTUREBLT);
 
                         if (Mainform.Instance.optSetuna.Setuna.CursorEnabled)
                         {
                             var cursorPos = Cursor.Position;
                             cursorPos.X -= targetScreen.Bounds.X;
-                            WindowsAPI.DrawCursorImageToScreenImage(cursorPos, intPtr2);
+                            WindowsAPI.DrawCursorImageToScreenImage(cursorPos, targetDC);
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                        throw ex;
                     }
                     finally
                     {
-                        if (intPtr2 != IntPtr.Zero)
+                        if (targetDC != IntPtr.Zero)
                         {
-                            graphics.ReleaseHdc(intPtr2);
+                            graphics.ReleaseHdc(targetDC);
                         }
                     }
                 }
+
+                return true;
             }
-            catch (Exception ex2)
+            catch (Exception ex)
             {
-                Console.WriteLine(ex2);
-                result = false;
+                Console.WriteLine(ex);
+                return false;
             }
             finally
             {
-                graphics.Dispose();
-
-                if (intPtr != IntPtr.Zero)
+                // GetDC 取得的 DC 按 API 约定要交还给 ReleaseDC。
+                // 原来用的是 DeleteDC——实测在 Windows 11 上也能释放屏幕 DC，
+                // 但 MSDN 明确禁止这个配对，且对窗口 DC 无效。改成契约正确的调用。
+                if (screenDC != IntPtr.Zero)
                 {
-                    CaptureForm.DeleteDC(intPtr);
+                    CaptureForm.ReleaseDC(IntPtr.Zero, screenDC);
                 }
             }
-            return result;
         }
 
         // Token: 0x060002A1 RID: 673 RVA: 0x0000E7E4 File Offset: 0x0000C9E4
@@ -425,11 +426,6 @@ namespace SETUNA.Main
             CaptureForm.selLineVer2.Refresh();
             CaptureForm.selLineHor1.Refresh();
             CaptureForm.selLineHor2.Refresh();
-        }
-
-        // Token: 0x060002A4 RID: 676 RVA: 0x0000E86C File Offset: 0x0000CA6C
-        ~CaptureForm()
-        {
         }
 
         // Token: 0x060002A5 RID: 677 RVA: 0x0000E894 File Offset: 0x0000CA94

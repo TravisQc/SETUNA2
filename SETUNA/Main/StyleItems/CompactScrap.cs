@@ -77,8 +77,26 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x0600040A RID: 1034 RVA: 0x00019FFE File Offset: 0x000181FE
         private void CompactScrap_DoubleClick(object sender, EventArgs e)
         {
-            _thumbnail.Dispose();
+            // _thumbnail 由 DisposeOwnedResources 释放：以前在这里释放，
+            // 走其他关闭路径（程序化关闭、随所属截图关闭）时就会泄漏。
             base.Close();
+        }
+
+        protected override void DisposeOwnedResources()
+        {
+            base.DisposeOwnedResources();
+
+            if (_thumbnail != null)
+            {
+                _thumbnail.Dispose();
+                _thumbnail = null;
+            }
+
+            if (_pen != null)
+            {
+                _pen.Dispose();
+                _pen = null;
+            }
         }
 
         // Token: 0x0600040B RID: 1035 RVA: 0x0001A014 File Offset: 0x00018214
@@ -148,7 +166,10 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x06000413 RID: 1043 RVA: 0x0001A14D File Offset: 0x0001834D
         private void CompactScrap_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Escape || e.KeyCode == Keys.Return || e.KeyCode == Keys.Return)
+            // 原来写的是 Keys.Return || Keys.Return（重复项）。
+            // Keys.Enter 是 Keys.Return 的别名（都是 13），原始源码大概两者都写了，
+            // 反编译后塌缩成同一项，因此删掉冗余项不丢任何行为。
+            if (e.KeyCode == Keys.Escape || e.KeyCode == Keys.Return)
             {
                 base.Close();
             }

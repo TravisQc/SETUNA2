@@ -35,7 +35,15 @@ namespace WebPWrapper
     {
         public WebP()
         {
-            SETUNA.Plugins.ResourceExtractor.ExtractWebP();
+            // 提取/加载失败时立刻以可诊断的异常结束，而不是等到某条
+            // DllImport 在 40 层调用栈深处抛 DllNotFoundException。
+            // 调用方（BitmapUtils.FromPath）会捕获并回退到「加载失败返回 null」。
+            if (!SETUNA.Plugins.ResourceExtractor.ExtractWebP())
+            {
+                throw new InvalidOperationException(
+                    "无法准备 libwebp 原生库，WEBP 解码不可用。提取目录："
+                    + SETUNA.Plugins.ResourceExtractor.NativeDirectory);
+            }
         }
 
 

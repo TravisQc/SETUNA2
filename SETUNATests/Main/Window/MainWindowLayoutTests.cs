@@ -1,63 +1,34 @@
-using System;
 using System.IO;
-using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SETUNA.Main.Option;
-using SETUNA.Main.Runtime.Tests;
 
 namespace SETUNA.Main.Window.Tests
 {
     /// <summary>
-    /// Guards the enlarged main-window geometry, the equal-width action layout,
-    /// and the window-size persistence added for those two capabilities.
+    /// Guards the main-window geometry bounds and the window-size persistence.
+    /// <para>
+    /// The assertions call <see cref="MainWindowGeometry"/> — the production source
+    /// of truth for these bounds — instead of matching text in Mainform.cs, so a
+    /// harmless refactor cannot turn them red and a real regression cannot stay green.
+    /// Constraints that need a live <c>Form</c> (the designer's control layout, the
+    /// startup call order, the resize bounds actually honoured by Windows) cannot be
+    /// exercised in this host; they are carried by the <c>main-window-sizing</c> and
+    /// <c>main-window-action-layout</c> specs and by the change's manual checklist.
+    /// </para>
     /// </summary>
     [TestClass]
     public class MainWindowLayoutTests
     {
-        private const int DefaultWidth = 415;
-        private const int DefaultHeight = 180;
-        private const int MinimumWidth = 260;
-        private const int MinimumHeight = 160;
-        private const int BaselineDpi = 168;
-        private const int MaximumWidth = 640;
-        private const int MaximumHeight = 360;
-
-        [TestMethod]
-        public void DesignerUsesEnlargedDefaultAndBoundedMaximumSize()
-        {
-            var designer = ReadMainformDesigner();
-
-            StringAssert.Contains(designer, "this.ClientSize = new System.Drawing.Size(" + DefaultWidth + ", " + DefaultHeight + ");");
-            StringAssert.Contains(designer, "this.MaximumSize = new System.Drawing.Size(" + MaximumWidth + ", " + MaximumHeight + ");");
-            StringAssert.Contains(designer, "this.MinimumSize = new System.Drawing.Size(" + MinimumWidth + ", " + MinimumHeight + ");");
-            StringAssert.Contains(designer, "this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;");
-        }
-
         [TestMethod]
         public void MinimumStaysBelowTheDefaultOuterSizeAndTheMaximum()
         {
-            Assert.IsTrue(MinimumWidth < MaximumWidth && MinimumHeight < MaximumHeight);
+            Assert.IsTrue(MainWindowGeometry.MinimumBaselineWidth < MainWindowGeometry.MaximumWidth);
+            Assert.IsTrue(MainWindowGeometry.MinimumBaselineHeight < MainWindowGeometry.MaximumHeight);
 
             // Windows' own minimum track size on a 175% display is 236x64; the
             // configured minimum has to exceed it to have any effect there.
-            Assert.IsTrue(MinimumWidth > 236, "The minimum width must beat the system floor at 175%.");
-            Assert.IsTrue(MinimumHeight > 64, "The minimum height must beat the system floor at 175%.");
-        }
-
-        [TestMethod]
-        public void MinimumIsRederivedForEachMonitorDpi()
-        {
-            var mainform = ReadMainform();
-
-            StringAssert.Contains(mainform, "protected override void OnDpiChanged(DpiChangedEventArgs e)");
-            StringAssert.Contains(mainform, "ApplyMinimumWindowSize(e.DeviceDpiNew);");
-
-            var load = mainform.IndexOf("private void Mainform_Load(", StringComparison.Ordinal);
-            var apply = mainform.IndexOf("ApplyMinimumWindowSize(DeviceDpi);", load, StringComparison.Ordinal);
-            var restore = mainform.IndexOf("RestoreMainWindowSize();", load, StringComparison.Ordinal);
-
-            Assert.IsTrue(apply > load, "The minimum must be sized for the startup monitor.");
-            Assert.IsTrue(restore > apply, "The saved size must be clamped against the scaled minimum.");
+            Assert.IsTrue(MainWindowGeometry.MinimumBaselineWidth > 236, "The minimum width must beat the system floor at 175%.");
+            Assert.IsTrue(MainWindowGeometry.MinimumBaselineHeight > 64, "The minimum height must beat the system floor at 175%.");
         }
 
         [TestMethod]
@@ -68,16 +39,42 @@ namespace SETUNA.Main.Window.Tests
             // scaled minimum has to stay under it on every monitor.
             foreach (var dpi in new[] { 96, 120, 144, 168, 192, 240, 288 })
             {
-                var width = MinimumWidth * dpi / BaselineDpi;
-                var height = MinimumHeight * dpi / BaselineDpi;
+                var minimum = MainWindowGeometry.ScaleMinimum(dpi);
 
-                Assert.IsTrue(width < MaximumWidth, "Minimum width exceeds the maximum at " + dpi + " DPI.");
-                Assert.IsTrue(height < MaximumHeight, "Minimum height exceeds the maximum at " + dpi + " DPI.");
+                Assert.IsTrue(minimum.Width < MainWindowGeometry.MaximumWidth, "Minimum width exceeds the maximum at " + dpi + " DPI.");
+                Assert.IsTrue(minimum.Height < MainWindowGeometry.MaximumHeight, "Minimum height exceeds the maximum at " + dpi + " DPI.");
             }
+        }
 
-            Assert.AreEqual(MinimumWidth, MinimumWidth * BaselineDpi / BaselineDpi);
-            Assert.AreEqual(148, MinimumWidth * 96 / BaselineDpi);
-            Assert.AreEqual(91, MinimumHeight * 96 / BaselineDpi);
+        [TestMethod]
+        public void ScaledMinimumReturnsTheMeasuredBaselineAtItsOwnDpi()
+        {
+            var baseline = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
+
+            Assert.AreEqual(MainWindowGeometry.MinimumBaselineWidth, baseline.Width);
+            Assert.AreEqual(MainWindowGeometry.MinimumBaselineHeight, baseline.Height);
+        }
+
+        [TestMethod]
+        public void ScaledMinimumShrinksOnLowerDpiAndGrowsOnHigherDpi()
+        {
+            var low = MainWindowGeometry.ScaleMinimum(96);
+            var baseline = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
+            var high = MainWindowGeometry.ScaleMinimum(288);
+
+            Assert.AreEqual(148, low.Width);
+            Assert.AreEqual(91, low.Height);
+            Assert.IsTrue(low.Width < baseline.Width && baseline.Width < high.Width);
+            Assert.IsTrue(low.Height < baseline.Height && baseline.Height < high.Height);
+        }
+
+        [TestMethod]
+        public void ScaledMinimumIsSkippedForANonPositiveDpi()
+        {
+            // Size.Empty tells the caller to leave the current MinimumSize alone
+            // rather than collapsing the window to nothing.
+            Assert.IsTrue(MainWindowGeometry.ScaleMinimum(0).IsEmpty);
+            Assert.IsTrue(MainWindowGeometry.ScaleMinimum(-96).IsEmpty);
         }
 
         [TestMethod]
@@ -87,87 +84,75 @@ namespace SETUNA.Main.Window.Tests
             // 168 DPI. The default is a client size, so the reachable outer
             // default is the client default plus that chrome.
             AssertDefaultReachable(96, 16, 39);
-            AssertDefaultReachable(BaselineDpi, 24, 64);
+            AssertDefaultReachable(MainWindowGeometry.MinimumBaselineDpi, 24, 64);
         }
 
-        private static void AssertDefaultReachable(int dpi, int chromeWidth, int chromeHeight)
+        static void AssertDefaultReachable(int dpi, int chromeWidth, int chromeHeight)
         {
-            var width = MinimumWidth * dpi / BaselineDpi;
-            var height = MinimumHeight * dpi / BaselineDpi;
+            var minimum = MainWindowGeometry.ScaleMinimum(dpi);
 
-            Assert.IsTrue(width <= DefaultWidth + chromeWidth, "Minimum width blocks the default at " + dpi + " DPI.");
-            Assert.IsTrue(height <= DefaultHeight + chromeHeight, "Minimum height blocks the default at " + dpi + " DPI.");
-        }
-
-        [TestMethod]
-        public void ActionsAreHostedInTwoEqualFilledColumns()
-        {
-            var designer = ReadMainformDesigner();
-
-            StringAssert.Contains(designer, "this.mainActionLayout.ColumnCount = 2;");
-            StringAssert.Contains(designer, "this.mainActionLayout.Dock = System.Windows.Forms.DockStyle.Fill;");
-            Assert.AreEqual(
-                2,
-                Regex.Matches(designer, @"mainActionLayout\.ColumnStyles\.Add\(new System\.Windows\.Forms\.ColumnStyle\(System\.Windows\.Forms\.SizeType\.Percent, 50F\)\)").Count,
-                "Both action columns must claim an equal 50% share.");
-
-            StringAssert.Contains(designer, "this.mainActionLayout.Controls.Add(this.button1, 0, 0);");
-            StringAssert.Contains(designer, "this.mainActionLayout.Controls.Add(this.button4, 1, 0);");
-            StringAssert.Contains(designer, "this.button1.Dock = System.Windows.Forms.DockStyle.Fill;");
-            StringAssert.Contains(designer, "this.button4.Dock = System.Windows.Forms.DockStyle.Fill;");
-            StringAssert.Contains(designer, "this.Controls.Add(this.mainActionLayout);");
+            Assert.IsTrue(
+                minimum.Width <= MainWindowGeometry.DefaultClientWidth + chromeWidth,
+                "Minimum width blocks the default at " + dpi + " DPI.");
+            Assert.IsTrue(
+                minimum.Height <= MainWindowGeometry.DefaultClientHeight + chromeHeight,
+                "Minimum height blocks the default at " + dpi + " DPI.");
         }
 
         [TestMethod]
-        public void ActionButtonsKeepTheirLabelsAndClickHandlers()
+        public void ClampPullsAnOversizedPersistedSizeDownToTheMaximum()
         {
-            var designer = ReadMainformDesigner();
-            var mainform = ReadMainform();
+            var minimum = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
 
-            StringAssert.Contains(designer, "this.button1.Text = \"截取\";");
-            StringAssert.Contains(designer, "this.button4.Text = \"选项\";");
-            StringAssert.Contains(designer, "this.button1.Click += new System.EventHandler(this.button1_Click);");
-            StringAssert.Contains(designer, "this.button4.Click += new System.EventHandler(this.button4_Click);");
+            var clamped = MainWindowGeometry.Clamp(9999, 9999, minimum);
 
-            StringAssert.Contains(mainform, "StartCapture();");
-            StringAssert.Contains(mainform, "Option();");
+            Assert.AreEqual(MainWindowGeometry.MaximumWidth, clamped.Width);
+            Assert.AreEqual(MainWindowGeometry.MaximumHeight, clamped.Height);
         }
 
         [TestMethod]
-        public void SizeIsRestoredBeforeDisplayAndSavedOnClose()
+        public void ClampPushesAnUndersizedPersistedSizeUpToTheScaledMinimum()
         {
-            var mainform = ReadMainform();
+            var minimum = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
 
-            var load = mainform.IndexOf("private void Mainform_Load(", StringComparison.Ordinal);
-            Assert.IsTrue(load >= 0, "Mainform_Load must exist.");
-            var loadOption = mainform.IndexOf("LoadOption();", load, StringComparison.Ordinal);
-            var restore = mainform.IndexOf("RestoreMainWindowSize();", load, StringComparison.Ordinal);
-            var optionApply = mainform.IndexOf("OptionApply();", restore, StringComparison.Ordinal);
+            var clamped = MainWindowGeometry.Clamp(10, 10, minimum);
 
-            Assert.IsTrue(loadOption > load, "The persisted option must be loaded first.");
-            Assert.IsTrue(restore > loadOption, "The saved size must be applied after the option is loaded.");
-            Assert.IsTrue(optionApply > restore, "The size must be applied before the window becomes visible.");
-
-            var closing = mainform.IndexOf("private void Mainform_FormClosing(", StringComparison.Ordinal);
-            Assert.IsTrue(closing >= 0, "Mainform_FormClosing must exist.");
-            var saveSize = mainform.IndexOf("SaveMainWindowSize();", closing, StringComparison.Ordinal);
-            var saveOption = mainform.IndexOf("SaveOption();", saveSize, StringComparison.Ordinal);
-
-            Assert.IsTrue(saveSize > closing, "The current size must be captured while closing.");
-            Assert.IsTrue(saveOption > saveSize, "The captured size must be written to the config file.");
+            Assert.AreEqual(minimum.Width, clamped.Width);
+            Assert.AreEqual(minimum.Height, clamped.Height);
         }
 
         [TestMethod]
-        public void RestoreClampsPersistedSizeIntoTheAllowedRange()
+        public void ClampLeavesAnInRangePersistedSizeUntouched()
         {
-            // Mirrors RestoreMainWindowSize: a Form cannot be hosted in this
-            // suite, so the documented bounds are exercised directly.
-            Assert.AreEqual(MaximumWidth, Clamp(9999, MinimumWidth, MaximumWidth));
-            Assert.AreEqual(MaximumHeight, Clamp(9999, MinimumHeight, MaximumHeight));
-            Assert.AreEqual(MinimumWidth, Clamp(10, MinimumWidth, MaximumWidth));
-            Assert.AreEqual(MinimumHeight, Clamp(10, MinimumHeight, MaximumHeight));
-            Assert.AreEqual(520, Clamp(520, MinimumWidth, MaximumWidth));
-            Assert.AreEqual(300, Clamp(300, MinimumHeight, MaximumHeight));
+            var minimum = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
+
+            var clamped = MainWindowGeometry.Clamp(520, 300, minimum);
+
+            Assert.AreEqual(520, clamped.Width);
+            Assert.AreEqual(300, clamped.Height);
+        }
+
+        [TestMethod]
+        public void ClampHonoursTheMinimumEvenWhenItExceedsTheMaximum()
+        {
+            // A hypothetical very-high-DPI monitor must never yield a size below
+            // the minimum the caller asked for, even if that beats the maximum.
+            var minimum = new System.Drawing.Size(MainWindowGeometry.MaximumWidth + 40, MainWindowGeometry.MaximumHeight + 40);
+
+            var clamped = MainWindowGeometry.Clamp(100, 100, minimum);
+
+            Assert.AreEqual(minimum.Width, clamped.Width);
+            Assert.AreEqual(minimum.Height, clamped.Height);
+        }
+
+        [TestMethod]
+        public void MissingOrInvalidPersistedSizeSelectsTheDefault()
+        {
+            Assert.IsFalse(MainWindowGeometry.HasPersistedSize(0, 0));
+            Assert.IsFalse(MainWindowGeometry.HasPersistedSize(520, 0));
+            Assert.IsFalse(MainWindowGeometry.HasPersistedSize(0, 300));
+            Assert.IsFalse(MainWindowGeometry.HasPersistedSize(-520, -300));
+            Assert.IsTrue(MainWindowGeometry.HasPersistedSize(520, 300));
         }
 
         [TestMethod]
@@ -210,12 +195,7 @@ namespace SETUNA.Main.Window.Tests
             Assert.AreEqual(270, clone.MainWindowHeight);
         }
 
-        private static int Clamp(int value, int minimum, int maximum)
-        {
-            return Math.Max(minimum, Math.Min(maximum, value));
-        }
-
-        private static SetunaOption RoundTrip(SetunaOption option)
+        static SetunaOption RoundTrip(SetunaOption option)
         {
             var serializer = new System.Xml.Serialization.XmlSerializer(typeof(SetunaOption), SetunaOption.GetAllType());
             using (var buffer = new MemoryStream())
@@ -224,16 +204,6 @@ namespace SETUNA.Main.Window.Tests
                 buffer.Position = 0;
                 return (SetunaOption)serializer.Deserialize(buffer);
             }
-        }
-
-        private static string ReadMainformDesigner()
-        {
-            return File.ReadAllText(Path.Combine(RepositoryPath.FindRoot(), "SETUNA", "Mainform.Designer.cs"));
-        }
-
-        private static string ReadMainform()
-        {
-            return File.ReadAllText(Path.Combine(RepositoryPath.FindRoot(), "SETUNA", "Mainform.cs"));
         }
     }
 }

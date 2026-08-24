@@ -16,11 +16,16 @@ namespace SETUNA.Main.StyleItems
         }
 
         // Token: 0x060004C8 RID: 1224 RVA: 0x00021724 File Offset: 0x0001F924
-        ~ImageJpegPreviewPanel()
+        // _img 由两个构造调用点各自新建（GetViewImage() / Clone()）后交给本类，
+        // 因此归本类所有；改由确定性释放承担，不再用终结器。
+        protected override void DisposeOwnedResources()
         {
+            base.DisposeOwnedResources();
+
             if (_img != null)
             {
                 _img.Dispose();
+                _img = null;
             }
         }
 

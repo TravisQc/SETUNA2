@@ -704,33 +704,37 @@ namespace SETUNA.Main.Option
         }
 
         // Token: 0x06000253 RID: 595 RVA: 0x0000CE70 File Offset: 0x0000B070
-        public bool RegistHotKey(IntPtr handle, HotKeyID keyID)
+        public HotKeyRegistrationResult RegistHotKey(IntPtr handle, HotKeyID keyID)
         {
+            // 先反注册，因此对同一句柄重复调用是幂等的。
             UnregistHotKey(handle, keyID);
 
             var hkScrap = this.hkScrap[(int)keyID];
-            if (hkScrap != Keys.None && blHotKey)
+            if (hkScrap == Keys.None || !blHotKey)
             {
-                var num = 0;
-                if ((hkScrap & Keys.Shift) == Keys.Shift)
-                {
-                    num |= 4;
-                }
-                if ((hkScrap & Keys.Alt) == Keys.Alt)
-                {
-                    num |= 1;
-                }
-                if ((hkScrap & Keys.Control) == Keys.Control)
-                {
-                    num |= 2;
-                }
-                var key = hkScrap & Keys.KeyCode;
-                if (SetunaOption.RegisterHotKey(handle, (int)keyID, num, (int)key) == 0)
-                {
-                    return false;
-                }
+                return HotKeyRegistrationResult.NotEnabled;
             }
-            return true;
+
+            var num = 0;
+            if ((hkScrap & Keys.Shift) == Keys.Shift)
+            {
+                num |= 4;
+            }
+            if ((hkScrap & Keys.Alt) == Keys.Alt)
+            {
+                num |= 1;
+            }
+            if ((hkScrap & Keys.Control) == Keys.Control)
+            {
+                num |= 2;
+            }
+            var key = hkScrap & Keys.KeyCode;
+            if (SetunaOption.RegisterHotKey(handle, (int)keyID, num, (int)key) == 0)
+            {
+                return HotKeyRegistrationResult.Failed;
+            }
+
+            return HotKeyRegistrationResult.Registered;
         }
 
         // Token: 0x06000254 RID: 596 RVA: 0x0000CF15 File Offset: 0x0000B115

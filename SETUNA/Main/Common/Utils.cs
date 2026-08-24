@@ -118,7 +118,9 @@ namespace SETUNA.Main
 
         public static void DownloadImage(string url, Action<Bitmap> finished)
         {
-            var filePath = Path.Combine(Cache.CacheManager.Path, string.Format("TEMP_{0}_{1}.png", DateTime.Now.Ticks, Math.Abs(url.GetHashCode())));
+            // 下载临时文件放系统 Temp，不放缓存目录：缓存目录是用户数据，
+            // 且进程在下载中途死亡时残留文件会留在那里。
+            var filePath = Path.Combine(Path.GetTempPath(), string.Format("SETUNA_TEMP_{0}_{1}.png", DateTime.Now.Ticks, Math.Abs(url.GetHashCode())));
             var client = new WebClient();
             client.DownloadFileCompleted += (s, e) =>
             {
@@ -199,70 +201,121 @@ namespace SETUNA.Main
         }
     }
 
-    static class ImageUtils
+    public static class ImageUtils
     {
+        // SVG 是文本格式，元素不一定出现在文件开头（可能先有 XML 声明、注释、DOCTYPE），
+        // 因此在开头这段范围内扫描而不是只看固定偏移。
+        const int SvgScanLength = 1024;
+
         public static ImageType GetImageType(byte[] imageBuffer)
         {
-            if (imageBuffer.Length > 3 &&
-                imageBuffer[1] == 0x50 &&
-                imageBuffer[2] == 0x4E &&
-                imageBuffer[3] == 0x47)
+            if (imageBuffer == null)
+            {
+                return ImageType.Unknown;
+            }
+
+            // 每个分支的长度校验都由签名长度推导（见 Matches），
+            // 不再手写 Length 阈值——原来 SVG 和 PSD 写的是 Length > 2 却读到索引 3，
+            // 长度恰好为 3 的输入会抛 IndexOutOfRangeException。
+            if (Matches(imageBuffer, 0, 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A))
             {
                 return ImageType.PNG;
             }
-            else if (imageBuffer.Length > 9 &&
-                imageBuffer[6] == 0x4A &&
-                imageBuffer[7] == 0x46 &&
-                imageBuffer[8] == 0x49 &&
-                imageBuffer[9] == 0x46)
+
+            // FF D8 FF 覆盖 JFIF、Exif 和裸 SOI 三种变体；
+            // 原来只认偏移 6 处的 "JFIF"，Exif 相机照片会落到 Unknown。
+            if (Matches(imageBuffer, 0, 0xFF, 0xD8, 0xFF))
             {
                 return ImageType.JPEG;
             }
-            else if (imageBuffer.Length > 10 &&
-                imageBuffer[8] == 0x57 &&
-                imageBuffer[9] == 0x45 &&
-                imageBuffer[10] == 0x42)
+
+            // RIFF....WEBP
+            if (Matches(imageBuffer, 0, 0x52, 0x49, 0x46, 0x46)
+                && Matches(imageBuffer, 8, 0x57, 0x45, 0x42, 0x50))
             {
                 return ImageType.WEBP;
             }
-            else if (imageBuffer.Length > 2 &&
-               imageBuffer[0] == 0x47 &&
-               imageBuffer[1] == 0x49 &&
-               imageBuffer[2] == 0x46)
+
+            if (Matches(imageBuffer, 0, 0x47, 0x49, 0x46))
             {
                 return ImageType.GIF;
             }
-            else if (imageBuffer.Length > 2 &&
-               imageBuffer[1] == 0x73 &&
-               imageBuffer[2] == 0x76 &&
-               imageBuffer[3] == 0x67)
-            {
-                return ImageType.SVG;
-            }
-            else if (imageBuffer.Length > 2 &&
-               imageBuffer[0] == 0x38 &&
-               imageBuffer[1] == 0x42 &&
-               imageBuffer[2] == 0x50 &&
-               imageBuffer[3] == 0x53)
+
+            // "8BPS"
+            if (Matches(imageBuffer, 0, 0x38, 0x42, 0x50, 0x53))
             {
                 return ImageType.PSD;
             }
-            else if (imageBuffer.Length > 5 &&
-              imageBuffer[0] == 0x00 &&
-              imageBuffer[1] == 0x00 &&
-              imageBuffer[2] == 0x01 &&
-              imageBuffer[3] == 0x00 &&
-              imageBuffer[4] == 0x01 &&
-              imageBuffer[5] == 0x00)
+
+            if (Matches(imageBuffer, 0, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00))
             {
                 return ImageType.ICO;
             }
-            else if (TGAUtils.IsTGA(imageBuffer))
+
+            if (LooksLikeSvg(imageBuffer))
+            {
+                return ImageType.SVG;
+            }
+
+            if (TGAUtils.IsTGA(imageBuffer))
             {
                 return ImageType.TGA;
             }
 
             return ImageType.Unknown;
+        }
+
+        /// <summary>
+        /// 判断 <paramref name="buffer"/> 从 <paramref name="offset"/> 起是否匹配 <paramref name="signature"/>。
+        /// 越界一律返回 false，绝不抛异常。
+        /// </summary>
+        static bool Matches(byte[] buffer, int offset, params byte[] signature)
+        {
+            if (offset < 0 || offset + signature.Length > buffer.Length)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < signature.Length; i++)
+            {
+                if (buffer[offset + i] != signature[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 在文件开头一段范围内查找 <c>&lt;svg</c> 元素，因此带 XML 声明、注释或
+        /// DOCTYPE 的 SVG 也能被识别。
+        /// </summary>
+        static bool LooksLikeSvg(byte[] buffer)
+        {
+            var limit = Math.Min(buffer.Length, SvgScanLength);
+            var needle = new[] { '<', 's', 'v', 'g' };
+
+            for (var i = 0; i + needle.Length <= limit; i++)
+            {
+                var matched = true;
+                for (var j = 0; j < needle.Length; j++)
+                {
+                    var current = char.ToLowerInvariant((char)buffer[i + j]);
+                    if (current != needle[j])
+                    {
+                        matched = false;
+                        break;
+                    }
+                }
+
+                if (matched)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

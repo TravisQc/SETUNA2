@@ -13,13 +13,12 @@ namespace SETUNA.Main.StyleItems
         [DllImport("user32.dll")]
         private static extern IntPtr GetDC(IntPtr hwnd);
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr ReleaseDC(IntPtr hwnd, IntPtr hdc);
+
         // Token: 0x06000163 RID: 355
         [DllImport("gdi32.dll")]
         private static extern int BitBlt(IntPtr hDestDC, int x, int y, int nWidth, int nHeight, IntPtr hSrcDC, int xSrc, int ySrc, int dwRop);
-
-        // Token: 0x06000164 RID: 356
-        [DllImport("Gdi32.dll")]
-        private static extern bool DeleteDC(IntPtr handle);
 
         // Token: 0x06000165 RID: 357 RVA: 0x00008430 File Offset: 0x00006630
         private ScrapDrawForm()
@@ -73,45 +72,42 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x06000168 RID: 360 RVA: 0x00008718 File Offset: 0x00006918
         public bool CopyFromScreen(Image img, Point location)
         {
-            var result = true;
-            var intPtr = IntPtr.Zero;
+            var screenDC = IntPtr.Zero;
             try
             {
-                intPtr = ScrapDrawForm.GetDC(IntPtr.Zero);
+                screenDC = ScrapDrawForm.GetDC(IntPtr.Zero);
                 using (var graphics = Graphics.FromImage(img))
                 {
-                    var intPtr2 = IntPtr.Zero;
+                    var targetDC = IntPtr.Zero;
                     try
                     {
-                        intPtr2 = graphics.GetHdc();
-                        ScrapDrawForm.BitBlt(intPtr2, 0, 0, img.Width, img.Height, intPtr, location.X, location.Y, 1087111200);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw ex;
+                        targetDC = graphics.GetHdc();
+                        ScrapDrawForm.BitBlt(targetDC, 0, 0, img.Width, img.Height, screenDC, location.X, location.Y, ScrapDrawForm.SRCCOPY | ScrapDrawForm.CAPTUREBLT);
                     }
                     finally
                     {
-                        if (intPtr2 != IntPtr.Zero)
+                        if (targetDC != IntPtr.Zero)
                         {
-                            graphics.ReleaseHdc(intPtr2);
+                            graphics.ReleaseHdc(targetDC);
                         }
                     }
                 }
+
+                return true;
             }
-            catch (Exception ex2)
+            catch (Exception ex)
             {
-                Console.WriteLine(ex2.Message);
-                result = false;
+                Console.WriteLine(ex);
+                return false;
             }
             finally
             {
-                if (intPtr != IntPtr.Zero)
+                // 与 CaptureForm.CopyFromScreen 同理：GetDC 按约定配 ReleaseDC。
+                if (screenDC != IntPtr.Zero)
                 {
-                    ScrapDrawForm.DeleteDC(intPtr);
+                    ScrapDrawForm.ReleaseDC(IntPtr.Zero, screenDC);
                 }
             }
-            return result;
         }
 
         // Token: 0x06000169 RID: 361 RVA: 0x0000880C File Offset: 0x00006A0C

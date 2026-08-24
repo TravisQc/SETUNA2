@@ -8,27 +8,17 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using com.clearunit;
 using SETUNA.Main;
+using SETUNA.Main.Common;
 using SETUNA.Main.KeyItems;
 using SETUNA.Main.Option;
 using SETUNA.Main.Style;
+using SETUNA.Main.Window;
 
 namespace SETUNA
 {
     // Token: 0x02000037 RID: 55
     public sealed partial class Mainform : BaseForm, IScrapKeyPressEventListener, IScrapAddedListener, IScrapRemovedListener, IScrapStyleListener, IScrapMenuListener, ISingletonForm
     {
-        private const int DefaultMainWindowWidth = 415;
-        private const int DefaultMainWindowHeight = 180;
-        private const int MaximumMainWindowWidth = 640;
-        private const int MaximumMainWindowHeight = 360;
-
-        // Smallest outer size that still shows both action labels, measured on a
-        // 175% display; MinimumMainWindowDpi is the DPI it was measured at so the
-        // same physical size can be recreated on any other monitor.
-        private const int MinimumMainWindowWidth = 260;
-        private const int MinimumMainWindowHeight = 160;
-        private const int MinimumMainWindowDpi = 168;
-
         public static Mainform Instance { private set; get; }
 
         // Token: 0x060001EE RID: 494 RVA: 0x0000A4C4 File Offset: 0x000086C4
@@ -227,19 +217,18 @@ namespace SETUNA
                 {
                     frmClickCapture.Stop();
                 }
-                var optionForm = new OptionForm(opt)
+                using (var optionForm = new OptionForm(opt)
                 {
                     StartPosition = FormStartPosition.CenterScreen
-                };
-                optionForm.ShowDialog();
-                if (optionForm.DialogResult == DialogResult.OK)
+                })
                 {
-                    optSetuna = optionForm.Option;
-                    OptionApply();
-                }
-                if (optionForm.DialogResult == DialogResult.OK)
-                {
-                    SaveOption();
+                    optionForm.ShowDialog();
+                    if (optionForm.DialogResult == DialogResult.OK)
+                    {
+                        optSetuna = optionForm.Option;
+                        OptionApply();
+                        SaveOption();
+                    }
                 }
             }
             finally
@@ -346,26 +335,35 @@ namespace SETUNA
 
         private void RegisterHotKeys(bool showError)
         {
-            if (!optSetuna.RegistHotKey(base.Handle, HotKeyID.Capture))
+            // 每个热键独立处理：某个热键被其他程序占用时，其余热键照常尝试注册。
+            // 注意不能用 Enum.GetValues 遍历——HotKeyID 带 __Count__ 哨兵值，
+            // 那会让 RegistHotKey 里的 hkScrap[2] 越界。
+            for (var hotKeyId = HotKeyID.Capture; hotKeyId < HotKeyID.__Count__; hotKeyId++)
             {
-                DisableHotKeys(HotKeyID.Capture, showError);
-            }
-
-            if (!optSetuna.RegistHotKey(base.Handle, HotKeyID.Function1))
-            {
-                DisableHotKeys(HotKeyID.Function1, showError);
+                if (optSetuna.RegistHotKey(base.Handle, hotKeyId) == HotKeyRegistrationResult.Failed)
+                {
+                    ReportHotKeyRegistrationFailure(hotKeyId, showError);
+                }
             }
         }
 
-        private void DisableHotKeys(HotKeyID hotKeyId, bool showError)
+        // 只上报单个热键的注册失败。以前这里会把 optSetuna.ScrapHotKeyEnable 置 false，
+        // 但那是用户的设置项而不是运行时状态：截图热键被占用会连带关掉显示/隐藏热键，
+        // 并且这个「关闭」还会被 SaveOption 写回配置文件，永久生效。
+        private void ReportHotKeyRegistrationFailure(HotKeyID hotKeyId, bool showError)
         {
-            optSetuna.ScrapHotKeyEnable = false;
-            if (showError)
+            // 启动期和句柄重建期静默：此时用户没有发起任何操作，不该弹模态对话框。
+            if (!showError)
             {
-                new HotkeyMsg
-                {
-                    HotKey = optSetuna.ScrapHotKeys[(int)hotKeyId]
-                }.ShowDialog();
+                return;
+            }
+
+            using (var message = new HotkeyMsg
+            {
+                HotKey = optSetuna.ScrapHotKeys[(int)hotKeyId]
+            })
+            {
+                message.ShowDialog();
             }
         }
 
@@ -429,9 +427,9 @@ namespace SETUNA
             try
             {
                 var xmlSerializer = new XmlSerializer(optSetuna.GetType(), allType);
-                var fileStream = new FileStream(configFile, FileMode.Create);
-                xmlSerializer.Serialize(fileStream, optSetuna);
-                fileStream.Close();
+
+                // 原子写：序列化中途失败时磁盘上的旧配置保持完好。
+                AtomicFile.Write(configFile, stream => xmlSerializer.Serialize(stream, optSetuna));
             }
             catch
             {
@@ -450,27 +448,29 @@ namespace SETUNA
 
         private void ApplyMinimumWindowSize(int dpi)
         {
-            if (dpi <= 0)
+            // 最大尺寸是固定像素值，不随 DPI 换算；在代码里设置使 MainWindowGeometry
+            // 成为运行时约束的唯一来源，设计器里的字面量只服务于设计时预览。
+            MaximumSize = MainWindowGeometry.Maximum;
+
+            var minimum = MainWindowGeometry.ScaleMinimum(dpi);
+            if (minimum.IsEmpty)
             {
                 return;
             }
 
-            MinimumSize = new Size(
-                MinimumMainWindowWidth * dpi / MinimumMainWindowDpi,
-                MinimumMainWindowHeight * dpi / MinimumMainWindowDpi);
+            MinimumSize = minimum;
         }
 
         private void RestoreMainWindowSize()
         {
-            if (optSetuna == null || optSetuna.MainWindowWidth <= 0 || optSetuna.MainWindowHeight <= 0)
+            if (optSetuna == null
+                || !MainWindowGeometry.HasPersistedSize(optSetuna.MainWindowWidth, optSetuna.MainWindowHeight))
             {
-                ClientSize = new Size(DefaultMainWindowWidth, DefaultMainWindowHeight);
+                ClientSize = MainWindowGeometry.DefaultClientSize;
                 return;
             }
 
-            var width = Math.Max(MinimumSize.Width, Math.Min(MaximumMainWindowWidth, optSetuna.MainWindowWidth));
-            var height = Math.Max(MinimumSize.Height, Math.Min(MaximumMainWindowHeight, optSetuna.MainWindowHeight));
-            Size = new Size(width, height);
+            Size = MainWindowGeometry.Clamp(optSetuna.MainWindowWidth, optSetuna.MainWindowHeight, MinimumSize);
         }
 
         private void SaveMainWindowSize()
@@ -480,11 +480,15 @@ namespace SETUNA
                 return;
             }
 
-            optSetuna.MainWindowWidth = Math.Max(MinimumSize.Width, Math.Min(MaximumMainWindowWidth, Size.Width));
-            optSetuna.MainWindowHeight = Math.Max(MinimumSize.Height, Math.Min(MaximumMainWindowHeight, Size.Height));
+            var clamped = MainWindowGeometry.Clamp(Size.Width, Size.Height, MinimumSize);
+            optSetuna.MainWindowWidth = clamped.Width;
+            optSetuna.MainWindowHeight = clamped.Height;
         }
 
         // Token: 0x060001FF RID: 511 RVA: 0x0000AF58 File Offset: 0x00009158
+        // 只负责读取。选项应用由 Mainform_Load 单点调用 —— 以前这里的 finally
+        // 也调一次 OptionApply()，导致启动时热键注册、子菜单重建、点击截图组件
+        // 创建各执行两遍。
         private void LoadOption()
         {
             var configFile = SetunaOption.ConfigFile;
@@ -498,19 +502,16 @@ namespace SETUNA
                 {
                     var allType = SetunaOption.GetAllType();
                     var xmlSerializer = new XmlSerializer(typeof(SetunaOption), allType);
-                    var fileStream = new FileStream(configFile, FileMode.Open);
-                    optSetuna = (SetunaOption)xmlSerializer.Deserialize(fileStream);
-                    fileStream.Close();
+                    using (var fileStream = new FileStream(configFile, FileMode.Open, FileAccess.Read))
+                    {
+                        optSetuna = (SetunaOption)xmlSerializer.Deserialize(fileStream);
+                    }
                 }
             }
             catch
             {
                 optSetuna = SetunaOption.GetDefaultOption();
                 MessageBox.Show("无法读取配置文件。\n使用默认设置。", "SETUNA2", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-            }
-            finally
-            {
-                OptionApply();
             }
         }
 
@@ -678,6 +679,18 @@ namespace SETUNA
             foreach (HotKeyID item in Enum.GetValues(typeof(HotKeyID)))
             {
                 optSetuna.UnregistHotKey(Handle, item);
+            }
+        }
+
+        protected override void DisposeOwnedResources()
+        {
+            base.DisposeOwnedResources();
+
+            // scrapBook 以前靠终结器关闭它持有的所有截图窗体，那发生在终结器线程上。
+            // 在这里释放，关闭发生在拥有这些窗体的 UI 线程。
+            if (scrapBook != null)
+            {
+                scrapBook.Dispose();
             }
         }
 

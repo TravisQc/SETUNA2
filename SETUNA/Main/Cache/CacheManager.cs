@@ -6,7 +6,11 @@ namespace SETUNA.Main.Cache
 {
     public class CacheManager : IScrapAddedListener, IScrapRemovedListener, IScrapLocationChangedListener, IScrapImageChangedListener, IScrapStyleAppliedListener, IScrapStyleRemovedListener
     {
-        public static readonly string Path = System.IO.Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SETUNA");
+        /// <summary>
+        /// 缓存根目录。默认是用户本地应用数据目录下的 SETUNA 子目录，
+        /// 可通过 <see cref="SetRoot"/> 改写，使测试不必读写用户真实数据。
+        /// </summary>
+        public static string Path { private set; get; } = DefaultRoot;
 
         public static readonly CacheManager Instance = new CacheManager();
 
@@ -14,8 +18,26 @@ namespace SETUNA.Main.Cache
         public bool IsInit { private set; get; }
 
 
+        static string DefaultRoot => System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SETUNA");
+
+        /// <summary>
+        /// 改写缓存根目录。传入 null 或空串则恢复默认位置。
+        /// </summary>
+        public static void SetRoot(string root)
+        {
+            Path = string.IsNullOrEmpty(root) ? DefaultRoot : root;
+        }
+
         public void Init()
         {
+            Init(null);
+        }
+
+        public void Init(string root)
+        {
+            SetRoot(root);
+
             IsInit = false;
             var scrapBook = Mainform.Instance.scrapBook;
             scrapBook.addScrapAddedListener(this);
@@ -50,24 +72,13 @@ namespace SETUNA.Main.Cache
             }
 
             list.Sort((x, y) => x.SortingOrder.CompareTo(y.SortingOrder));
-            AddScrap(0);
 
-
-
-            void AddScrap(int index)
-            {
-                if (index >= list.Count)
-                {
-                    IsInit = true;
-                    return;
-                }
-
-                var item = list[index];
-                mainBook.AddScrapFromCache(item, () =>
-                {
-                    AddScrap(++index);
-                });
-            }
+            // RestoreChain 保证：每项只推进一次、单项失败跳过继续、
+            // 结束时 IsInit 一定被置位。
+            RestoreChain.Run(
+                list.Count,
+                (index, advance) => mainBook.AddScrapFromCache(list[index], advance),
+                () => IsInit = true);
         }
 
 

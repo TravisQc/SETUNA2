@@ -23,29 +23,38 @@ namespace SETUNA.Main
 
         public void Update()
         {
+            // 事件只在对应窗口真正变化时触发。以前两个 Invoke 在 if 之外，
+            // 于是每个定时器周期都会触发一次 CheckRefreshLayer，
+            // 而后者会为每个已跟踪窗体各做一次全局窗口枚举。
             var hwnd = WindowsAPI.GetForegroundWindow();
             if (foregroundWindow.Handle != hwnd)
             {
-                var windowInfo = GetWindowInfo(hwnd);
-                foregroundWindow = windowInfo;
+                foregroundWindow = GetWindowInfo(hwnd);
+                WindowActived?.Invoke(this, foregroundWindow);
             }
 
-            hwnd = WindowsAPI.GetTopMostWindow(IntPtr.Zero);
+            hwnd = WindowsAPI.GetTopMostWindow();
             if (topMostWindow.Handle != hwnd)
             {
-                var windowInfo = GetWindowInfo(hwnd);
-                topMostWindow = windowInfo;
+                topMostWindow = GetWindowInfo(hwnd);
+                TopMostChanged?.Invoke(this, topMostWindow);
             }
-
-            WindowActived?.Invoke(this, foregroundWindow);
-            TopMostChanged?.Invoke(this, topMostWindow);
         }
 
-        public WindowInfo GetWindowInfo(IntPtr hwnd)
+        /// <summary>
+        /// 取窗口信息。<paramref name="includeZOrder"/> 为 false 时跳过 Z 序获取——
+        /// 那是一次全局顶层窗口枚举，而多数调用方只需要 Rect。
+        /// </summary>
+        public WindowInfo GetWindowInfo(IntPtr hwnd, bool includeZOrder = true)
         {
             var titleName = WindowsAPI.GetWindowTitle(hwnd);
             var className = WindowsAPI.GetClassName(hwnd);
-            WindowsAPI.GetWindowZOrder(hwnd, out var zOrder);
+
+            var zOrder = 0;
+            if (includeZOrder)
+            {
+                WindowsAPI.GetWindowZOrder(hwnd, out zOrder);
+            }
 
             var rect = new Rect();
             WindowsAPI.GetWindowRect(hwnd, ref rect);

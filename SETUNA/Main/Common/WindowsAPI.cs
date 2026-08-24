@@ -103,15 +103,31 @@ namespace SETUNA.Main
         [DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "GetWindow", SetLastError = true)]
         public static extern IntPtr GetNextWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.U4)] int wFlag);
 
-        public static IntPtr GetTopMostWindow(IntPtr hWnd_mainFrm)
+        /// <summary>
+        /// 返回系统最顶层的可见窗口，链表走完仍未找到时返回 <see cref="IntPtr.Zero"/>。
+        /// </summary>
+        public static IntPtr GetTopMostWindow()
         {
-            var hwnd = GetTopWindow(IntPtr.Zero);
-            if (hwnd != IntPtr.Zero)
+            return FindFirstVisible(
+                GetTopWindow(IntPtr.Zero),
+                hwnd => GetNextWindow(hwnd, GW_HWNDNEXT),
+                IsWindowVisible);
+        }
+
+        /// <summary>
+        /// 沿窗口链表向后查找第一个可见窗口。遍历在句柄为空时终止。
+        /// 抽成不依赖 Win32 的形式，使终止性可以直接验证。
+        /// </summary>
+        public static IntPtr FindFirstVisible(IntPtr start, Func<IntPtr, IntPtr> getNext, Func<IntPtr, bool> isVisible)
+        {
+            var hwnd = start;
+
+            // 必须判断句柄非空：GetNextWindow 在链表末端返回 IntPtr.Zero，
+            // 而 IsWindowVisible(IntPtr.Zero) 恒为 false，
+            // 原来的 while (!IsWindowVisible(hwnd)) 会就此死循环。
+            while (hwnd != IntPtr.Zero && !isVisible(hwnd))
             {
-                while (!IsWindowVisible(hwnd))
-                {
-                    hwnd = GetNextWindow(hwnd, GW_HWNDNEXT);
-                }
+                hwnd = getNext(hwnd);
             }
 
             return hwnd;
