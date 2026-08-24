@@ -9,6 +9,12 @@
     <RootNamespace>SETUNA</RootNamespace>
     <AssemblyName>SETUNA</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <!-- Svg 3.x 传递引入了 System.Memory 系列强名称 facade。当前版本组合下这些程序集的
+         编译期引用版本与运行期实现版本一致，不会生成 assemblyBinding 节；保留这两个开关是
+         为了后续依赖真正引入版本冲突时由 MSBuild 自动兜底。WinExe 需要第二个开关才会把
+         重定向写入 SETUNA.exe.config。 -->
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <FileAlignment>512</FileAlignment>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>SETUNA.ico</ApplicationIcon>
@@ -684,14 +690,14 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Costura.Fody">
-      <Version>4.1.0</Version>
+      <Version>6.2.0</Version>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.4</Version>
     </PackageReference>
     <PackageReference Include="Svg">
-      <Version>2.2.1</Version>
+      <Version>3.4.8</Version>
     </PackageReference>
     <PackageReference Include="System.Drawing.PSD">
       <Version>0.1.0</Version>

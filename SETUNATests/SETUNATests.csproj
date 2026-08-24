@@ -85,6 +85,7 @@
     <Compile Include="Main\Cache\RestoreChainTests.cs" />
     <Compile Include="Main\Common\BaseFormDisposalTests.cs" />
     <Compile Include="Main\Common\ImageFormatDetectionTests.cs" />
+    <Compile Include="Main\Common\SvgRasterizationTests.cs" />
     <Compile Include="Main\Common\WindowEnumerationTests.cs" />
     <Compile Include="Main\Layer\LayerSortingTests.cs" />
     <Compile Include="Main\Option\HotKeyRegistrationTests.cs" />
