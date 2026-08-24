@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using com.clearunit;
+using SETUNA.Main.Runtime;
 
 namespace SETUNA
 {
@@ -11,6 +12,10 @@ namespace SETUNA
         [STAThread]
         private static void Main(string[] args)
         {
+            // 必须在任何网络类型被触碰之前：单文件分发没有 app.config，TLS 开关
+            // 只能由这里设置。
+            RuntimeConfiguration.Apply();
+
             var instance = SingletonApplication.GetInstance(Application.ProductVersion, args);
             if (instance.Register())
             {

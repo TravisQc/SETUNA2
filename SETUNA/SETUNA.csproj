@@ -9,12 +9,10 @@
     <RootNamespace>SETUNA</RootNamespace>
     <AssemblyName>SETUNA</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <!-- Svg 3.x 传递引入了 System.Memory 系列强名称 facade。当前版本组合下这些程序集的
-         编译期引用版本与运行期实现版本一致，不会生成 assemblyBinding 节；保留这两个开关是
-         为了后续依赖真正引入版本冲突时由 MSBuild 自动兜底。WinExe 需要第二个开关才会把
-         重定向写入 SETUNA.exe.config。 -->
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <!-- 单文件分发：不启用 AutoGenerateBindingRedirects / GenerateBindingRedirectsOutputType。
+         它们是唯一会在没有 app.config 时也凭空生成 SETUNA.exe.config 的机制，一旦某次依赖
+         升级触发重定向，单文件约束就会被 MSBuild 悄悄破坏。Svg 3.x 传递引入的 System.Memory
+         系列强名称 facade 由 Costura 的程序集解析器按简单名解析（忽略版本），不需要重定向。 -->
     <FileAlignment>512</FileAlignment>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>SETUNA.ico</ApplicationIcon>
@@ -181,6 +179,7 @@
     <Compile Include="Main\ToolStripEx.cs" />
     <Compile Include="Main\Window\WindowManager.cs" />
     <Compile Include="Main\Window\MainWindowGeometry.cs" />
+    <Compile Include="Main\Runtime\RuntimeConfiguration.cs" />
     <Compile Include="Main\ContextStyleMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -672,7 +671,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -708,20 +706,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PackageOutputPath>$(MSBuildProjectDirectory)\..\publish\</PackageOutputPath>
-    <PackageStagingPath>$(BaseIntermediateOutputPath)package\$(Configuration)\$(Platform)\</PackageStagingPath>
-    <PackageFile>$(PackageOutputPath)$(TargetName)_$(Configuration)_$(Platform).zip</PackageFile>
+    <PackageOutputPath>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '..', 'publish'))</PackageOutputPath>
+    <PackageFile>$(PackageOutputPath)$(TargetName)_$(Configuration)_$(Platform).exe</PackageFile>
   </PropertyGroup>
   <Target Name="CreateReleasePackage" DependsOnTargets="Build">
-    <ItemGroup>
-      <_PackageFile Include="$(TargetPath)" />
-      <_PackageFile Include="$(TargetPath).config" />
-    </ItemGroup>
-    <RemoveDir Directories="$(PackageStagingPath)" />
-    <MakeDir Directories="$(PackageStagingPath);$(PackageOutputPath)" />
-    <Copy SourceFiles="@(_PackageFile)" DestinationFolder="$(PackageStagingPath)" />
-    <Delete Files="$(PackageFile)" />
-    <ZipDirectory SourceDirectory="$(PackageStagingPath)" DestinationFile="$(PackageFile)" />
-    <RemoveDir Directories="$(PackageStagingPath)" />
+    <!-- 单文件约束的强制点。这里不自行删除残留的配置文件：陈旧产物和「配置文件被
+         重新引入」都必须由人处理，悄悄删掉会把真实回归发布出去。 -->
+    <Error Condition="Exists('$(TargetPath).config')" Text="$(TargetFileName).config 存在于 $(TargetDir)，违反单文件分发约束。要么是上一次构建留下的陈旧产物（执行 Rebuild 或删除 bin 目录），要么是配置文件／绑定重定向生成被重新引入（检查 app.config 与 AutoGenerateBindingRedirects）。" />
+    <MakeDir Directories="$(PackageOutputPath)" />
+    <!-- 发布产物就是那个 exe 本身，不再套一层 ZIP；文件名带上配置与平台，使不同架构
+         的产物能并存在同一目录。Copy 覆盖同名文件，重复调用可重复。 -->
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(PackageFile)" />
+    <Message Importance="high" Text="发布产物：$(PackageFile)" />
   </Target>
 </Project>

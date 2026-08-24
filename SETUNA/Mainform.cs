@@ -437,15 +437,9 @@ namespace SETUNA
             }
         }
 
-        // WinForms shrinks MinimumSize when the window moves to a monitor with a
-        // lower DPI but never scales it back up, so the bound is re-derived from
-        // the measured baseline whenever the DPI changes.
-        protected override void OnDpiChanged(DpiChangedEventArgs e)
-        {
-            base.OnDpiChanged(e);
-            ApplyMinimumWindowSize(e.DeviceDpiNew);
-        }
-
+        // 只在启动时按当前 DPI 换算一次：单文件分发没有 app.config，WinForms 4.7+
+        // 的动态 DPI 特性（DpiChanged 事件、跨显示器自动重排）随之关闭，窗口移动到
+        // 其他缩放比例的显示器时不会有通知，也不会被 WinForms 改动 MinimumSize。
         private void ApplyMinimumWindowSize(int dpi)
         {
             // 最大尺寸是固定像素值，不随 DPI 换算；在代码里设置使 MainWindowGeometry

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Xml;
@@ -13,40 +14,81 @@ using SETUNA.Main.Cache;
 namespace SETUNA.Main.Runtime.Tests
 {
     /// <summary>
-    /// Guards the .NET Framework 4.8 runtime configuration.
+    /// Guards the .NET Framework 4.8 runtime configuration of the single-file build.
     /// <para>
-    /// The TLS constraints of <c>net48-network-security</c> (no fixed
+    /// There is no <c>app.config</c> any more: DPI awareness is declared by the
+    /// manifest that gets linked into <c>SETUNA.exe</c>, and the TLS switches are
+    /// applied by <see cref="RuntimeConfiguration"/> at startup. The negative half
+    /// of <c>net48-network-security</c> (no fixed
     /// <c>ServicePointManager.SecurityProtocol</c> list, no process-wide
-    /// <c>ServerCertificateValidationCallback</c>) are carried by that spec rather
-    /// than asserted here: verifying them needs IL scanning, and the previous
+    /// <c>ServerCertificateValidationCallback</c>) is carried by that spec rather
+    /// than asserted here: verifying it needs IL scanning, and the previous
     /// implementation — grepping every .cs file for those identifiers — broke on
-    /// harmless edits while never exercising a request path. The positive half of
-    /// the requirement (the AppContext switches that enable strong crypto and
-    /// system-default TLS) *is* asserted, from app.config, below.
+    /// harmless edits while never exercising a request path. The positive half *is*
+    /// asserted, as observable process state, below.
+    /// </para>
+    /// <para>
+    /// These tests guard the build *inputs* (manifest, project file, absence of
+    /// app.config). The corresponding output invariant — no <c>SETUNA.exe.config</c>
+    /// next to the exe — is enforced by the <c>CreateReleasePackage</c> target,
+    /// which the test host cannot observe.
     /// </para>
     /// </summary>
     [TestClass]
     public class RuntimeConfigurationTests
     {
         [TestMethod]
-        public void Net48RuntimeConfigurationUsesPerMonitorV2()
+        public void StartupAppliesSystemDefaultTlsPolicy()
+        {
+            RuntimeConfiguration.Apply();
+
+            Assert.IsTrue(
+                AppContext.TryGetSwitch("Switch.System.Net.DontEnableSchUseStrongCrypto", out var dontEnableStrongCrypto),
+                "The switch must be set explicitly, not left to the target-framework default.");
+            Assert.IsFalse(dontEnableStrongCrypto);
+
+            Assert.IsTrue(
+                AppContext.TryGetSwitch("Switch.System.Net.DontEnableSystemDefaultTlsVersions", out var dontEnableSystemDefaults),
+                "The switch must be set explicitly, not left to the target-framework default.");
+            Assert.IsFalse(dontEnableSystemDefaults);
+
+            // SystemDefault is "whatever the Windows policy allows", not a fixed
+            // protocol list, so this assertion does not conflict with the
+            // net48-network-security requirement that forbids pinning protocols.
+            Assert.AreEqual(SecurityProtocolType.SystemDefault, ServicePointManager.SecurityProtocol);
+        }
+
+        [TestMethod]
+        public void SingleFileBuildCarriesNoApplicationConfiguration()
         {
             var repositoryRoot = RepositoryPath.FindRoot();
-            var config = new XmlDocument();
-            config.Load(Path.Combine(repositoryRoot, "SETUNA", "app.config"));
 
-            Assert.AreEqual("true", GetWinFormsSetting(config, "EnableWindowsFormsHighDpiAutoResizing"));
-            Assert.AreEqual("PerMonitorV2", GetWinFormsSetting(config, "DpiAwareness"));
+            Assert.IsFalse(
+                File.Exists(Path.Combine(repositoryRoot, "SETUNA", "app.config")),
+                "app.config would be copied next to the exe as SETUNA.exe.config, breaking single-file distribution.");
 
-            var supportedRuntime = config.SelectSingleNode("/configuration/startup/supportedRuntime") as XmlElement;
-            Assert.IsNotNull(supportedRuntime);
-            Assert.AreEqual(".NETFramework,Version=v4.8", supportedRuntime.GetAttribute("sku"));
+            // MSBuild copies a referenced exe's .config alongside the exe itself, so
+            // the test output directory shows whether the build produced one.
+            var deployedExe = typeof(CacheItem).Assembly.Location;
+            Assert.IsFalse(
+                File.Exists(deployedExe + ".config"),
+                "The build emitted " + Path.GetFileName(deployedExe) + ".config. Either a stale artifact needs cleaning, "
+                    + "or a configuration file has been reintroduced.");
 
-            var appContextSwitches = config.SelectSingleNode("/configuration/runtime/AppContextSwitchOverrides") as XmlElement;
-            Assert.IsNotNull(appContextSwitches);
-            var switchValue = appContextSwitches.GetAttribute("value");
-            StringAssert.Contains(switchValue, "Switch.System.Net.DontEnableSchUseStrongCrypto=false");
-            StringAssert.Contains(switchValue, "Switch.System.Net.DontEnableSystemDefaultTlsVersions=false");
+            // Read as XML rather than text: these two properties are the only
+            // mechanism that generates a SETUNA.exe.config out of thin air when no
+            // app.config exists, so their absence is the invariant worth pinning.
+            var project = new XmlDocument();
+            project.Load(Path.Combine(repositoryRoot, "SETUNA", "SETUNA.csproj"));
+            var msbuild = new XmlNamespaceManager(project.NameTable);
+            msbuild.AddNamespace("msb", "http://schemas.microsoft.com/developer/msbuild/2003");
+
+            foreach (var property in new[] { "AutoGenerateBindingRedirects", "GenerateBindingRedirectsOutputType" })
+            {
+                Assert.IsNull(
+                    project.SelectSingleNode("/msb:Project/msb:PropertyGroup/msb:" + property, msbuild),
+                    property + " must stay disabled: it emits SETUNA.exe.config as soon as a dependency needs a redirect.");
+            }
         }
 
         [TestMethod]
@@ -71,7 +113,9 @@ namespace SETUNA.Main.Runtime.Tests
                     }
 
                     var entryPoint = string.IsNullOrEmpty(import.EntryPoint) ? method.Name : import.EntryPoint;
-                    if (entryPoint == "SetProcessDPIAware" || entryPoint == "SetProcessDpiAwareness")
+                    if (entryPoint == "SetProcessDPIAware"
+                        || entryPoint == "SetProcessDpiAwareness"
+                        || entryPoint == "SetProcessDpiAwarenessContext")
                     {
                         offenders.Add(type.FullName + "." + method.Name + " -> " + entryPoint);
                     }
@@ -81,20 +125,45 @@ namespace SETUNA.Main.Runtime.Tests
             Assert.AreEqual(
                 0,
                 offenders.Count,
-                "The legacy process-wide DPI API must not be declared: " + string.Join(", ", offenders));
+                "Process DPI awareness comes from the manifest; no API may set it: " + string.Join(", ", offenders));
         }
 
         [TestMethod]
-        public void ManifestDoesNotReintroduceALegacyDpiFallback()
+        public void ManifestDeclaresPerMonitorV2DpiAwareness()
         {
-            var manifest = File.ReadAllText(Path.Combine(RepositoryPath.FindRoot(), "SETUNA", "app.manifest"));
+            var manifest = new XmlDocument();
+            manifest.Load(Path.Combine(RepositoryPath.FindRoot(), "SETUNA", "app.manifest"));
 
-            // The manifest is a build artifact whose content *is* the behavior:
-            // a dpiAware/dpiAwareness element there overrides the WinForms
-            // configuration asserted by Net48RuntimeConfigurationUsesPerMonitorV2.
-            Assert.IsFalse(manifest.Contains("SetProcessDPIAware"));
-            Assert.IsFalse(manifest.Contains("<dpiAware>"));
-            Assert.IsFalse(manifest.Contains("<dpiAwareness>"));
+            // The manifest is a build artifact whose content *is* the behavior: it is
+            // linked into SETUNA.exe and read by the OS at process creation, which is
+            // what makes per-monitor-v2 awareness survive single-file distribution.
+            var namespaces = new XmlNamespaceManager(manifest.NameTable);
+            namespaces.AddNamespace("asmv1", "urn:schemas-microsoft-com:asm.v1");
+            namespaces.AddNamespace("asmv3", "urn:schemas-microsoft-com:asm.v3");
+            namespaces.AddNamespace("ws2005", "http://schemas.microsoft.com/SMI/2005/WindowsSettings");
+            namespaces.AddNamespace("ws2016", "http://schemas.microsoft.com/SMI/2016/WindowsSettings");
+
+            const string WindowsSettings = "/asmv1:assembly/asmv3:application/asmv3:windowsSettings/";
+            Assert.AreEqual(
+                "true/pm",
+                GetSettingValue(manifest, WindowsSettings + "ws2005:dpiAware", namespaces));
+            Assert.AreEqual(
+                "PerMonitorV2",
+                GetSettingValue(manifest, WindowsSettings + "ws2016:dpiAwareness", namespaces));
+
+            // Windows 10 compatibility is a precondition for PerMonitorV2 taking effect.
+            Assert.IsNotNull(manifest.SelectSingleNode(
+                "/asmv1:assembly/*[local-name()='compatibility']/*[local-name()='application']"
+                    + "/*[local-name()='supportedOS'][@Id='{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}']",
+                namespaces));
+        }
+
+        static string GetSettingValue(XmlDocument manifest, string xpath, XmlNamespaceManager namespaces)
+        {
+            var element = manifest.SelectSingleNode(xpath, namespaces) as XmlElement;
+            Assert.IsNotNull(element, "Missing manifest element: " + xpath);
+
+            return element.InnerText.Trim();
         }
 
         static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
@@ -107,20 +176,6 @@ namespace SETUNA.Main.Runtime.Tests
             {
                 return ex.Types.Where(x => x != null);
             }
-        }
-
-        private static string GetWinFormsSetting(XmlDocument config, string key)
-        {
-            var settings = config.SelectNodes("/configuration/System.Windows.Forms.ApplicationConfigurationSection/add");
-            foreach (XmlElement setting in settings)
-            {
-                if (setting.GetAttribute("key") == key)
-                {
-                    return setting.GetAttribute("value");
-                }
-            }
-
-            return null;
         }
     }
 

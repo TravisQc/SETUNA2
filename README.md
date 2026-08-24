@@ -83,13 +83,15 @@ msbuild SETUNA.sln /restore
 msbuild SETUNA.sln /t:Rebuild /p:Configuration=Debug /p:Platform=x64
 ```
 
-解决方案支持 `Debug`/`Release` 与 `x86`/`x64` 组合。普通构建不需要 7-Zip；发布 ZIP 通过显式目标生成：
+解决方案支持 `Debug`/`Release` 与 `x86`/`x64` 组合。普通构建不需要 7-Zip；发布产物通过显式目标生成：
 
 ```powershell
 msbuild SETUNA\SETUNA.csproj /restore /t:CreateReleasePackage /p:Configuration=Release /p:Platform=x64
 ```
 
-产物写入 `publish` 目录。
+产物是 `publish\SETUNA_<配置>_<平台>.exe`（如 `SETUNA_Release_x64.exe`），不打压缩包，下载即可运行：托管依赖由 Costura 嵌入，DPI 感知由内嵌清单声明，TLS 设置由启动代码应用，因此不再需要 `SETUNA.exe.config`。从旧版升级时可以直接删掉目录里残留的 `SETUNA.exe.config`。
+
+发布目标在发现输出目录存在 `SETUNA.exe.config` 时会报错终止——这通常意味着旧产物没清理干净，执行 `Rebuild` 或删除 `bin` 目录即可。
 
 ---
 
