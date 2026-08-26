@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("clearup")]
 [assembly: NeutralResourcesLanguage("zh-CN")]
-[assembly: AssemblyVersion("3.0.0.6")]
+[assembly: AssemblyVersion("3.1.0")]
 
 // 让测试项目能验证 internal 的内部机制（如 AutoStartup 的注册表值格式），
 // 不必为了可测性把它们提升为 public。两个程序集都未签名，无需公钥。
