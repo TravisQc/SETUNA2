@@ -2,6 +2,8 @@
 using System.IO;
 using System.Windows.Forms;
 
+using SETUNA.Main.Localization;
+
 namespace SETUNA.Main.Style
 {
     // Token: 0x02000049 RID: 73
@@ -11,7 +13,7 @@ namespace SETUNA.Main.Style
         public CPasteStyle()
         {
             _styleid = -13;
-            _stylename = "从剪贴板中粘贴截图";
+            _stylename = Lang.T("Style.Paste.Name");
         }
 
         // Token: 0x060002BF RID: 703 RVA: 0x0000F53B File Offset: 0x0000D73B

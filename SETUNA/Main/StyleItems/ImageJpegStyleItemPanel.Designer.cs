@@ -74,7 +74,7 @@
             "覆盖",
             "追加序号",
             "重复时指定"});
-            this.cmbDupli.Location = new System.Drawing.Point(133, 127);
+            this.cmbDupli.Location = new System.Drawing.Point(168, 127);
             this.cmbDupli.Name = "cmbDupli";
             this.cmbDupli.Size = new System.Drawing.Size(133, 20);
             this.cmbDupli.TabIndex = 9;
@@ -91,7 +91,7 @@
             // rdoSaveAs
             // 
             this.rdoSaveAs.AutoSize = true;
-            this.rdoSaveAs.Location = new System.Drawing.Point(86, 66);
+            this.rdoSaveAs.Location = new System.Drawing.Point(98, 66);
             this.rdoSaveAs.Name = "rdoSaveAs";
             this.rdoSaveAs.Size = new System.Drawing.Size(83, 16);
             this.rdoSaveAs.TabIndex = 4;
@@ -102,16 +102,16 @@
             // 
             // txtName
             // 
-            this.txtName.Location = new System.Drawing.Point(103, 104);
+            this.txtName.Location = new System.Drawing.Point(115, 104);
             this.txtName.MaxLength = 255;
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(223, 21);
+            this.txtName.Size = new System.Drawing.Size(211, 21);
             this.txtName.TabIndex = 7;
             // 
             // rdoScrapName
             // 
             this.rdoScrapName.AutoSize = true;
-            this.rdoScrapName.Location = new System.Drawing.Point(86, 86);
+            this.rdoScrapName.Location = new System.Drawing.Point(98, 86);
             this.rdoScrapName.Name = "rdoScrapName";
             this.rdoScrapName.Size = new System.Drawing.Size(95, 16);
             this.rdoScrapName.TabIndex = 5;
@@ -123,7 +123,7 @@
             // rdoName
             // 
             this.rdoName.AutoSize = true;
-            this.rdoName.Location = new System.Drawing.Point(86, 107);
+            this.rdoName.Location = new System.Drawing.Point(98, 107);
             this.rdoName.Name = "rdoName";
             this.rdoName.Size = new System.Drawing.Size(14, 13);
             this.rdoName.TabIndex = 6;
@@ -184,7 +184,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(77, 204);
+            this.label5.Location = new System.Drawing.Point(95, 204);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(11, 12);
             this.label5.TabIndex = 13;
@@ -202,10 +202,10 @@
             // barQuality
             // 
             this.barQuality.AutoSize = false;
-            this.barQuality.Location = new System.Drawing.Point(68, 172);
+            this.barQuality.Location = new System.Drawing.Point(86, 172);
             this.barQuality.Maximum = 100;
             this.barQuality.Name = "barQuality";
-            this.barQuality.Size = new System.Drawing.Size(233, 33);
+            this.barQuality.Size = new System.Drawing.Size(215, 33);
             this.barQuality.TabIndex = 11;
             this.barQuality.TickFrequency = 10;
             this.barQuality.Value = 100;
@@ -233,9 +233,9 @@
             // 
             // txtFolder
             // 
-            this.txtFolder.Location = new System.Drawing.Point(75, 32);
+            this.txtFolder.Location = new System.Drawing.Point(109, 32);
             this.txtFolder.Name = "txtFolder";
-            this.txtFolder.Size = new System.Drawing.Size(250, 21);
+            this.txtFolder.Size = new System.Drawing.Size(216, 21);
             this.txtFolder.TabIndex = 1;
             // 
             // label1

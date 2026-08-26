@@ -1,0 +1,1820 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    English strings. The <comment> on each entry is the Simplified Chinese original, kept for translator context.
+
+    Keys come in two families:
+      FormType.controlName[.ToolTip]        designer-owned control text
+      FormType.controlName.Items.N          designer-preset combo/list items
+      Area.Name                             runtime text read by key
+
+    Do not rename this file with a culture suffix (Strings.en.resx): that makes
+    MSBuild emit a satellite assembly, which breaks single-file distribution.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CompactStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="CompactStyleItemPanel.groupBox2" xml:space="preserve">
+    <value>Preview</value>
+    <comment>预览</comment>
+  </data>
+  <data name="CompactStyleItemPanel.label1" xml:space="preserve">
+    <value>Opacity:</value>
+    <comment>不透明度：</comment>
+  </data>
+  <data name="CompactStyleItemPanel.label3" xml:space="preserve">
+    <value>Border:</value>
+    <comment>边框：</comment>
+  </data>
+  <data name="CompactStyleItemPanel.rdoDashed" xml:space="preserve">
+    <value>Dotted</value>
+    <comment>虚线</comment>
+  </data>
+  <data name="CompactStyleItemPanel.rdoSolid" xml:space="preserve">
+    <value>Solid</value>
+    <comment>实线</comment>
+  </data>
+  <data name="CopyStyleItemPanel.chkWindow" xml:space="preserve">
+    <value>Include window frame</value>
+    <comment>包含窗口/边框</comment>
+  </data>
+  <data name="CopyStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="HotkeyMsg.$this" xml:space="preserve">
+    <value>SETUNA Hotkeys</value>
+    <comment>SETUNA快捷键设置</comment>
+  </data>
+  <data name="HotkeyMsg.btnClose" xml:space="preserve">
+    <value>Close</value>
+    <comment>关闭</comment>
+  </data>
+  <data name="HotkeyMsg.label1" xml:space="preserve">
+    <value>Hotkeys disabled</value>
+    <comment>禁用快捷键设置</comment>
+  </data>
+  <data name="HotkeyMsg.label2" xml:space="preserve">
+    <value>SETUNA's hotkeys are disabled: another application is using them.</value>
+    <comment>因为被其他软件使用，禁用SETUNA的快捷键设置。</comment>
+  </data>
+  <data name="HotkeyMsg.label3" xml:space="preserve">
+    <value>You can assign a different key in Options.</value>
+    <comment>您可以重新指定启用另一个键，请打开选项设置。</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.chkCopy" xml:space="preserve">
+    <value>Copy the saved file path to the clipboard</value>
+    <comment>复制到剪贴板上的文件的保存路径</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.chkWindow" xml:space="preserve">
+    <value>Include window frame</value>
+    <comment>包含窗口/边框</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.cmbDupli.Items.0" xml:space="preserve">
+    <value>Overwrite</value>
+    <comment>覆盖</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.cmbDupli.Items.1" xml:space="preserve">
+    <value>Append a number</value>
+    <comment>追加序号</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.cmbDupli.Items.2" xml:space="preserve">
+    <value>Ask each time</value>
+    <comment>重复时指定</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.label1" xml:space="preserve">
+    <value>Destination:</value>
+    <comment>目的地：</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.label2" xml:space="preserve">
+    <value>File name:</value>
+    <comment>文件名∶</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.label3" xml:space="preserve">
+    <value>On conflict:</value>
+    <comment>重复时∶</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.rdoSaveAs" xml:space="preserve">
+    <value>Ask when saving</value>
+    <comment>保存时指定</comment>
+  </data>
+  <data name="ImageBmpStyleItemPanel.rdoScrapName" xml:space="preserve">
+    <value>Use the scrap name</value>
+    <comment>使用参考图名字</comment>
+  </data>
+  <data name="ImageJpegPreviewPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="ImageJpegPreviewPanel.label3" xml:space="preserve">
+    <value>Quality:</value>
+    <comment>质量：</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.chkCopy" xml:space="preserve">
+    <value>Copy the saved file path to the clipboard</value>
+    <comment>复制到剪贴板上的文件的保存路径</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.chkShowParam" xml:space="preserve">
+    <value>Set quality when saving</value>
+    <comment>保存图像时设置质量</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.chkWindow" xml:space="preserve">
+    <value>Include window frame</value>
+    <comment>包含窗口/边框</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.cmbDupli.Items.0" xml:space="preserve">
+    <value>Overwrite</value>
+    <comment>覆盖</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.cmbDupli.Items.1" xml:space="preserve">
+    <value>Append a number</value>
+    <comment>追加序号</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.cmbDupli.Items.2" xml:space="preserve">
+    <value>Ask each time</value>
+    <comment>重复时指定</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.label1" xml:space="preserve">
+    <value>Destination:</value>
+    <comment>保存路径：</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.label2" xml:space="preserve">
+    <value>On conflict:</value>
+    <comment>重复时∶</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.label3" xml:space="preserve">
+    <value>Quality:</value>
+    <comment>质量：</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.label4" xml:space="preserve">
+    <value>File name:</value>
+    <comment>文件名∶</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.rdoSaveAs" xml:space="preserve">
+    <value>Ask when saving</value>
+    <comment>保存时指定</comment>
+  </data>
+  <data name="ImageJpegStyleItemPanel.rdoScrapName" xml:space="preserve">
+    <value>Use the scrap name</value>
+    <comment>使用参考图名</comment>
+  </data>
+  <data name="ImagePngPreviewPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="ImagePngPreviewPanel.label3" xml:space="preserve">
+    <value>Quality:</value>
+    <comment>质量：</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.chkCopy" xml:space="preserve">
+    <value>Copy the saved file path to the clipboard</value>
+    <comment>复制到剪贴板上的文件的保存路径</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.chkWindow" xml:space="preserve">
+    <value>Include window frame</value>
+    <comment>包含窗口/边框</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.cmbDupli.Items.0" xml:space="preserve">
+    <value>Overwrite</value>
+    <comment>覆盖</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.cmbDupli.Items.1" xml:space="preserve">
+    <value>Append a number</value>
+    <comment>追加序号</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.cmbDupli.Items.2" xml:space="preserve">
+    <value>Ask each time</value>
+    <comment>重复时指定</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.label1" xml:space="preserve">
+    <value>Destination:</value>
+    <comment>目的地：</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.label2" xml:space="preserve">
+    <value>File name:</value>
+    <comment>文件名∶</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.label3" xml:space="preserve">
+    <value>On conflict:</value>
+    <comment>重复时∶</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.rdoSaveAs" xml:space="preserve">
+    <value>Ask when saving</value>
+    <comment>保存时指定</comment>
+  </data>
+  <data name="ImagePngStyleItemPanel.rdoScrapName" xml:space="preserve">
+    <value>Use the scrap name</value>
+    <comment>使用参考图名</comment>
+  </data>
+  <data name="LayerRenameWindow.$this" xml:space="preserve">
+    <value>Rename layer</value>
+    <comment>更改图层名称</comment>
+  </data>
+  <data name="LayerRenameWindow.btnCancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>取消</comment>
+  </data>
+  <data name="LayerRenameWindow.btnOK" xml:space="preserve">
+    <value>OK</value>
+    <comment>确定</comment>
+  </data>
+  <data name="LayerRenameWindow.label1" xml:space="preserve">
+    <value>Layer name:</value>
+    <comment>图层名称：</comment>
+  </data>
+  <data name="LoginInput.btnCancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>取消</comment>
+  </data>
+  <data name="LoginInput.btnOK" xml:space="preserve">
+    <value>OK</value>
+    <comment>确定</comment>
+  </data>
+  <data name="LoginInput.label1" xml:space="preserve">
+    <value>Account:</value>
+    <comment>帐号：</comment>
+  </data>
+  <data name="LoginInput.label2" xml:space="preserve">
+    <value>Password:</value>
+    <comment>密码:</comment>
+  </data>
+  <data name="Mainform.button1" xml:space="preserve">
+    <value>Capture</value>
+    <comment>截取</comment>
+  </data>
+  <data name="Mainform.button4" xml:space="preserve">
+    <value>Options</value>
+    <comment>选项</comment>
+  </data>
+  <data name="MarginStyleItemPanel.chkTopMost" xml:space="preserve">
+    <value>Always on top</value>
+    <comment>设置为总在最上面</comment>
+  </data>
+  <data name="MarginStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="MarginStyleItemPanel.groupBox2" xml:space="preserve">
+    <value>Preview</value>
+    <comment>预览</comment>
+  </data>
+  <data name="MarginStyleItemPanel.label1" xml:space="preserve">
+    <value>Width:</value>
+    <comment>宽度：</comment>
+  </data>
+  <data name="MarginStyleItemPanel.label2" xml:space="preserve">
+    <value>Color:</value>
+    <comment>颜色∶</comment>
+  </data>
+  <data name="MarginStyleItemPanel.rdo3D" xml:space="preserve">
+    <value>3D border</value>
+    <comment>立体边框</comment>
+  </data>
+  <data name="MarginStyleItemPanel.rdoSolid" xml:space="preserve">
+    <value>Solid border</value>
+    <comment>单色边框</comment>
+  </data>
+  <data name="MarginStyleItemPanel.rdoWindow" xml:space="preserve">
+    <value>Window border</value>
+    <comment>窗口边框</comment>
+  </data>
+  <data name="MoveStyleItemPanel.chkDown" xml:space="preserve">
+    <value>Down</value>
+    <comment>下</comment>
+  </data>
+  <data name="MoveStyleItemPanel.chkLeft" xml:space="preserve">
+    <value>Left</value>
+    <comment>左</comment>
+  </data>
+  <data name="MoveStyleItemPanel.chkRight" xml:space="preserve">
+    <value>Right</value>
+    <comment>右</comment>
+  </data>
+  <data name="MoveStyleItemPanel.chkUp" xml:space="preserve">
+    <value>Up</value>
+    <comment>上</comment>
+  </data>
+  <data name="MoveStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="NothingStyleItemPanel.label1" xml:space="preserve">
+    <value>This action has no settings</value>
+    <comment>这个项目没有设置</comment>
+  </data>
+  <data name="OpacityStyleItemPanel.btnPreview" xml:space="preserve">
+    <value>Apply relative</value>
+    <comment>应用相对值</comment>
+  </data>
+  <data name="OpacityStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="OpacityStyleItemPanel.groupBox2" xml:space="preserve">
+    <value>Preview</value>
+    <comment>预览</comment>
+  </data>
+  <data name="OpacityStyleItemPanel.label1" xml:space="preserve">
+    <value>Opacity:</value>
+    <comment>不透明度：</comment>
+  </data>
+  <data name="OpacityStyleItemPanel.rdoFixed" xml:space="preserve">
+    <value>Absolute</value>
+    <comment>绝对值</comment>
+  </data>
+  <data name="OpacityStyleItemPanel.rdoIncrement" xml:space="preserve">
+    <value>Relative</value>
+    <comment>相对值</comment>
+  </data>
+  <data name="OptionForm.$this" xml:space="preserve">
+    <value>Options</value>
+    <comment>选项</comment>
+  </data>
+  <data name="OptionForm.btnCancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>取消</comment>
+  </data>
+  <data name="OptionForm.btnDeleteStyle" xml:space="preserve">
+    <value>Delete</value>
+    <comment>删除</comment>
+  </data>
+  <data name="OptionForm.btnEditStyle" xml:space="preserve">
+    <value>Edit</value>
+    <comment>编辑</comment>
+  </data>
+  <data name="OptionForm.btnInitialize" xml:space="preserve">
+    <value>Reset all settings</value>
+    <comment>设置全部恢复为默认状态</comment>
+  </data>
+  <data name="OptionForm.btnNewStyle" xml:space="preserve">
+    <value>New</value>
+    <comment>新建</comment>
+  </data>
+  <data name="OptionForm.btnOK" xml:space="preserve">
+    <value>OK</value>
+    <comment>确定</comment>
+  </data>
+  <data name="OptionForm.button1" xml:space="preserve">
+    <value>Copy</value>
+    <comment>复制</comment>
+  </data>
+  <data name="OptionForm.button2" xml:space="preserve">
+    <value>Open cache folder</value>
+    <comment>打开缓存目录</comment>
+  </data>
+  <data name="OptionForm.checkBox1" xml:space="preserve">
+    <value>Enable hotkeys</value>
+    <comment>启用快捷键</comment>
+  </data>
+  <data name="OptionForm.checkBox1.ToolTip" xml:space="preserve">
+    <value>Check to enable hotkeys.</value>
+    <comment>要启用快捷键，请勾选。</comment>
+  </data>
+  <data name="OptionForm.checkBox_autoStartup" xml:space="preserve">
+    <value>Start with Windows</value>
+    <comment>开机自启动</comment>
+  </data>
+  <data name="OptionForm.checkBox_cursor" xml:space="preserve">
+    <value>Include the pointer in captures</value>
+    <comment>在截图中保留鼠标</comment>
+  </data>
+  <data name="OptionForm.checkBox_cursor.ToolTip" xml:space="preserve">
+    <value>Whether the pointer is drawn into the capture.</value>
+    <comment>截图时是否显示鼠标</comment>
+  </data>
+  <data name="OptionForm.checkBox_fullscreenCursor" xml:space="preserve">
+    <value>Enable</value>
+    <comment>全屏光标</comment>
+  </data>
+  <data name="OptionForm.checkBox_fullscreenCursor.ToolTip" xml:space="preserve">
+    <value>Draw the capture cursor as a full-screen crosshair.</value>
+    <comment>截图时的光标显示为全屏光标</comment>
+  </data>
+  <data name="OptionForm.checkBox_magnifier" xml:space="preserve">
+    <value>Show a magnifier while capturing</value>
+    <comment>截图时显示放大镜以供参考</comment>
+  </data>
+  <data name="OptionForm.checkBox_magnifier.ToolTip" xml:space="preserve">
+    <value>Show a magnifier while capturing.</value>
+    <comment>截图时显示放大镜以供参考</comment>
+  </data>
+  <data name="OptionForm.checkBox_topMost" xml:space="preserve">
+    <value>Keep scraps on top</value>
+    <comment>始终置顶截图</comment>
+  </data>
+  <data name="OptionForm.checkBox_transparent" xml:space="preserve">
+    <value>Let the pointer pass through transparent areas</value>
+    <comment>鼠标是否可穿透截图透明部分</comment>
+  </data>
+  <data name="OptionForm.chkDustBox" xml:space="preserve">
+    <value>Use recycle bin</value>
+    <comment>使用回收站</comment>
+  </data>
+  <data name="OptionForm.chkDustBox.ToolTip" xml:space="preserve">
+    <value>With the recycle bin on, scraps are kept temporarily.
+Restore them from the bin when needed.</value>
+    <comment>使用回收站的话，参考图将暂时储存在回收站里。
+可以根据情况需要从回收站中取出。</comment>
+  </data>
+  <data name="OptionForm.chkInactiveAlphaChange" xml:space="preserve">
+    <value>Change scrap opacity</value>
+    <comment>改变参考图的不透明度</comment>
+  </data>
+  <data name="OptionForm.chkInactiveAlphaChange.ToolTip" xml:space="preserve">
+    <value>Opacity after the pointer leaves a scrap.
+Turn off if response feels slow.</value>
+    <comment>设置鼠标光标离开参考图上后参考图的透明度。
+如果响应速度很慢请关闭。</comment>
+  </data>
+  <data name="OptionForm.chkMouseOverAlphaChange" xml:space="preserve">
+    <value>Change scrap opacity</value>
+    <comment>改变参考图的不透明度</comment>
+  </data>
+  <data name="OptionForm.chkMouseOverAlphaChange.ToolTip" xml:space="preserve">
+    <value>Opacity while the pointer is over a scrap.
+Turn off if response feels slow.</value>
+    <comment>设置鼠标光标处于参考图上时参考图的透明度。
+如果响应速度很慢请关闭。</comment>
+  </data>
+  <data name="OptionForm.chkScrapImageDrag" xml:space="preserve">
+    <value>Create a scrap from a dropped image file</value>
+    <comment>拖动图像文件创建一个参考图</comment>
+  </data>
+  <data name="OptionForm.chkScrapImageDrag.ToolTip" xml:space="preserve">
+    <value>Drop an image file to view it as a scrap.</value>
+    <comment>拖动图像文件到参考图可作为参考图查看。</comment>
+  </data>
+  <data name="OptionForm.chkShowMainWindow" xml:space="preserve">
+    <value>Show main window</value>
+    <comment>显示主窗口</comment>
+  </data>
+  <data name="OptionForm.chkSplash" xml:space="preserve">
+    <value>Show splash screen</value>
+    <comment>显示启动界面</comment>
+  </data>
+  <data name="OptionForm.chkSplash.ToolTip" xml:space="preserve">
+    <value>Shows the logo for a few seconds while SETUNA starts.</value>
+    <comment>将在启动SETUNA时的几秒钟内显示标志。</comment>
+  </data>
+  <data name="OptionForm.cmbCreateStyle.ToolTip" xml:space="preserve">
+    <value>Style applied when a scrap is created.</value>
+    <comment>您可以指定要创建参考图时使用的自动操作。</comment>
+  </data>
+  <data name="OptionForm.cmbWClickStyle.ToolTip" xml:space="preserve">
+    <value>Style applied when a scrap is double-clicked.</value>
+    <comment>指定双击参考图时使用的自动操作。</comment>
+  </data>
+  <data name="OptionForm.groupBox1" xml:space="preserve">
+    <value>Style list</value>
+    <comment>自动操作列表</comment>
+  </data>
+  <data name="OptionForm.groupBox10" xml:space="preserve">
+    <value>Scrap menu</value>
+    <comment>参考图菜单</comment>
+  </data>
+  <data name="OptionForm.groupBox11" xml:space="preserve">
+    <value>When not selected</value>
+    <comment>非选择时的效果</comment>
+  </data>
+  <data name="OptionForm.groupBox12" xml:space="preserve">
+    <value>Click to capture</value>
+    <comment>单击截取</comment>
+  </data>
+  <data name="OptionForm.groupBox13" xml:space="preserve">
+    <value>About</value>
+    <comment>信息</comment>
+  </data>
+  <data name="OptionForm.groupBox14" xml:space="preserve">
+    <value>Other</value>
+    <comment>其他</comment>
+  </data>
+  <data name="OptionForm.groupBox15" xml:space="preserve">
+    <value>Capture background</value>
+    <comment>截图背景</comment>
+  </data>
+  <data name="OptionForm.groupBox16" xml:space="preserve">
+    <value>Full-screen crosshair</value>
+    <comment>全屏十字光标样式</comment>
+  </data>
+  <data name="OptionForm.groupBox2" xml:space="preserve">
+    <value>Hotkeys</value>
+    <comment>快捷键设置</comment>
+  </data>
+  <data name="OptionForm.groupBox3" xml:space="preserve">
+    <value>On second launch</value>
+    <comment>防止双重启动的操作</comment>
+  </data>
+  <data name="OptionForm.groupBox4" xml:space="preserve">
+    <value>Selection area</value>
+    <comment>截取时的框选范围</comment>
+  </data>
+  <data name="OptionForm.groupBox5" xml:space="preserve">
+    <value>Recycle bin</value>
+    <comment>回收站的设置</comment>
+  </data>
+  <data name="OptionForm.groupBox6" xml:space="preserve">
+    <value>Mode</value>
+    <comment>操作类型</comment>
+  </data>
+  <data name="OptionForm.groupBox7" xml:space="preserve">
+    <value>Other</value>
+    <comment>其他</comment>
+  </data>
+  <data name="OptionForm.groupBox8" xml:space="preserve">
+    <value>Style list</value>
+    <comment>自动操作列表</comment>
+  </data>
+  <data name="OptionForm.groupBox9" xml:space="preserve">
+    <value>Other</value>
+    <comment>其他</comment>
+  </data>
+  <data name="OptionForm.hotkeyControl1.ToolTip" xml:space="preserve">
+    <value>Combine Ctrl, Shift and Alt to set the capture hotkey.
+Hotkeys already claimed by other programs cannot be used.</value>
+    <comment>Ctrl键，Shift键和Alt键，各个键的组合来设置截取的快捷键。
+不能使用其他程序设置的快捷键。</comment>
+  </data>
+  <data name="OptionForm.hotkeyControl2.ToolTip" xml:space="preserve">
+    <value>Combine Ctrl, Shift and Alt to set the hide/show-all hotkey.
+Hotkeys already claimed by other programs cannot be used.</value>
+    <comment>Ctrl键，Shift键和Alt键，各个键的组合来设置隐藏/显示所有截图的快捷键。
+不能使用其他程序设置的快捷键。</comment>
+  </data>
+  <data name="OptionForm.label1" xml:space="preserve">
+    <value>Style contents:</value>
+    <comment>自动操作的构成：</comment>
+  </data>
+  <data name="OptionForm.label10" xml:space="preserve">
+    <value>Area transparency:</value>
+    <comment>框选范围的透明度：</comment>
+  </data>
+  <data name="OptionForm.label11" xml:space="preserve">
+    <value>Pointer over</value>
+    <comment>鼠标触到时</comment>
+  </data>
+  <data name="OptionForm.label14" xml:space="preserve">
+    <value>scraps max</value>
+    <comment>张为上限</comment>
+  </data>
+  <data name="OptionForm.label16" xml:space="preserve">
+    <value>Clicking the selected screen edge starts a capture.</value>
+    <comment>当您点击一下指定的屏幕边缘，即开始截取。</comment>
+  </data>
+  <data name="OptionForm.label17" xml:space="preserve">
+    <value>Hide/show all:</value>
+    <comment>隐藏/显示所有快捷键：</comment>
+  </data>
+  <data name="OptionForm.label18" xml:space="preserve">
+    <value>Line color:</value>
+    <comment>框选线的颜色∶</comment>
+  </data>
+  <data name="OptionForm.label19" xml:space="preserve">
+    <value>Line style:</value>
+    <comment>框选线的种类∶</comment>
+  </data>
+  <data name="OptionForm.label2" xml:space="preserve">
+    <value>Assigned hotkeys:</value>
+    <comment>快捷键分配：</comment>
+  </data>
+  <data name="OptionForm.label3" xml:space="preserve">
+    <value>Capture hotkey:</value>
+    <comment>截图快捷键：</comment>
+  </data>
+  <data name="OptionForm.label4" xml:space="preserve">
+    <value>Default style:</value>
+    <comment>基本自动操作：</comment>
+  </data>
+  <data name="OptionForm.label5" xml:space="preserve">
+    <value>On double-click:</value>
+    <comment>双击时∶</comment>
+  </data>
+  <data name="OptionForm.label6" xml:space="preserve">
+    <value>Pointer away</value>
+    <comment>鼠标没触到时</comment>
+  </data>
+  <data name="OptionForm.label7" xml:space="preserve">
+    <value>Border style:</value>
+    <comment>框选线的种类∶</comment>
+  </data>
+  <data name="OptionForm.label8" xml:space="preserve">
+    <value>Border color:</value>
+    <comment>框选线的颜色∶</comment>
+  </data>
+  <data name="OptionForm.label9" xml:space="preserve">
+    <value>Area color:</value>
+    <comment>框选范围的颜色：</comment>
+  </data>
+  <data name="OptionForm.lblLanguage" xml:space="preserve">
+    <value>Language:</value>
+    <comment>语言：</comment>
+  </data>
+  <data name="OptionForm.lblMenuAll" xml:space="preserve">
+    <value>General</value>
+    <comment>常规</comment>
+  </data>
+  <data name="OptionForm.lblMenuCapture" xml:space="preserve">
+    <value>Capture</value>
+    <comment>截取设置</comment>
+  </data>
+  <data name="OptionForm.lblMenuMenu" xml:space="preserve">
+    <value>Scrap menu</value>
+    <comment>参考图菜单</comment>
+  </data>
+  <data name="OptionForm.lblMenuMisc" xml:space="preserve">
+    <value>Misc</value>
+    <comment>杂项设置</comment>
+  </data>
+  <data name="OptionForm.lblMenuScrap" xml:space="preserve">
+    <value>Scraps</value>
+    <comment>参考图设置</comment>
+  </data>
+  <data name="OptionForm.lblMenuStyle" xml:space="preserve">
+    <value>Create styles</value>
+    <comment>创建自动操作</comment>
+  </data>
+  <data name="OptionForm.listScrapMenuList.ToolTip" xml:space="preserve">
+    <value>Structure of the menu shown when a scrap is right-clicked.</value>
+    <comment>右键单击参考图时显示的菜单结构。</comment>
+  </data>
+  <data name="OptionForm.numDustBox.ToolTip" xml:space="preserve">
+    <value>Maximum number of scraps kept in the recycle bin.
+Older scraps are discarded beyond this limit.</value>
+    <comment>指定在回收站中放入的最大张数。
+超过限额将丢弃旧的参考图。</comment>
+  </data>
+  <data name="OptionForm.numSelectAreaTrans.ToolTip" xml:space="preserve">
+    <value>Transparency of the selection area fill.
+100% transparency responds fastest.</value>
+    <comment>设置框选范围填充颜色的透明度。
+选择透明度100％时可提高响应速度。</comment>
+  </data>
+  <data name="OptionForm.pageAll" xml:space="preserve">
+    <value>General</value>
+    <comment>常规</comment>
+  </data>
+  <data name="OptionForm.pageCapture" xml:space="preserve">
+    <value>Capture</value>
+    <comment>截取设置</comment>
+  </data>
+  <data name="OptionForm.pageMisc" xml:space="preserve">
+    <value>Misc</value>
+    <comment>杂项设置</comment>
+  </data>
+  <data name="OptionForm.pageScrap" xml:space="preserve">
+    <value>Scraps</value>
+    <comment>参考图设置</comment>
+  </data>
+  <data name="OptionForm.pageScrapMenu" xml:space="preserve">
+    <value>Scrap menu</value>
+    <comment>参考图菜单</comment>
+  </data>
+  <data name="OptionForm.pageStyle" xml:space="preserve">
+    <value>Edit styles</value>
+    <comment>编辑自动操作</comment>
+  </data>
+  <data name="OptionForm.picSelectAreaBackColor.ToolTip" xml:space="preserve">
+    <value>Fill color of the selection area.
+Set transparency to 100% for no fill.</value>
+    <comment>设置全面填充框选范围的颜色。
+不全面涂抹的情况设置透明度为100％。</comment>
+  </data>
+  <data name="OptionForm.picSelectAreaLineColor.ToolTip" xml:space="preserve">
+    <value>Border color of the selection area.</value>
+    <comment>指定框选范围的边框线的颜色。</comment>
+  </data>
+  <data name="OptionForm.pictureBox_fullscreenCursor.ToolTip" xml:space="preserve">
+    <value>Border color of the selection area.</value>
+    <comment>指定框选范围的边框线的颜色。</comment>
+  </data>
+  <data name="OptionForm.radioButton1_fullscreenCursor" xml:space="preserve">
+    <value>Solid</value>
+    <comment>实线</comment>
+  </data>
+  <data name="OptionForm.radioButton1_fullscreenCursor.ToolTip" xml:space="preserve">
+    <value>Border style of the selection area.</value>
+    <comment>设置框选范围的边框线的类型。</comment>
+  </data>
+  <data name="OptionForm.radioButton2_fullscreenCursor" xml:space="preserve">
+    <value>Dotted</value>
+    <comment>虚线</comment>
+  </data>
+  <data name="OptionForm.radioButton2_fullscreenCursor.ToolTip" xml:space="preserve">
+    <value>Border style of the selection area.</value>
+    <comment>设置框选范围的边框线的类型。</comment>
+  </data>
+  <data name="OptionForm.rdoDupCapture" xml:space="preserve">
+    <value>Start a capture</value>
+    <comment>截取参考图</comment>
+  </data>
+  <data name="OptionForm.rdoDupCapture.ToolTip" xml:space="preserve">
+    <value>Launching SETUNA again starts a capture.</value>
+    <comment>如果您尝试重复启动SETUNA，则开始截取。</comment>
+  </data>
+  <data name="OptionForm.rdoDupNone" xml:space="preserve">
+    <value>Do nothing</value>
+    <comment>什么都不做</comment>
+  </data>
+  <data name="OptionForm.rdoDupNone.ToolTip" xml:space="preserve">
+    <value>Launching SETUNA again does nothing.</value>
+    <comment>如果您尝试重复启动SETUNA，则什么都不做。</comment>
+  </data>
+  <data name="OptionForm.rdoExeTypeApp" xml:space="preserve">
+    <value>Application</value>
+    <comment>应用软件</comment>
+  </data>
+  <data name="OptionForm.rdoExeTypeApp.ToolTip" xml:space="preserve">
+    <value>Show the main window and minimize to the taskbar.</value>
+    <comment>显示主窗口、最小化到任务栏上</comment>
+  </data>
+  <data name="OptionForm.rdoExeTypeResident" xml:space="preserve">
+    <value>Resident in tray</value>
+    <comment>常驻任务栏</comment>
+  </data>
+  <data name="OptionForm.rdoExeTypeResident.ToolTip" xml:space="preserve">
+    <value>Show an icon in the notification area.</value>
+    <comment>在任务栏上显示图标。</comment>
+  </data>
+  <data name="OptionForm.rdoSelLineTypeDotted" xml:space="preserve">
+    <value>Dotted</value>
+    <comment>虚线</comment>
+  </data>
+  <data name="OptionForm.rdoSelLineTypeDotted.ToolTip" xml:space="preserve">
+    <value>Border style of the selection area.</value>
+    <comment>设置框选范围的边框线的类型。</comment>
+  </data>
+  <data name="OptionForm.rdoSelLineTypeSolid" xml:space="preserve">
+    <value>Solid</value>
+    <comment>实线</comment>
+  </data>
+  <data name="OptionForm.rdoSelLineTypeSolid.ToolTip" xml:space="preserve">
+    <value>Border style of the selection area.</value>
+    <comment>设置框选范围的边框线的类型。</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.button1" xml:space="preserve">
+    <value>Copy URL</value>
+    <comment>复制网址</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.comboBox1.Items.0" xml:space="preserve">
+    <value>Save account and password</value>
+    <comment>保存帐号和密码</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.comboBox1.Items.1" xml:space="preserve">
+    <value>Save account only</value>
+    <comment>只保存帐号</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.comboBox1.Items.2" xml:space="preserve">
+    <value>Save nothing</value>
+    <comment>全部不保存</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.label1" xml:space="preserve">
+    <value>Google account:</value>
+    <comment>谷歌帐号：</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.label2" xml:space="preserve">
+    <value>Password:</value>
+    <comment>密码：</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.label3" xml:space="preserve">
+    <value>* New to Picasa Web Albums?</value>
+    <comment>※如果这是你第一次使用 Picasa 网络相册</comment>
+  </data>
+  <data name="PicasaStyleItemPanel.label4" xml:space="preserve">
+    <value>Please review Picasa's terms of use on its website before using the service.</value>
+    <comment>请在使用服务前访问 Picasa 的网站，以确认使用条款。</comment>
+  </data>
+  <data name="RotateStyleItemPanel.chkHorizon" xml:space="preserve">
+    <value>Horizontal</value>
+    <comment>水平翻转</comment>
+  </data>
+  <data name="RotateStyleItemPanel.chkVertical" xml:space="preserve">
+    <value>Vertical</value>
+    <comment>垂直翻转</comment>
+  </data>
+  <data name="RotateStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="RotateStyleItemPanel.groupBox2" xml:space="preserve">
+    <value>Preview</value>
+    <comment>预览</comment>
+  </data>
+  <data name="RotateStyleItemPanel.label1" xml:space="preserve">
+    <value>Rotate scrap:</value>
+    <comment>旋转参考图：</comment>
+  </data>
+  <data name="RotateStyleItemPanel.label2" xml:space="preserve">
+    <value>Flip scrap:</value>
+    <comment>翻转参考图∶</comment>
+  </data>
+  <data name="RotateStyleItemPanel.rdo180" xml:space="preserve">
+    <value>180</value>
+    <comment>180度</comment>
+  </data>
+  <data name="RotateStyleItemPanel.rdoLeft90" xml:space="preserve">
+    <value>90 left</value>
+    <comment>左转90度</comment>
+  </data>
+  <data name="RotateStyleItemPanel.rdoNone" xml:space="preserve">
+    <value>None</value>
+    <comment>无</comment>
+  </data>
+  <data name="RotateStyleItemPanel.rdoRight90" xml:space="preserve">
+    <value>90 right</value>
+    <comment>右转90度</comment>
+  </data>
+  <data name="SaveImageStyleItemPanel.checkBox1" xml:space="preserve">
+    <value>Set format and quality when saving</value>
+    <comment>保存时的格式、质量等设置</comment>
+  </data>
+  <data name="SaveImageStyleItemPanel.checkBox2" xml:space="preserve">
+    <value>Ask for the file name when saving</value>
+    <comment>指定保存时的文件名</comment>
+  </data>
+  <data name="SaveImageStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="SaveImageStyleItemPanel.label1" xml:space="preserve">
+    <value>Destination:</value>
+    <comment>目的地：</comment>
+  </data>
+  <data name="SaveImageStyleItemPanel.label2" xml:space="preserve">
+    <value>Quality:</value>
+    <comment>质量：</comment>
+  </data>
+  <data name="SaveImageStyleItemPanel.label4" xml:space="preserve">
+    <value>Low</value>
+    <comment>低</comment>
+  </data>
+  <data name="SaveImageStyleItemPanel.label5" xml:space="preserve">
+    <value>High</value>
+    <comment>高</comment>
+  </data>
+  <data name="ScaleStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="ScaleStyleItemPanel.label1" xml:space="preserve">
+    <value>Scale:</value>
+    <comment>尺度∶</comment>
+  </data>
+  <data name="ScaleStyleItemPanel.lblInterpolation" xml:space="preserve">
+    <value>Interpolation:</value>
+    <comment>插值方法：</comment>
+  </data>
+  <data name="ScaleStyleItemPanel.rdoFixed" xml:space="preserve">
+    <value>Absolute</value>
+    <comment>绝对值</comment>
+  </data>
+  <data name="ScaleStyleItemPanel.rdoIncrement" xml:space="preserve">
+    <value>Relative</value>
+    <comment>相对值</comment>
+  </data>
+  <data name="ScrapPaintLayer.$this" xml:space="preserve">
+    <value>Layers</value>
+    <comment>层</comment>
+  </data>
+  <data name="ScrapPaintPenTool.$this" xml:space="preserve">
+    <value>Pen</value>
+    <comment>笔工具</comment>
+  </data>
+  <data name="ScrapPaintPenTool.label1" xml:space="preserve">
+    <value>Opacity</value>
+    <comment>不透明度</comment>
+  </data>
+  <data name="ScrapPaintPenTool.label3" xml:space="preserve">
+    <value>Size</value>
+    <comment>尺寸</comment>
+  </data>
+  <data name="ScrapPaintTextTool.$this" xml:space="preserve">
+    <value>Text</value>
+    <comment>文字工具</comment>
+  </data>
+  <data name="ScrapPaintTextTool.label3" xml:space="preserve">
+    <value>Size</value>
+    <comment>尺寸</comment>
+  </data>
+  <data name="ScrapPaintTextTool.label5" xml:space="preserve">
+    <value>Font</value>
+    <comment>字体</comment>
+  </data>
+  <data name="ScrapPaintToolBar.$this" xml:space="preserve">
+    <value>Tools</value>
+    <comment>工具</comment>
+  </data>
+  <data name="ScrapPaintToolBar.chkErase.ToolTip" xml:space="preserve">
+    <value>Eraser tool</value>
+    <comment>橡皮擦工具</comment>
+  </data>
+  <data name="ScrapPaintToolBar.chkPen.ToolTip" xml:space="preserve">
+    <value>Pen tool</value>
+    <comment>笔工具</comment>
+  </data>
+  <data name="ScrapPaintToolBar.chkText.ToolTip" xml:space="preserve">
+    <value>Text tool</value>
+    <comment>文本工具</comment>
+  </data>
+  <data name="ScrapPaintToolBar.picColorA.ToolTip" xml:space="preserve">
+    <value>Foreground color</value>
+    <comment>前景色</comment>
+  </data>
+  <data name="ScrapPaintToolBar.picColorB.ToolTip" xml:space="preserve">
+    <value>Background color</value>
+    <comment>背景色</comment>
+  </data>
+  <data name="StyleEditForm.btnCancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>取消</comment>
+  </data>
+  <data name="StyleEditForm.btnItemDelete.ToolTip" xml:space="preserve">
+    <value>Remove the selected action.</value>
+    <comment>删除选定的项目。</comment>
+  </data>
+  <data name="StyleEditForm.btnItemDown.ToolTip" xml:space="preserve">
+    <value>Reorder the selected action.</value>
+    <comment>更改选定项目的顺序。</comment>
+  </data>
+  <data name="StyleEditForm.btnItemUp.ToolTip" xml:space="preserve">
+    <value>Reorder the selected action.</value>
+    <comment>更改选定项目的顺序。</comment>
+  </data>
+  <data name="StyleEditForm.btnKeyDelete" xml:space="preserve">
+    <value>Delete</value>
+    <comment>删除</comment>
+  </data>
+  <data name="StyleEditForm.btnKeyEntry" xml:space="preserve">
+    <value>Add</value>
+    <comment>登记</comment>
+  </data>
+  <data name="StyleEditForm.btnOk" xml:space="preserve">
+    <value>OK</value>
+    <comment>确定</comment>
+  </data>
+  <data name="StyleEditForm.groupBox1" xml:space="preserve">
+    <value>Hotkey</value>
+    <comment>指定快捷键</comment>
+  </data>
+  <data name="StyleEditForm.groupBox2" xml:space="preserve">
+    <value>Style contents</value>
+    <comment>自动操作的装配</comment>
+  </data>
+  <data name="StyleEditForm.hotkey.ToolTip" xml:space="preserve">
+    <value>Set the hotkey that applies this style.</value>
+    <comment>创建应用自动操作的快捷键。</comment>
+  </data>
+  <data name="StyleEditForm.label1" xml:space="preserve">
+    <value>Style name:</value>
+    <comment>自动操作名∶</comment>
+  </data>
+  <data name="StyleEditForm.label2" xml:space="preserve">
+    <value>Available actions:</value>
+    <comment>自动操作列表：</comment>
+  </data>
+  <data name="StyleEditForm.label3" xml:space="preserve">
+    <value>Add as:</value>
+    <comment>登记方式：</comment>
+  </data>
+  <data name="StyleEditForm.label4" xml:space="preserve">
+    <value>Hotkey:</value>
+    <comment>快捷键：</comment>
+  </data>
+  <data name="StyleEditForm.label5" xml:space="preserve">
+    <value>Assigned hotkeys:</value>
+    <comment>快捷键分配：</comment>
+  </data>
+  <data name="StyleEditForm.listAllStyleItem.Items.0" xml:space="preserve">
+    <value>Item 1</value>
+    <comment>第1项</comment>
+  </data>
+  <data name="StyleEditForm.listAllStyleItem.Items.1" xml:space="preserve">
+    <value>Item 2</value>
+    <comment>第2项</comment>
+  </data>
+  <data name="StyleEditForm.listAllStyleItem.Items.2" xml:space="preserve">
+    <value>Item 3</value>
+    <comment>第3项</comment>
+  </data>
+  <data name="StyleEditForm.listKeys.ToolTip" xml:space="preserve">
+    <value>Select a scrap and press an assigned hotkey to apply the style.</value>
+    <comment>选择参考图，如果点击分配的快捷键则应用自动操作。</comment>
+  </data>
+  <data name="StyleEditForm.listStyleItem.Items.0" xml:space="preserve">
+    <value>Item 1</value>
+    <comment>第1项</comment>
+  </data>
+  <data name="StyleEditForm.listStyleItem.Items.1" xml:space="preserve">
+    <value>Item 2</value>
+    <comment>第2项</comment>
+  </data>
+  <data name="StyleEditForm.listStyleItem.Items.2" xml:space="preserve">
+    <value>Item 3</value>
+    <comment>第3项</comment>
+  </data>
+  <data name="StyleEditForm.listStyleItem.ToolTip" xml:space="preserve">
+    <value>Actions are applied from top to bottom.</value>
+    <comment>自上而下依次应用自动操作项目。</comment>
+  </data>
+  <data name="StyleEditForm.txtStyleName.ToolTip" xml:space="preserve">
+    <value>Name for this style.</value>
+    <comment>您可以对具体自动操作命名。</comment>
+  </data>
+  <data name="TimerStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="TimerStyleItemPanel.label1" xml:space="preserve">
+    <value>Delay:</value>
+    <comment>延迟：</comment>
+  </data>
+  <data name="ToolBoxForm.cmdCancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>取消</comment>
+  </data>
+  <data name="ToolBoxForm.cmdOK" xml:space="preserve">
+    <value>OK</value>
+    <comment>确定</comment>
+  </data>
+  <data name="WindowStyleItemPanel.groupBox1" xml:space="preserve">
+    <value>Settings</value>
+    <comment>设置</comment>
+  </data>
+  <data name="WindowStyleItemPanel.rdoFixed" xml:space="preserve">
+    <value>Scrap size</value>
+    <comment>参考图类型</comment>
+  </data>
+  <data name="WindowStyleItemPanel.rdoIncrement" xml:space="preserve">
+    <value>Window size</value>
+    <comment>窗口类型</comment>
+  </data>
+  <data name="Capture.Blue" xml:space="preserve">
+    <value>B:</value>
+    <comment>蓝：</comment>
+  </data>
+  <data name="Capture.Green" xml:space="preserve">
+    <value>G:</value>
+    <comment>绿：</comment>
+  </data>
+  <data name="Capture.Red" xml:space="preserve">
+    <value>R:</value>
+    <comment>红：</comment>
+  </data>
+  <data name="Common.No" xml:space="preserve">
+    <value>No</value>
+    <comment>否</comment>
+  </data>
+  <data name="Common.None" xml:space="preserve">
+    <value>None</value>
+    <comment>无</comment>
+  </data>
+  <data name="Common.Yes" xml:space="preserve">
+    <value>Yes</value>
+    <comment>是</comment>
+  </data>
+  <data name="DefaultStyle.Basic" xml:space="preserve">
+    <value>Default style</value>
+    <comment>基本自动操作</comment>
+  </data>
+  <data name="DefaultStyle.Border3D" xml:space="preserve">
+    <value>3D border</value>
+    <comment>立体边框</comment>
+  </data>
+  <data name="DefaultStyle.BorderSolid" xml:space="preserve">
+    <value>Solid border</value>
+    <comment>单色边框</comment>
+  </data>
+  <data name="DefaultStyle.Close" xml:space="preserve">
+    <value>Close</value>
+    <comment>关闭</comment>
+  </data>
+  <data name="DefaultStyle.Compact" xml:space="preserve">
+    <value>Shrink</value>
+    <comment>收缩</comment>
+  </data>
+  <data name="DefaultStyle.Copy" xml:space="preserve">
+    <value>Copy</value>
+    <comment>复制</comment>
+  </data>
+  <data name="DefaultStyle.CopyWithBorder" xml:space="preserve">
+    <value>Copy (with border)</value>
+    <comment>复制（有边框）</comment>
+  </data>
+  <data name="DefaultStyle.Cut" xml:space="preserve">
+    <value>Cut</value>
+    <comment>剪切</comment>
+  </data>
+  <data name="DefaultStyle.CutWithBorder" xml:space="preserve">
+    <value>Cut (with border)</value>
+    <comment>剪切（有边框）</comment>
+  </data>
+  <data name="DefaultStyle.Enlarge" xml:space="preserve">
+    <value>Enlarge</value>
+    <comment>扩大</comment>
+  </data>
+  <data name="DefaultStyle.EnlargeFine" xml:space="preserve">
+    <value>Enlarge (fine)</value>
+    <comment>扩大（微调）</comment>
+  </data>
+  <data name="DefaultStyle.FlipHorizontal" xml:space="preserve">
+    <value>Flip horizontally</value>
+    <comment>水平翻转</comment>
+  </data>
+  <data name="DefaultStyle.FlipVertical" xml:space="preserve">
+    <value>Flip vertically</value>
+    <comment>垂直翻转</comment>
+  </data>
+  <data name="DefaultStyle.MoveDown" xml:space="preserve">
+    <value>Move down</value>
+    <comment>向下移动</comment>
+  </data>
+  <data name="DefaultStyle.MoveDownFine" xml:space="preserve">
+    <value>Move down (fine)</value>
+    <comment>向下移动（微调）</comment>
+  </data>
+  <data name="DefaultStyle.MoveLeft" xml:space="preserve">
+    <value>Move left</value>
+    <comment>向左移动</comment>
+  </data>
+  <data name="DefaultStyle.MoveLeftFine" xml:space="preserve">
+    <value>Move left (fine)</value>
+    <comment>向左移动（微调）</comment>
+  </data>
+  <data name="DefaultStyle.MoveRight" xml:space="preserve">
+    <value>Move right</value>
+    <comment>向右移动</comment>
+  </data>
+  <data name="DefaultStyle.MoveRightFine" xml:space="preserve">
+    <value>Move right (fine)</value>
+    <comment>向右移动（微调）</comment>
+  </data>
+  <data name="DefaultStyle.MoveUp" xml:space="preserve">
+    <value>Move up</value>
+    <comment>向上移动</comment>
+  </data>
+  <data name="DefaultStyle.MoveUpFine" xml:space="preserve">
+    <value>Move up (fine)</value>
+    <comment>向上移动（微调）</comment>
+  </data>
+  <data name="DefaultStyle.NoBorder" xml:space="preserve">
+    <value>No border</value>
+    <comment>无边框</comment>
+  </data>
+  <data name="DefaultStyle.OpacityDown" xml:space="preserve">
+    <value>Less opaque</value>
+    <comment>降低透明度</comment>
+  </data>
+  <data name="DefaultStyle.OpacityDownFine" xml:space="preserve">
+    <value>Less opaque (fine)</value>
+    <comment>降低透明度（微调）</comment>
+  </data>
+  <data name="DefaultStyle.OpacityUp" xml:space="preserve">
+    <value>More opaque</value>
+    <comment>增加透明度</comment>
+  </data>
+  <data name="DefaultStyle.OpacityUpFine" xml:space="preserve">
+    <value>More opaque (fine)</value>
+    <comment>增加透明度（微调）</comment>
+  </data>
+  <data name="DefaultStyle.Paste" xml:space="preserve">
+    <value>Paste</value>
+    <comment>粘贴</comment>
+  </data>
+  <data name="DefaultStyle.Rotate90" xml:space="preserve">
+    <value>Rotate 90</value>
+    <comment>旋转90度</comment>
+  </data>
+  <data name="DefaultStyle.Save" xml:space="preserve">
+    <value>Save</value>
+    <comment>保存</comment>
+  </data>
+  <data name="DefaultStyle.SaveWithBorder" xml:space="preserve">
+    <value>Save (with border)</value>
+    <comment>保存（有边框）</comment>
+  </data>
+  <data name="DefaultStyle.Scale100" xml:space="preserve">
+    <value>Scale to 100%</value>
+    <comment>缩放为100%</comment>
+  </data>
+  <data name="DefaultStyle.Scale150" xml:space="preserve">
+    <value>Scale to 150%</value>
+    <comment>缩放为150%</comment>
+  </data>
+  <data name="DefaultStyle.Scale50" xml:space="preserve">
+    <value>Scale to 50%</value>
+    <comment>缩放为50%</comment>
+  </data>
+  <data name="DefaultStyle.Scale60" xml:space="preserve">
+    <value>Scale to 60%</value>
+    <comment>缩放为60%</comment>
+  </data>
+  <data name="DefaultStyle.Scale70" xml:space="preserve">
+    <value>Scale to 70%</value>
+    <comment>缩放为70%</comment>
+  </data>
+  <data name="DefaultStyle.Scale80" xml:space="preserve">
+    <value>Scale to 80%</value>
+    <comment>缩放为80%</comment>
+  </data>
+  <data name="DefaultStyle.Scale90" xml:space="preserve">
+    <value>Scale to 90%</value>
+    <comment>缩放为90%</comment>
+  </data>
+  <data name="DefaultStyle.Shrink" xml:space="preserve">
+    <value>Shrink</value>
+    <comment>缩小</comment>
+  </data>
+  <data name="DefaultStyle.ShrinkFine" xml:space="preserve">
+    <value>Shrink (fine)</value>
+    <comment>缩小（微调）</comment>
+  </data>
+  <data name="DefaultStyle.Trim" xml:space="preserve">
+    <value>Trim</value>
+    <comment>修剪</comment>
+  </data>
+  <data name="DefaultStyle.Windowed" xml:space="preserve">
+    <value>Add window frame</value>
+    <comment>窗口化</comment>
+  </data>
+  <data name="Filter.AllFiles" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
+    <comment>所有文件 (*.*)|*.*</comment>
+  </data>
+  <data name="Filter.Bmp" xml:space="preserve">
+    <value>Bitmap (.bmp)|*.bmp|All files (*.*)|*.*</value>
+    <comment>Bitmap格式 (.bmp)|*.bmp|所有文件 (*.*)|*.*</comment>
+  </data>
+  <data name="Filter.Jpeg" xml:space="preserve">
+    <value>JPEG (.jpg)|*.jpg|All files (*.*)|*.*</value>
+    <comment>Jpeg格式 (.jpg)|*.jpg|所有文件 (*.*)|*.*</comment>
+  </data>
+  <data name="Filter.Png" xml:space="preserve">
+    <value>PNG (.png)|*.png|All files (*.*)|*.*</value>
+    <comment>Png格式(.png)|*.png|所有文件 (*.*)|*.*</comment>
+  </data>
+  <data name="Message.AutoStartupDisableFailed" xml:space="preserve">
+    <value>Could not disable start with Windows.</value>
+    <comment>无法取消开机启动。</comment>
+  </data>
+  <data name="Message.AutoStartupEnableFailed" xml:space="preserve">
+    <value>Could not enable start with Windows.</value>
+    <comment>无法设置开机启动。</comment>
+  </data>
+  <data name="Message.AutoStartupRegistryUnavailable" xml:space="preserve">
+    <value>Could not open the startup registry key.</value>
+    <comment>无法访问开机启动项的注册表位置。</comment>
+  </data>
+  <data name="Message.ConfigLoadFailed" xml:space="preserve">
+    <value>Could not read the configuration file.
+Using default settings.</value>
+    <comment>无法读取配置文件。
+使用默认设置。</comment>
+  </data>
+  <data name="Message.ConfigSaveFailed" xml:space="preserve">
+    <value>Could not save the configuration file.</value>
+    <comment>无法保存配置文件。</comment>
+  </data>
+  <data name="Message.ConfirmCaption" xml:space="preserve">
+    <value>Confirm</value>
+    <comment>提示</comment>
+  </data>
+  <data name="Message.ConfirmCloseAllScraps" xml:space="preserve">
+    <value>Close all scraps?</value>
+    <comment>是否关闭所有截图</comment>
+  </data>
+  <data name="Message.ConfirmDeleteLayer" xml:space="preserve">
+    <value>Delete "{0}"?</value>
+    <comment>{0}我如何删除？</comment>
+  </data>
+  <data name="Message.ConfirmOverwrite" xml:space="preserve">
+    <value>A file with the same name already exists.
+Overwrite?</value>
+    <comment>相同的文件名已存在。
+覆盖？</comment>
+  </data>
+  <data name="Message.ConfirmResetSettings" xml:space="preserve">
+    <value>Reset all settings to their defaults.</value>
+    <comment>进行设置内容的初始化。</comment>
+  </data>
+  <data name="Message.FileNameMissing" xml:space="preserve">
+    <value>No file name was given.</value>
+    <comment>没有指定文件名。</comment>
+  </data>
+  <data name="Message.InvalidFileName" xml:space="preserve">
+    <value>The file name is not valid.</value>
+    <comment>文件名无效。</comment>
+  </data>
+  <data name="Message.InvalidFolderName" xml:space="preserve">
+    <value>The folder name is not valid.</value>
+    <comment>文件夹名无效。</comment>
+  </data>
+  <data name="Message.LayerNameRequired" xml:space="preserve">
+    <value>No layer name was entered.</value>
+    <comment>没有输入图层名</comment>
+  </data>
+  <data name="Message.NoEncoderFound" xml:space="preserve">
+    <value>The image cannot be saved because no usable encoder was found.</value>
+    <comment>因为利用可以的编码器没找到，不能保存图像。</comment>
+  </data>
+  <data name="Message.OtherVersionRunning" xml:space="preserve">
+    <value>A different version of SETUNA is already running.</value>
+    <comment>SETUNA已经运行在不同的版本。</comment>
+  </data>
+  <data name="Message.SaveFailed" xml:space="preserve">
+    <value>{0}
+Could not save.</value>
+    <comment>{0}
+无法保存。</comment>
+  </data>
+  <data name="Message.StyleNameRequired" xml:space="preserve">
+    <value>Please enter a style name.</value>
+    <comment>请输入自动操作名。</comment>
+  </data>
+  <data name="Option.CommentAll" xml:space="preserve">
+    <value>General SETUNA settings.</value>
+    <comment>SETUNA常规设置。</comment>
+  </data>
+  <data name="Option.CommentCapture" xml:space="preserve">
+    <value>Settings for capturing.</value>
+    <comment>进行有关截取的设置。</comment>
+  </data>
+  <data name="Option.CommentMisc" xml:space="preserve">
+    <value>Pointer style and other settings.</value>
+    <comment>鼠标样式设置等等。</comment>
+  </data>
+  <data name="Option.CommentScrap" xml:space="preserve">
+    <value>General settings for scraps.</value>
+    <comment>进行参考图的常规设置。</comment>
+  </data>
+  <data name="Option.CommentScrapMenu" xml:space="preserve">
+    <value>Set up the menu shown when a scrap is right-clicked.</value>
+    <comment>设置右键单击参考图时的菜单。</comment>
+  </data>
+  <data name="Option.CommentStyle" xml:space="preserve">
+    <value>Build a style out of individual actions.</value>
+    <comment>创建一个由自动操作组合而成的自动操作。</comment>
+  </data>
+  <data name="Option.EditStyleTitle" xml:space="preserve">
+    <value>Edit "{0}"</value>
+    <comment>{0}的相关编辑</comment>
+  </data>
+  <data name="Option.LanguageAuto" xml:space="preserve">
+    <value>Follow system setting</value>
+    <comment>跟随系统区域设置</comment>
+  </data>
+  <data name="Option.LanguageChineseSimplified" xml:space="preserve">
+    <value>Chinese (Simplified)</value>
+    <comment>简体中文</comment>
+  </data>
+  <data name="Option.LanguageEnglish" xml:space="preserve">
+    <value>English</value>
+    <comment>English</comment>
+  </data>
+  <data name="Option.LinkOfficial" xml:space="preserve">
+    <value>Original version (link is dead)</value>
+    <comment>官方版本（地址已挂）</comment>
+  </data>
+  <data name="Option.LinkOptimized" xml:space="preserve">
+    <value>Optimized build by TravisQc. Version: {0}</value>
+    <comment>优化版本 by TravisQc. Version: {0}</comment>
+  </data>
+  <data name="Option.NewStyleTitle" xml:space="preserve">
+    <value>New style</value>
+    <comment>新建自动操作</comment>
+  </data>
+  <data name="Paint.EraserToolTitle" xml:space="preserve">
+    <value>Eraser</value>
+    <comment>橡皮擦工具</comment>
+  </data>
+  <data name="Paint.LayerName" xml:space="preserve">
+    <value>Layer {0}</value>
+    <comment>层{0}</comment>
+  </data>
+  <data name="Paint.TextLayerName" xml:space="preserve">
+    <value>Text layer</value>
+    <comment>文字层</comment>
+  </data>
+  <data name="Picasa.AccountAndPasswordRequired" xml:space="preserve">
+    <value>Please enter an account and password.</value>
+    <comment>请输入帐号和密码。</comment>
+  </data>
+  <data name="Picasa.AccountRequired" xml:space="preserve">
+    <value>Please enter an account.</value>
+    <comment>请输入帐号。</comment>
+  </data>
+  <data name="Picasa.AlbumCreateFailed" xml:space="preserve">
+    <value>Could not create the album.
+
+* Using this feature requires accepting the Picasa service agreement.
+Sign in at https://picasaweb.google.com/ to review it.</value>
+    <comment>无法创建相册。
+
+※要使用此功能，您需要同意使用Picasa服务协议。
+请登陆 https://picasaweb.google.com/ 详细确认。</comment>
+  </data>
+  <data name="Picasa.ConnectionError" xml:space="preserve">
+    <value>Could not connect.</value>
+    <comment>无法连接。</comment>
+  </data>
+  <data name="Picasa.Forbidden" xml:space="preserve">
+    <value>Access denied.</value>
+    <comment>访问被禁止。</comment>
+  </data>
+  <data name="Picasa.InternalServerError" xml:space="preserve">
+    <value>Internal server error.</value>
+    <comment>内部服务器错误。</comment>
+  </data>
+  <data name="Picasa.LoginFailed" xml:space="preserve">
+    <value>Could not sign in.</value>
+    <comment>无法登录。</comment>
+  </data>
+  <data name="Picasa.LoginFailedGeneric" xml:space="preserve">
+    <value>Sign-in failed.</value>
+    <comment>登录失败。</comment>
+  </data>
+  <data name="Picasa.LoginGroupTitle" xml:space="preserve">
+    <value>Enter your Google account</value>
+    <comment>输入您的谷歌帐户</comment>
+  </data>
+  <data name="Picasa.NoEncoderFound" xml:space="preserve">
+    <value>The image cannot be saved because no usable encoder was found.</value>
+    <comment>因为没找到可以利用的编码器，不能保存图像。</comment>
+  </data>
+  <data name="Picasa.NotFound" xml:space="preserve">
+    <value>The requested data could not be found.</value>
+    <comment>无法找到所需的数据。</comment>
+  </data>
+  <data name="Picasa.NotLoggedIn" xml:space="preserve">
+    <value>You are not signed in to Picasa.</value>
+    <comment>您还没有登录Picasa服务。</comment>
+  </data>
+  <data name="Picasa.ServiceDisabled" xml:space="preserve">
+    <value>The Picasa service is currently unavailable.</value>
+    <comment>Picasa服务当前无法使用。</comment>
+  </data>
+  <data name="Picasa.ServiceUnavailable" xml:space="preserve">
+    <value>The Picasa service is not running.</value>
+    <comment>Picasa服务未启动。</comment>
+  </data>
+  <data name="Picasa.TermsNotAgreed" xml:space="preserve">
+    <value>The terms and conditions were not accepted.</value>
+    <comment>不同意的条款和条件。</comment>
+  </data>
+  <data name="Picasa.UploadFailed" xml:space="preserve">
+    <value>Upload failed.</value>
+    <comment>上传失败。</comment>
+  </data>
+  <data name="Picasa.UploadTitle" xml:space="preserve">
+    <value>Upload to Picasa</value>
+    <comment>上传到Picasa</comment>
+  </data>
+  <data name="Scale.Interpolation.Bicubic" xml:space="preserve">
+    <value>Bicubic</value>
+    <comment>两次立方</comment>
+  </data>
+  <data name="Scale.Interpolation.Bilinear" xml:space="preserve">
+    <value>Bilinear</value>
+    <comment>双线性</comment>
+  </data>
+  <data name="Scale.Interpolation.Default" xml:space="preserve">
+    <value>Default</value>
+    <comment>标准</comment>
+  </data>
+  <data name="Scale.Interpolation.NearestNeighbor" xml:space="preserve">
+    <value>Nearest neighbor</value>
+    <comment>最近邻法</comment>
+  </data>
+  <data name="Scale.Interpolation.Unchanged" xml:space="preserve">
+    <value>Leave unchanged</value>
+    <comment>不要更改</comment>
+  </data>
+  <data name="Style.AllHide.Name" xml:space="preserve">
+    <value>Hide all</value>
+    <comment>全部隐藏</comment>
+  </data>
+  <data name="Style.AllShow.Name" xml:space="preserve">
+    <value>Show all</value>
+    <comment>全部显示</comment>
+  </data>
+  <data name="Style.Capture.Name" xml:space="preserve">
+    <value>New scrap</value>
+    <comment>制作参考图</comment>
+  </data>
+  <data name="Style.Close.Name" xml:space="preserve">
+    <value>Close</value>
+    <comment>关闭</comment>
+  </data>
+  <data name="Style.DustBox.Name" xml:space="preserve">
+    <value>Recycle bin</value>
+    <comment>回收站</comment>
+  </data>
+  <data name="Style.DustErase.Name" xml:space="preserve">
+    <value>Empty recycle bin</value>
+    <comment>清空回收站</comment>
+  </data>
+  <data name="Style.DustScrap.Name" xml:space="preserve">
+    <value>Close all scraps</value>
+    <comment>关闭所有截图</comment>
+  </data>
+  <data name="Style.Option.Name" xml:space="preserve">
+    <value>Options</value>
+    <comment>选项</comment>
+  </data>
+  <data name="Style.Paste.Name" xml:space="preserve">
+    <value>Paste scrap from clipboard</value>
+    <comment>从剪贴板中粘贴截图</comment>
+  </data>
+  <data name="Style.ScrapList.Name" xml:space="preserve">
+    <value>Scrap list</value>
+    <comment>参考图名单</comment>
+  </data>
+  <data name="Style.Separator.Name" xml:space="preserve">
+    <value>[Separator]</value>
+    <comment>[分隔符]</comment>
+  </data>
+  <data name="Style.ShowVersion.Name" xml:space="preserve">
+    <value>About</value>
+    <comment>版本信息</comment>
+  </data>
+  <data name="Style.ShutDown.Name" xml:space="preserve">
+    <value>Exit SETUNA</value>
+    <comment>退出SETUNA</comment>
+  </data>
+  <data name="StyleEdit.HotkeyAssignedTo" xml:space="preserve">
+    <value>"{0}" is assigned.</value>
+    <comment>「{0}」被分配。</comment>
+  </data>
+  <data name="StyleEdit.HotkeyRegisterHint" xml:space="preserve">
+    <value>Press "Add" to use the current assignment.</value>
+    <comment>「登记」，然后按目前的分配方式。</comment>
+  </data>
+  <data name="StyleItem.Close.Description" xml:space="preserve">
+    <value>Close the scrap.
+Later actions are not applied.</value>
+    <comment>关闭参考图。
+之后的自动操作将不被使用。</comment>
+  </data>
+  <data name="StyleItem.Close.DisplayName" xml:space="preserve">
+    <value>Close</value>
+    <comment>关闭</comment>
+  </data>
+  <data name="StyleItem.Compact.Description" xml:space="preserve">
+    <value>Shrink the scrap.
+Later actions are not applied.</value>
+    <comment>将参考图的尺寸收缩。
+之后的自动操作将不被使用。</comment>
+  </data>
+  <data name="StyleItem.Compact.DisplayName" xml:space="preserve">
+    <value>Shrink</value>
+    <comment>收缩</comment>
+  </data>
+  <data name="StyleItem.Copy.Description" xml:space="preserve">
+    <value>Copy the scrap to the clipboard as an image.</value>
+    <comment>将参考图作为图像复制到剪贴板里。</comment>
+  </data>
+  <data name="StyleItem.Copy.DisplayName" xml:space="preserve">
+    <value>Copy to clipboard</value>
+    <comment>复制到剪贴板</comment>
+  </data>
+  <data name="StyleItem.ImageBmp.Description" xml:space="preserve">
+    <value>Save the scrap as a BMP image.</value>
+    <comment>用BMP格式的图像保存参考图。</comment>
+  </data>
+  <data name="StyleItem.ImageBmp.DisplayName" xml:space="preserve">
+    <value>Save as BMP</value>
+    <comment>保存为BMP格式</comment>
+  </data>
+  <data name="StyleItem.ImageJpeg.Description" xml:space="preserve">
+    <value>Save the scrap as a JPEG image.</value>
+    <comment>用JPEG格式的图像保存参考图。</comment>
+  </data>
+  <data name="StyleItem.ImageJpeg.DisplayName" xml:space="preserve">
+    <value>Save as JPEG</value>
+    <comment>保存为JPEG格式</comment>
+  </data>
+  <data name="StyleItem.ImagePng.Description" xml:space="preserve">
+    <value>Save the scrap as a PNG image.</value>
+    <comment>用PNG格式的图像保存参考图。</comment>
+  </data>
+  <data name="StyleItem.ImagePng.DisplayName" xml:space="preserve">
+    <value>Save as PNG</value>
+    <comment>保存为PNG格式</comment>
+  </data>
+  <data name="StyleItem.Margin.Description" xml:space="preserve">
+    <value>Set the scrap's border style.</value>
+    <comment>设置参考图的边框的种类。</comment>
+  </data>
+  <data name="StyleItem.Margin.DisplayName" xml:space="preserve">
+    <value>Border</value>
+    <comment>边框</comment>
+  </data>
+  <data name="StyleItem.Margin.State3D" xml:space="preserve">
+    <value>3D border</value>
+    <comment>立体边框</comment>
+  </data>
+  <data name="StyleItem.Margin.StateSolid" xml:space="preserve">
+    <value>Solid border</value>
+    <comment>单色边框</comment>
+  </data>
+  <data name="StyleItem.Margin.StateWindow" xml:space="preserve">
+    <value>Window</value>
+    <comment>窗口</comment>
+  </data>
+  <data name="StyleItem.Move.Description" xml:space="preserve">
+    <value>Move the scrap up, down, left or right.</value>
+    <comment>上下左右移动参考图。</comment>
+  </data>
+  <data name="StyleItem.Move.DisplayName" xml:space="preserve">
+    <value>Move scrap</value>
+    <comment>参考图的移动</comment>
+  </data>
+  <data name="StyleItem.Move.StateDown" xml:space="preserve">
+    <value>Down: {0}px </value>
+    <comment>下：{0}px </comment>
+  </data>
+  <data name="StyleItem.Move.StateLeft" xml:space="preserve">
+    <value>Left: {0}px </value>
+    <comment>左：{0}px </comment>
+  </data>
+  <data name="StyleItem.Move.StateRight" xml:space="preserve">
+    <value>Right: {0}px </value>
+    <comment>右：{0}px </comment>
+  </data>
+  <data name="StyleItem.Move.StateUp" xml:space="preserve">
+    <value>Up: {0}px </value>
+    <comment>上：{0}px </comment>
+  </data>
+  <data name="StyleItem.Opacity.Description" xml:space="preserve">
+    <value>Make the scrap transparent.</value>
+    <comment>设置不透明的参考图。</comment>
+  </data>
+  <data name="StyleItem.Opacity.DisplayName" xml:space="preserve">
+    <value>Opacity</value>
+    <comment>不透明度</comment>
+  </data>
+  <data name="StyleItem.Paint.Description" xml:space="preserve">
+    <value>Draw directly on the scrap.</value>
+    <comment>可以直接在参考图上绘制。</comment>
+  </data>
+  <data name="StyleItem.Paint.DisplayName" xml:space="preserve">
+    <value>Draw</value>
+    <comment>绘制</comment>
+  </data>
+  <data name="StyleItem.Paste.Description" xml:space="preserve">
+    <value>Use the clipboard image as a scrap.</value>
+    <comment>将剪贴板内的图像作为参考图。</comment>
+  </data>
+  <data name="StyleItem.Paste.DisplayName" xml:space="preserve">
+    <value>Paste from clipboard</value>
+    <comment>从剪贴板粘贴</comment>
+  </data>
+  <data name="StyleItem.PicasaUploader.AlbumComment" xml:space="preserve">
+    <value>Album uploaded with SETUNA.</value>
+    <comment>用SETUNA上传的相册。</comment>
+  </data>
+  <data name="StyleItem.PicasaUploader.Description" xml:space="preserve">
+    <value>Upload the scrap to Picasa Web Albums.</value>
+    <comment>把参考图上传到Picasa网络相册。</comment>
+  </data>
+  <data name="StyleItem.PicasaUploader.DisplayName" xml:space="preserve">
+    <value>Upload to Picasa</value>
+    <comment>上传到Picasa</comment>
+  </data>
+  <data name="StyleItem.Rotate.Description" xml:space="preserve">
+    <value>Rotate and flip the scrap.</value>
+    <comment>旋转和翻转参考图。</comment>
+  </data>
+  <data name="StyleItem.Rotate.DisplayName" xml:space="preserve">
+    <value>Rotate and flip</value>
+    <comment>旋转和翻转</comment>
+  </data>
+  <data name="StyleItem.Scale.Description" xml:space="preserve">
+    <value>Shrink or enlarge the scrap.</value>
+    <comment>用于缩小/扩大参考图。</comment>
+  </data>
+  <data name="StyleItem.Scale.DisplayName" xml:space="preserve">
+    <value>Scale scrap</value>
+    <comment>缩放参考图</comment>
+  </data>
+  <data name="StyleItem.Scale.StateEnlarge" xml:space="preserve">
+    <value>{0}% larger</value>
+    <comment>{0}% 扩大</comment>
+  </data>
+  <data name="StyleItem.Scale.StateFixed" xml:space="preserve">
+    <value>{0}% fixed</value>
+    <comment>{0}% 固定</comment>
+  </data>
+  <data name="StyleItem.Scale.StateOriginal" xml:space="preserve">
+    <value>Original size</value>
+    <comment>原始大小</comment>
+  </data>
+  <data name="StyleItem.Scale.StateShrink" xml:space="preserve">
+    <value>{0}% smaller</value>
+    <comment>{0}% 缩小</comment>
+  </data>
+  <data name="StyleItem.Timer.Description" xml:space="preserve">
+    <value>Pause for the given time.</value>
+    <comment>指定的时间内，暂停。</comment>
+  </data>
+  <data name="StyleItem.Timer.DisplayName" xml:space="preserve">
+    <value>Timer</value>
+    <comment>定时器</comment>
+  </data>
+  <data name="StyleItem.ToneReverse.Description" xml:space="preserve">
+    <value>Invert the scrap's tones.</value>
+    <comment>进行灰度等级翻转。</comment>
+  </data>
+  <data name="StyleItem.ToneReverse.DisplayName" xml:space="preserve">
+    <value>Invert tones</value>
+    <comment>灰度等级翻转</comment>
+  </data>
+  <data name="StyleItem.Trim.Description" xml:space="preserve">
+    <value>Cut away the parts you don't need.</value>
+    <comment>您可以删除不需要的部分。</comment>
+  </data>
+  <data name="StyleItem.Trim.DisplayName" xml:space="preserve">
+    <value>Trim</value>
+    <comment>修剪</comment>
+  </data>
+  <data name="StyleItem.Window.Description" xml:space="preserve">
+    <value>Give the scrap a window frame.</value>
+    <comment>为参考图加上窗口边框。</comment>
+  </data>
+  <data name="StyleItem.Window.DisplayName" xml:space="preserve">
+    <value>Add window frame</value>
+    <comment>窗口化</comment>
+  </data>
+</root>

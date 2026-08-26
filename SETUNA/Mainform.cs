@@ -10,6 +10,7 @@ using com.clearunit;
 using SETUNA.Main;
 using SETUNA.Main.Common;
 using SETUNA.Main.KeyItems;
+using SETUNA.Main.Localization;
 using SETUNA.Main.Option;
 using SETUNA.Main.Style;
 using SETUNA.Main.Window;
@@ -43,6 +44,22 @@ namespace SETUNA
             SetSubMenu();
 
             Text = $"SETUNA {Application.ProductVersion}";
+        }
+
+        /// <summary>
+        /// 主窗口的文字有两处不在控件树里：由代码拼接的标题，以及每次由
+        /// <see cref="CPreStyle"/> 对象重建的托盘菜单。基类的应用器看不到它们。
+        /// </summary>
+        protected override void ApplyLanguage()
+        {
+            base.ApplyLanguage();
+
+            Text = $"SETUNA {Application.ProductVersion}";
+
+            // 托盘菜单本来就是清空后由预设操作对象重新构建的，那些对象的名称已改为
+            // 按键查表，所以重建一次就跟上了当前语言。参考图右键菜单同理。
+            SetSubMenu();
+            SetScrapSubMenu();
         }
 
         // Token: 0x17000055 RID: 85
@@ -110,6 +127,49 @@ namespace SETUNA
             setunaIconMenu.Items.Add(new COptionStyle().GetToolStrip());
             setunaIconMenu.Items.Add(new ToolStripSeparator());
             setunaIconMenu.Items.Add(new CShutDownStyle().GetToolStrip());
+        }
+
+        /// <summary>
+        /// 重建参考图右键菜单。
+        /// <para>
+        /// 从 <see cref="OptionApply"/> 里提出来，是因为语言变更也需要重建：菜单里混着
+        /// 用户自定义的自动操作（名称是用户数据，原样使用）和预设操作（名称按键查表），
+        /// 后者只有重建一次才会跟上新语言。
+        /// </para>
+        /// </summary>
+        private void SetScrapSubMenu()
+        {
+            // ApplyLanguage() 在 Load 事件之前跑，那时配置还没读进来，
+            // SubMenuStyles/Styles 可能还是 null。菜单随后会由 OptionApply() 建好。
+            if (optSetuna?.Scrap?.SubMenuStyles == null || optSetuna.Styles == null)
+            {
+                return;
+            }
+
+            subMenu.Items.Clear();
+            foreach (var num in optSetuna.Scrap.SubMenuStyles)
+            {
+                if (num >= 0)
+                {
+                    using (var enumerator2 = optSetuna.Styles.GetEnumerator())
+                    {
+                        while (enumerator2.MoveNext())
+                        {
+                            var cstyle = enumerator2.Current;
+                            if (cstyle.StyleID == num)
+                            {
+                                subMenu.Items.Add(cstyle.GetToolStrip(scrapBook));
+                            }
+                        }
+                        continue;
+                    }
+                }
+                var preStyle = CPreStyles.GetPreStyle(num);
+                if (preStyle != null)
+                {
+                    subMenu.Items.Add(preStyle.GetToolStrip(scrapBook));
+                }
+            }
         }
 
         // Token: 0x060001F6 RID: 502 RVA: 0x0000A740 File Offset: 0x00008940
@@ -276,30 +336,8 @@ namespace SETUNA
                 _hotKeysInitialized = true;
                 RegisterHotKeys(true);
 
-                subMenu.Items.Clear();
-                foreach (var num in optSetuna.Scrap.SubMenuStyles)
-                {
-                    if (num >= 0)
-                    {
-                        using (var enumerator2 = optSetuna.Styles.GetEnumerator())
-                        {
-                            while (enumerator2.MoveNext())
-                            {
-                                var cstyle = enumerator2.Current;
-                                if (cstyle.StyleID == num)
-                                {
-                                    subMenu.Items.Add(cstyle.GetToolStrip(scrapBook));
-                                }
-                            }
-                            continue;
-                        }
-                    }
-                    var preStyle = CPreStyles.GetPreStyle(num);
-                    if (preStyle != null)
-                    {
-                        subMenu.Items.Add(preStyle.GetToolStrip(scrapBook));
-                    }
-                }
+                SetScrapSubMenu();
+
                 if (optSetuna.Setuna.ClickCapture)
                 {
                     if (frmClickCapture == null)
@@ -433,7 +471,7 @@ namespace SETUNA
             }
             catch
             {
-                MessageBox.Show("无法保存配置文件。", "SETUNA2", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(Lang.T("Message.ConfigSaveFailed"), "SETUNA2", MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
         }
 
@@ -505,7 +543,14 @@ namespace SETUNA
             catch
             {
                 optSetuna = SetunaOption.GetDefaultOption();
-                MessageBox.Show("无法读取配置文件。\n使用默认设置。", "SETUNA2", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(Lang.T("Message.ConfigLoadFailed"), "SETUNA2", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            }
+            finally
+            {
+                // 语言在这里生效，而不是在 Program.Main：那样得把配置文件读两遍。
+                // 读失败走默认设置时 Language 为空，等同「跟随系统」，与 Lang 的初值
+                // 一致，因此这条路径也不会留下错误的语言。
+                Lang.SetLanguage(optSetuna.Setuna.Language);
             }
         }
 
@@ -825,7 +870,7 @@ namespace SETUNA
         {
             if (Application.ProductVersion != version)
             {
-                MessageBox.Show("SETUNA已经运行在不同的版本。", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                MessageBox.Show(Lang.T("Message.OtherVersionRunning"), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return;
             }
             if (args.Length > 0)

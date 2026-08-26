@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -68,13 +69,13 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x06000378 RID: 888 RVA: 0x00015E2A File Offset: 0x0001402A
         public override string GetDisplayName()
         {
-            return "参考图的移动";
+            return Lang.T("StyleItem.Move.DisplayName");
         }
 
         // Token: 0x06000379 RID: 889 RVA: 0x00015E31 File Offset: 0x00014031
         public override string GetDescription()
         {
-            return "上下左右移动参考图。";
+            return Lang.T("StyleItem.Move.Description");
         }
 
         // Token: 0x0600037A RID: 890 RVA: 0x00015E38 File Offset: 0x00014038
@@ -106,50 +107,24 @@ namespace SETUNA.Main.StyleItems
         {
             get
             {
+                // 每个方向是「标签 + 像素值 + 单位」，整段才是可翻译单位，所以用带
+                // 位置占位符的模板而不是拼接：英语里数字和标签的顺序不一定和中文相同。
                 var text = "";
                 if (_top < 0)
                 {
-                    object obj = text;
-                    text = string.Concat(new object[]
-                    {
-                        obj,
-                        "上：",
-                        Math.Abs(_top),
-                        "px "
-                    });
+                    text += Lang.T("StyleItem.Move.StateUp", Math.Abs(_top));
                 }
                 if (_top > 0)
                 {
-                    object obj2 = text;
-                    text = string.Concat(new object[]
-                    {
-                        obj2,
-                        "下：",
-                        Math.Abs(_top),
-                        "px "
-                    });
+                    text += Lang.T("StyleItem.Move.StateDown", Math.Abs(_top));
                 }
                 if (_left < 0)
                 {
-                    object obj3 = text;
-                    text = string.Concat(new object[]
-                    {
-                        obj3,
-                        "左：",
-                        Math.Abs(_left),
-                        "px "
-                    });
+                    text += Lang.T("StyleItem.Move.StateLeft", Math.Abs(_left));
                 }
                 if (_left > 0)
                 {
-                    object obj4 = text;
-                    text = string.Concat(new object[]
-                    {
-                        obj4,
-                        "右：",
-                        Math.Abs(_left),
-                        "px "
-                    });
+                    text += Lang.T("StyleItem.Move.StateRight", Math.Abs(_left));
                 }
                 return text;
             }

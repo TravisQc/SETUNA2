@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.Startup
 {
@@ -20,7 +21,7 @@ namespace SETUNA.Main.Startup
                     {
                         // 打开 Run 键失败（权限或策略）。按失败处理，
                         // 不再靠 catch 兜住一个空引用异常。
-                        ShowFailure("无法访问开机启动项的注册表位置。");
+                        ShowFailure(Lang.T("Message.AutoStartupRegistryUnavailable"));
                         return false;
                     }
 
@@ -43,7 +44,7 @@ namespace SETUNA.Main.Startup
             {
                 // 记录细节给开发者，呈现给用户的是可理解的说明而不是堆栈跟踪。
                 Console.WriteLine("AutoStartup.Set failed: " + ex);
-                ShowFailure(enabled ? "无法设置开机启动。" : "无法取消开机启动。");
+                ShowFailure(Lang.T(enabled ? "Message.AutoStartupEnableFailed" : "Message.AutoStartupDisableFailed"));
                 return false;
             }
         }

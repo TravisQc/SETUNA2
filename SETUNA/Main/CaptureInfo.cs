@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main
 {
@@ -99,11 +100,11 @@ namespace SETUNA.Main
             }
             p.Y += 40;
             e.Graphics.FillRectangle(new SolidBrush(colMouse), new Rectangle(p.X, p.Y, 30, 30));
-            e.Graphics.DrawString("红：" + colMouse.R.ToString(), font, new SolidBrush(Color.White), p.X + 35, p.Y);
+            e.Graphics.DrawString(Lang.T("Capture.Red") + colMouse.R.ToString(), font, new SolidBrush(Color.White), p.X + 35, p.Y);
             p.Y += (int)font.GetHeight() + 3;
-            e.Graphics.DrawString("绿：" + colMouse.G.ToString(), font, new SolidBrush(Color.White), p.X + 35, p.Y);
+            e.Graphics.DrawString(Lang.T("Capture.Green") + colMouse.G.ToString(), font, new SolidBrush(Color.White), p.X + 35, p.Y);
             p.Y += (int)font.GetHeight() + 3;
-            e.Graphics.DrawString("蓝：" + colMouse.B.ToString(), font, new SolidBrush(Color.White), p.X + 35, p.Y);
+            e.Graphics.DrawString(Lang.T("Capture.Blue") + colMouse.B.ToString(), font, new SolidBrush(Color.White), p.X + 35, p.Y);
             p.Y += (int)font.GetHeight() + 3;
             e.Graphics.DrawString("#:" + colMouse.R.ToString("X2") + colMouse.G.ToString("X2") + colMouse.B.ToString("X2"), font, new SolidBrush(Color.White), p.X + 35, p.Y);
         }

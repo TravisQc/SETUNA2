@@ -68,9 +68,9 @@
             // 
             this.cmbInterpolation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbInterpolation.FormattingEnabled = true;
-            this.cmbInterpolation.Location = new System.Drawing.Point(107, 124);
+            this.cmbInterpolation.Location = new System.Drawing.Point(124, 124);
             this.cmbInterpolation.Name = "cmbInterpolation";
-            this.cmbInterpolation.Size = new System.Drawing.Size(177, 20);
+            this.cmbInterpolation.Size = new System.Drawing.Size(160, 20);
             this.cmbInterpolation.TabIndex = 10;
             // 
             // label3
@@ -99,11 +99,11 @@
             // barRelative
             // 
             this.barRelative.AutoSize = false;
-            this.barRelative.Location = new System.Drawing.Point(107, 80);
+            this.barRelative.Location = new System.Drawing.Point(121, 80);
             this.barRelative.Maximum = 190;
             this.barRelative.Minimum = -190;
             this.barRelative.Name = "barRelative";
-            this.barRelative.Size = new System.Drawing.Size(123, 20);
+            this.barRelative.Size = new System.Drawing.Size(109, 20);
             this.barRelative.TabIndex = 6;
             this.barRelative.TickFrequency = 20;
             this.barRelative.Scroll += new System.EventHandler(this.barFixed_Scroll);
@@ -120,11 +120,11 @@
             // barFixed
             // 
             this.barFixed.AutoSize = false;
-            this.barFixed.Location = new System.Drawing.Point(107, 50);
+            this.barFixed.Location = new System.Drawing.Point(121, 50);
             this.barFixed.Maximum = 200;
             this.barFixed.Minimum = 10;
             this.barFixed.Name = "barFixed";
-            this.barFixed.Size = new System.Drawing.Size(123, 20);
+            this.barFixed.Size = new System.Drawing.Size(109, 20);
             this.barFixed.TabIndex = 2;
             this.barFixed.TickFrequency = 10;
             this.barFixed.Value = 100;

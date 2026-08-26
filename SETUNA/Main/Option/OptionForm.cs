@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using SETUNA.Main.KeyItems;
+using SETUNA.Main.Localization;
 using SETUNA.Main.Style;
 
 namespace SETUNA.Main.Option
@@ -18,17 +19,91 @@ namespace SETUNA.Main.Option
             _pageStyle = pageStyle;
             _pageScrapMenu = pageScrapMenu;
             _so = opt;
+            BuildLanguageItems();
             LoadSetunaOption();
 
-            linkLabel1.Text = "官方版本（地址已挂）";
-            linkLabel1.Links.Add(0, linkLabel1.Text.Length, URLUtils.OriginURL);
+            ApplyAboutLinks();
             linkLabel1.LinkClicked += LinkLabel1_LinkClicked;
+            linkLabel2.LinkClicked += LinkLabel2_LinkClicked;
+        }
+
+        /// <summary>
+        /// 设置「信息」区两个链接的文字与热区。
+        /// <para>
+        /// 链接热区是按文字长度算的，所以换语言后必须连带重建，不能只改 <c>Text</c>：
+        /// 否则热区会停留在旧长度上，短译文点不到、长译文点空。
+        /// </para>
+        /// </summary>
+        private void ApplyAboutLinks()
+        {
+            linkLabel1.Text = Lang.T("Option.LinkOfficial");
+            linkLabel1.Links.Clear();
+            linkLabel1.Links.Add(0, linkLabel1.Text.Length, URLUtils.OriginURL);
             toolTip1.SetToolTip(linkLabel1, URLUtils.OriginURL);
 
-            linkLabel2.Text = $"优化版本 by TravisQc. Version: {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}";
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            linkLabel2.Text = Lang.T("Option.LinkOptimized", version);
+            linkLabel2.Links.Clear();
             linkLabel2.Links.Add(0, linkLabel2.Text.Length, URLUtils.NewURL);
-            linkLabel2.LinkClicked += LinkLabel2_LinkClicked;
             toolTip1.SetToolTip(linkLabel2, URLUtils.NewURL);
+        }
+
+        /// <summary>
+        /// 选项对话框里由代码设置的文字：两个链接，以及语言下拉框自己的条目。
+        /// 悬停说明（<c>lblComment</c>）不在这里重设——它只在鼠标移入时赋值、移出时清空，
+        /// 没有需要跟着语言刷新的持久状态。
+        /// </summary>
+        protected override void ApplyLanguage()
+        {
+            base.ApplyLanguage();
+
+            ApplyAboutLinks();
+            BuildLanguageItems();
+        }
+
+        /// <summary>
+        /// 与 <see cref="cmbLanguage"/> 各条目一一对应的语言，顺序即条目顺序。
+        /// 「跟随系统」放第一位：它是默认值，也是大多数用户该选的那个。
+        /// </summary>
+        private static readonly AppLanguage[] LanguageChoices =
+        {
+            AppLanguage.Auto,
+            AppLanguage.ChineseSimplified,
+            AppLanguage.English,
+        };
+
+        /// <summary>
+        /// 用当前语言重建语言下拉框的条目，并保留原有选中项。
+        /// <para>
+        /// 「跟随系统」这一项显示的是它本身，不是推断出来的具体语言：配置里存的就是
+        /// 「跟随系统」这个选择，界面上也必须照实显示，否则用户换机器后会以为自己
+        /// 选的是某个固定语言。
+        /// </para>
+        /// </summary>
+        private void BuildLanguageItems()
+        {
+            var selected = cmbLanguage.SelectedIndex;
+
+            cmbLanguage.BeginUpdate();
+            cmbLanguage.Items.Clear();
+            cmbLanguage.Items.Add(Lang.T("Option.LanguageAuto"));
+            cmbLanguage.Items.Add(Lang.T("Option.LanguageChineseSimplified"));
+            cmbLanguage.Items.Add(Lang.T("Option.LanguageEnglish"));
+            cmbLanguage.EndUpdate();
+
+            cmbLanguage.SelectedIndex = selected >= 0 && selected < cmbLanguage.Items.Count
+                ? selected
+                : Array.IndexOf(LanguageChoices, Lang.Selected);
+        }
+
+        /// <summary>下拉框当前选中的语言。</summary>
+        private AppLanguage SelectedLanguage
+        {
+            get
+            {
+                var index = cmbLanguage.SelectedIndex;
+                return index >= 0 && index < LanguageChoices.Length ? LanguageChoices[index] : AppLanguage.Auto;
+            }
         }
 
         private void LinkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -81,6 +156,10 @@ namespace SETUNA.Main.Option
             pictureBox_fullscreenCursor.BackColor = _so.Setuna.FullscreenCursorLineColor;
 
             checkBox_transparent.Checked = _so.Setuna.BackgroundTransparentEnabled;
+
+            // 显示已保存的选择。无法识别的值解析为 Auto，与启动时的处理一致。
+            var language = AppLanguages.Parse(_so.Setuna.Language);
+            cmbLanguage.SelectedIndex = Math.Max(0, Array.IndexOf(LanguageChoices, language));
         }
 
         // Token: 0x060002D5 RID: 725 RVA: 0x00013908 File Offset: 0x00011B08
@@ -132,6 +211,7 @@ namespace SETUNA.Main.Option
             _so.Setuna.ClickCapture1 = chkCC1.Checked;
             _so.Setuna.ClickCapture2 = chkCC2.Checked;
             _so.Setuna.ClickCapture3 = chkCC3.Checked;
+            _so.Setuna.Language = AppLanguages.ToConfigValue(SelectedLanguage);
             _so.Styles.Clear();
             for (var i = 0; i < listStyles.Items.Count; i++)
             {
@@ -352,7 +432,7 @@ namespace SETUNA.Main.Option
                 var selectedIndex = listStyles.SelectedIndex;
                 var styleEditForm = new StyleEditForm((CStyle)listStyles.SelectedItem, keybook)
                 {
-                    Text = ((CStyle)listStyles.SelectedItem).StyleName + "的相关编辑"
+                    Text = Lang.T("Option.EditStyleTitle", ((CStyle)listStyles.SelectedItem).StyleName)
                 };
                 var dialogResult = styleEditForm.ShowDialog();
                 if (dialogResult == DialogResult.OK)
@@ -402,7 +482,7 @@ namespace SETUNA.Main.Option
             var styleEditForm = styleEditForm2 = new StyleEditForm(cstyle, keybook);
             try
             {
-                styleEditForm.Text = "新建自动操作";
+                styleEditForm.Text = Lang.T("Option.NewStyleTitle");
                 var dialogResult = styleEditForm.ShowDialog();
                 if (dialogResult == DialogResult.OK)
                 {
@@ -431,7 +511,7 @@ namespace SETUNA.Main.Option
                 cstyle.ClearKey();
                 var dialogResult = new StyleEditForm(cstyle, keybook)
                 {
-                    Text = "新建自动操作"
+                    Text = Lang.T("Option.NewStyleTitle")
                 }.ShowDialog();
                 if (dialogResult == DialogResult.OK)
                 {
@@ -490,6 +570,11 @@ namespace SETUNA.Main.Option
         private void btnOK_Click(object sender, EventArgs e)
         {
             WriteSetunaOption();
+
+            // 立即生效：本窗体即将关闭，但主窗口、托盘菜单和所有已打开的
+            // 窗口会通过 Lang.LanguageChanged 当场刷新。实际语言未变时不会触发事件。
+            Lang.SetLanguage(SelectedLanguage);
+
             base.DialogResult = DialogResult.OK;
             base.Close();
         }
@@ -647,7 +732,7 @@ namespace SETUNA.Main.Option
         // Token: 0x060002F7 RID: 759 RVA: 0x00014A6C File Offset: 0x00012C6C
         private void btnInitialize_Click(object sender, EventArgs e)
         {
-            var dialogResult = MessageBox.Show("进行设置内容的初始化。", Application.ProductName, MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+            var dialogResult = MessageBox.Show(Lang.T("Message.ConfirmResetSettings"), Application.ProductName, MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
             if (dialogResult == DialogResult.OK)
             {
                 _so = SetunaOption.GetDefaultOption();
@@ -704,31 +789,31 @@ namespace SETUNA.Main.Option
         // Token: 0x06000300 RID: 768 RVA: 0x00014B37 File Offset: 0x00012D37
         private void lblMenuAll_MouseEnter(object sender, EventArgs e)
         {
-            lblComment.Text = "SETUNA常规设置。";
+            lblComment.Text = Lang.T("Option.CommentAll");
         }
 
         // Token: 0x06000301 RID: 769 RVA: 0x00014B49 File Offset: 0x00012D49
         private void lblMenuCapture_MouseEnter(object sender, EventArgs e)
         {
-            lblComment.Text = "进行有关截取的设置。";
+            lblComment.Text = Lang.T("Option.CommentCapture");
         }
 
         // Token: 0x06000302 RID: 770 RVA: 0x00014B5B File Offset: 0x00012D5B
         private void lblMenuScrap_MouseEnter(object sender, EventArgs e)
         {
-            lblComment.Text = "进行参考图的常规设置。";
+            lblComment.Text = Lang.T("Option.CommentScrap");
         }
 
         // Token: 0x06000303 RID: 771 RVA: 0x00014B6D File Offset: 0x00012D6D
         private void lblMenuStyle_MouseEnter(object sender, EventArgs e)
         {
-            lblComment.Text = "创建一个由自动操作组合而成的自动操作。";
+            lblComment.Text = Lang.T("Option.CommentStyle");
         }
 
         // Token: 0x06000304 RID: 772 RVA: 0x00014B7F File Offset: 0x00012D7F
         private void lblMenuMenu_MouseEnter(object sender, EventArgs e)
         {
-            lblComment.Text = "设置右键单击参考图时的菜单。";
+            lblComment.Text = Lang.T("Option.CommentScrapMenu");
         }
 
         // Token: 0x06000305 RID: 773 RVA: 0x00014B91 File Offset: 0x00012D91
@@ -801,7 +886,7 @@ namespace SETUNA.Main.Option
 
         private void lblMenuMisc_MouseEnter(object sender, EventArgs e)
         {
-            lblComment.Text = "鼠标样式设置等等。";
+            lblComment.Text = Lang.T("Option.CommentMisc");
         }
 
         private void lblMenuMisc_MouseLeave(object sender, EventArgs e)

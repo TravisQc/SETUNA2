@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using com.clearunit;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -161,22 +162,22 @@ namespace SETUNA.Main.StyleItems
                         case PicasaLoginError.CaptchaRequired:
                         case PicasaLoginError.AccountDeleted:
                         case PicasaLoginError.AccountDisabled:
-                            _error = "无法登录。";
+                            _error = Lang.T("Picasa.LoginFailed");
                             goto IL_119;
                         case PicasaLoginError.TermsNotAgreed:
-                            _error = "不同意的条款和条件。";
+                            _error = Lang.T("Picasa.TermsNotAgreed");
                             goto IL_119;
                         case PicasaLoginError.ServiceDisabled:
-                            _error = "Picasa服务当前无法使用。";
+                            _error = Lang.T("Picasa.ServiceDisabled");
                             goto IL_119;
                         case PicasaLoginError.ServiceUnavailable:
-                            _error = "Picasa服务未启动。";
+                            _error = Lang.T("Picasa.ServiceUnavailable");
                             goto IL_119;
                         case PicasaLoginError.ConnectionError:
-                            _error = "无法连接。";
+                            _error = Lang.T("Picasa.ConnectionError");
                             goto IL_119;
                     }
-                    _error = "登录失败。";
+                    _error = Lang.T("Picasa.LoginFailedGeneric");
                 IL_119:
                     e.Cancel = true;
                 }
@@ -192,7 +193,7 @@ namespace SETUNA.Main.StyleItems
                     backgroundWorker1.ReportProgress(30);
                     if (text2.Length == 0)
                     {
-                        _error = "无法创建相册。\n\n※要使用此功能，您需要同意使用Picasa服务协议。\n请登陆 https://picasaweb.google.com/ 详细确认。";
+                        _error = Lang.T("Picasa.AlbumCreateFailed");
                         e.Cancel = true;
                     }
                     else
@@ -205,19 +206,19 @@ namespace SETUNA.Main.StyleItems
                                 case PicasaUploadError.BadRequest:
                                 case PicasaUploadError.UnAuthorized:
                                 case PicasaUploadError.Conflict:
-                                    _error = "上传失败。";
+                                    _error = Lang.T("Picasa.UploadFailed");
                                     break;
                                 case PicasaUploadError.Forbidden:
-                                    _error = "访问被禁止。";
+                                    _error = Lang.T("Picasa.Forbidden");
                                     break;
                                 case PicasaUploadError.NotFound:
-                                    _error = "无法找到所需的数据。";
+                                    _error = Lang.T("Picasa.NotFound");
                                     break;
                                 case PicasaUploadError.InternalServerError:
-                                    _error = "内部服务器错误。";
+                                    _error = Lang.T("Picasa.InternalServerError");
                                     break;
                                 default:
-                                    _error = "上传失败。";
+                                    _error = Lang.T("Picasa.UploadFailed");
                                     break;
                             }
                             e.Cancel = true;
@@ -251,7 +252,7 @@ namespace SETUNA.Main.StyleItems
         {
             if (e.Cancelled)
             {
-                MessageBox.Show(this, _error, "上传到Picasa");
+                MessageBox.Show(this, _error, Lang.T("Picasa.UploadTitle"));
             }
             base.Close();
         }
@@ -271,7 +272,7 @@ namespace SETUNA.Main.StyleItems
             }
             if (imageCodecInfo == null)
             {
-                MessageBox.Show("因为没找到可以利用的编码器，不能保存图像。", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(Lang.T("Picasa.NoEncoderFound"), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
             return imageCodecInfo;
         }
@@ -294,8 +295,8 @@ namespace SETUNA.Main.StyleItems
                 {
                     loginInput.ID = _strID;
                     loginInput.Pass = _strPass;
-                    loginInput.GroupTitle = "输入您的谷歌帐户";
-                    loginInput.Text = "上传到Picasa";
+                    loginInput.GroupTitle = Lang.T("Picasa.LoginGroupTitle");
+                    loginInput.Text = Lang.T("Picasa.UploadTitle");
                     loginInput.TopMost = true;
                     loginInput.StartPosition = FormStartPosition.CenterParent;
                     if (loginInput.ShowDialog() != DialogResult.OK)

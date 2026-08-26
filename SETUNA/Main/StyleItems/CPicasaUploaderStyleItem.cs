@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -24,7 +25,7 @@ namespace SETUNA.Main.StyleItems
         // (set) Token: 0x0600048E RID: 1166 RVA: 0x0001D91E File Offset: 0x0001BB1E
         public string AlbumComment
         {
-            get => "用SETUNA上传的相册。";
+            get => Lang.T("StyleItem.PicasaUploader.AlbumComment");
             set
             {
             }
@@ -104,13 +105,13 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x0600049A RID: 1178 RVA: 0x0001DA35 File Offset: 0x0001BC35
         public override string GetDisplayName()
         {
-            return "上传到Picasa";
+            return Lang.T("StyleItem.PicasaUploader.DisplayName");
         }
 
         // Token: 0x0600049B RID: 1179 RVA: 0x0001DA3C File Offset: 0x0001BC3C
         public override string GetDescription()
         {
-            return "把参考图上传到Picasa网络相册。";
+            return Lang.T("StyleItem.PicasaUploader.Description");
         }
 
         // Token: 0x0600049C RID: 1180 RVA: 0x0001DA43 File Offset: 0x0001BC43

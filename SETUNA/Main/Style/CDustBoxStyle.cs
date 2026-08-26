@@ -1,5 +1,7 @@
 ﻿using System.Windows.Forms;
 
+using SETUNA.Main.Localization;
+
 namespace SETUNA.Main.Style
 {
     // Token: 0x02000048 RID: 72
@@ -9,7 +11,7 @@ namespace SETUNA.Main.Style
         public CDustBoxStyle()
         {
             _styleid = -7;
-            _stylename = "回收站";
+            _stylename = Lang.T("Style.DustBox.Name");
         }
 
         // Token: 0x060002BD RID: 701 RVA: 0x0000F512 File Offset: 0x0000D712

@@ -28,12 +28,12 @@
             // 
             // cmdOK
             // 
-            this.cmdOK.Location = new System.Drawing.Point(237, 177);
+            this.cmdOK.Location = new System.Drawing.Point(261, 177);
             // 
             // cmdCancel
             // 
             this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdCancel.Location = new System.Drawing.Point(311, 177);
+            this.cmdCancel.Location = new System.Drawing.Point(335, 177);
             // 
             // groupBox1
             // 
@@ -48,7 +48,7 @@
             this.groupBox1.Controls.Add(this.numOpacity);
             this.groupBox1.Location = new System.Drawing.Point(8, 8);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(373, 164);
+            this.groupBox1.Size = new System.Drawing.Size(397, 164);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设置";
@@ -56,7 +56,7 @@
             // rdoDashed
             // 
             this.rdoDashed.AutoSize = true;
-            this.rdoDashed.Location = new System.Drawing.Point(157, 100);
+            this.rdoDashed.Location = new System.Drawing.Point(176, 100);
             this.rdoDashed.Name = "rdoDashed";
             this.rdoDashed.Size = new System.Drawing.Size(47, 16);
             this.rdoDashed.TabIndex = 14;
@@ -67,7 +67,7 @@
             // rdoSolid
             // 
             this.rdoSolid.AutoSize = true;
-            this.rdoSolid.Location = new System.Drawing.Point(104, 100);
+            this.rdoSolid.Location = new System.Drawing.Point(116, 100);
             this.rdoSolid.Name = "rdoSolid";
             this.rdoSolid.Size = new System.Drawing.Size(47, 16);
             this.rdoSolid.TabIndex = 13;
@@ -80,7 +80,7 @@
             // 
             this.picLineColor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.picLineColor.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picLineColor.Location = new System.Drawing.Point(62, 98);
+            this.picLineColor.Location = new System.Drawing.Point(77, 98);
             this.picLineColor.Name = "picLineColor";
             this.picLineColor.Size = new System.Drawing.Size(32, 19);
             this.picLineColor.TabIndex = 12;
@@ -99,7 +99,7 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.picPreview);
-            this.groupBox2.Location = new System.Drawing.Point(226, 18);
+            this.groupBox2.Location = new System.Drawing.Point(250, 18);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(138, 138);
             this.groupBox2.TabIndex = 9;
@@ -161,7 +161,7 @@
             // CompactStyleItemPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.ClientSize = new System.Drawing.Size(389, 209);
+            this.ClientSize = new System.Drawing.Size(413, 209);
             this.Controls.Add(this.groupBox1);
             this.DoubleBuffered = true;
             this.Name = "CompactStyleItemPanel";

@@ -33,6 +33,8 @@
             this.checkBox_autoStartup = new System.Windows.Forms.CheckBox();
             this.checkBox_topMost = new System.Windows.Forms.CheckBox();
             this.chkSplash = new System.Windows.Forms.CheckBox();
+            this.lblLanguage = new System.Windows.Forms.Label();
+            this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.chkDustBox = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
@@ -278,7 +280,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(21, 744);
+            this.button2.Location = new System.Drawing.Point(21, 770);
             this.button2.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(456, 66);
@@ -291,7 +293,7 @@
             // 
             this.groupBox13.Controls.Add(this.linkLabel2);
             this.groupBox13.Controls.Add(this.linkLabel1);
-            this.groupBox13.Location = new System.Drawing.Point(21, 584);
+            this.groupBox13.Location = new System.Drawing.Point(21, 630);
             this.groupBox13.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.groupBox13.Name = "groupBox13";
             this.groupBox13.Padding = new System.Windows.Forms.Padding(8, 6, 8, 6);
@@ -326,6 +328,8 @@
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this.lblLanguage);
+            this.groupBox7.Controls.Add(this.cmbLanguage);
             this.groupBox7.Controls.Add(this.checkBox_autoStartup);
             this.groupBox7.Controls.Add(this.checkBox_topMost);
             this.groupBox7.Controls.Add(this.chkSplash);
@@ -333,7 +337,7 @@
             this.groupBox7.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Padding = new System.Windows.Forms.Padding(8, 6, 8, 6);
-            this.groupBox7.Size = new System.Drawing.Size(1058, 126);
+            this.groupBox7.Size = new System.Drawing.Size(1058, 182);
             this.groupBox7.TabIndex = 10;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "其他";
@@ -341,11 +345,11 @@
             // checkBox_autoStartup
             // 
             this.checkBox_autoStartup.AutoSize = true;
-            this.checkBox_autoStartup.Location = new System.Drawing.Point(789, 54);
+            this.checkBox_autoStartup.Location = new System.Drawing.Point(680, 104);
             this.checkBox_autoStartup.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.checkBox_autoStartup.Name = "checkBox_autoStartup";
             this.checkBox_autoStartup.Size = new System.Drawing.Size(201, 34);
-            this.checkBox_autoStartup.TabIndex = 9;
+            this.checkBox_autoStartup.TabIndex = 13;
             this.checkBox_autoStartup.Text = "开机自启动";
             this.checkBox_autoStartup.UseVisualStyleBackColor = true;
             // 
@@ -371,6 +375,26 @@
             this.chkSplash.Text = "显示启动界面";
             this.toolTip1.SetToolTip(this.chkSplash, "将在启动SETUNA时的几秒钟内显示标志。");
             this.chkSplash.UseVisualStyleBackColor = true;
+            // 
+            // lblLanguage
+            // 
+            this.lblLanguage.AutoSize = true;
+            this.lblLanguage.Location = new System.Drawing.Point(39, 108);
+            this.lblLanguage.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
+            this.lblLanguage.Name = "lblLanguage";
+            this.lblLanguage.Size = new System.Drawing.Size(90, 30);
+            this.lblLanguage.TabIndex = 11;
+            this.lblLanguage.Text = "语言：";
+            // 
+            // cmbLanguage
+            // 
+            this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLanguage.FormattingEnabled = true;
+            this.cmbLanguage.Location = new System.Drawing.Point(210, 102);
+            this.cmbLanguage.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
+            this.cmbLanguage.Name = "cmbLanguage";
+            this.cmbLanguage.Size = new System.Drawing.Size(430, 38);
+            this.cmbLanguage.TabIndex = 12;
             // 
             // groupBox5
             // 
@@ -401,7 +425,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(180, 106);
+            this.label14.Location = new System.Drawing.Point(200, 106);
             this.label14.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(133, 30);
@@ -421,7 +445,7 @@
             // 
             // btnInitialize
             // 
-            this.btnInitialize.Location = new System.Drawing.Point(622, 744);
+            this.btnInitialize.Location = new System.Drawing.Point(622, 770);
             this.btnInitialize.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.btnInitialize.Name = "btnInitialize";
             this.btnInitialize.Size = new System.Drawing.Size(456, 66);
@@ -520,10 +544,10 @@
             // 
             // label16
             // 
-            this.label16.Location = new System.Drawing.Point(13, 424);
+            this.label16.Location = new System.Drawing.Point(13, 404);
             this.label16.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(433, 76);
+            this.label16.Size = new System.Drawing.Size(433, 116);
             this.label16.TabIndex = 8;
             this.label16.Text = "当您点击一下指定的屏幕边缘，即开始截取。";
             // 
@@ -678,7 +702,7 @@
             // rdoSelLineTypeDotted
             // 
             this.rdoSelLineTypeDotted.AutoSize = true;
-            this.rdoSelLineTypeDotted.Location = new System.Drawing.Point(416, 114);
+            this.rdoSelLineTypeDotted.Location = new System.Drawing.Point(438, 114);
             this.rdoSelLineTypeDotted.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.rdoSelLineTypeDotted.Name = "rdoSelLineTypeDotted";
             this.rdoSelLineTypeDotted.Size = new System.Drawing.Size(110, 34);
@@ -691,7 +715,7 @@
             // 
             this.rdoSelLineTypeSolid.AutoSize = true;
             this.rdoSelLineTypeSolid.Checked = true;
-            this.rdoSelLineTypeSolid.Location = new System.Drawing.Point(294, 116);
+            this.rdoSelLineTypeSolid.Location = new System.Drawing.Point(288, 116);
             this.rdoSelLineTypeSolid.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.rdoSelLineTypeSolid.Name = "rdoSelLineTypeSolid";
             this.rdoSelLineTypeSolid.Size = new System.Drawing.Size(110, 34);
@@ -837,8 +861,9 @@
             // 
             // checkBox1
             // 
+            this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(862, 22);
+            this.checkBox1.Location = new System.Drawing.Point(843, 22);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(201, 34);
@@ -1342,7 +1367,7 @@
             this.groupBox14.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.groupBox14.Name = "groupBox14";
             this.groupBox14.Padding = new System.Windows.Forms.Padding(8, 6, 8, 6);
-            this.groupBox14.Size = new System.Drawing.Size(1076, 114);
+            this.groupBox14.Size = new System.Drawing.Size(1076, 150);
             this.groupBox14.TabIndex = 14;
             this.groupBox14.TabStop = false;
             this.groupBox14.Text = "其他";
@@ -1362,7 +1387,7 @@
             // checkBox_magnifier
             // 
             this.checkBox_magnifier.AutoSize = true;
-            this.checkBox_magnifier.Location = new System.Drawing.Point(420, 48);
+            this.checkBox_magnifier.Location = new System.Drawing.Point(79, 96);
             this.checkBox_magnifier.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.checkBox_magnifier.Name = "checkBox_magnifier";
             this.checkBox_magnifier.Size = new System.Drawing.Size(411, 34);
@@ -1390,8 +1415,9 @@
             // 
             // checkBox_fullscreenCursor
             // 
+            this.checkBox_fullscreenCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox_fullscreenCursor.AutoSize = true;
-            this.checkBox_fullscreenCursor.Location = new System.Drawing.Point(909, 24);
+            this.checkBox_fullscreenCursor.Location = new System.Drawing.Point(891, 24);
             this.checkBox_fullscreenCursor.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.checkBox_fullscreenCursor.Name = "checkBox_fullscreenCursor";
             this.checkBox_fullscreenCursor.Size = new System.Drawing.Size(171, 34);
@@ -1403,7 +1429,7 @@
             // radioButton2_fullscreenCursor
             // 
             this.radioButton2_fullscreenCursor.AutoSize = true;
-            this.radioButton2_fullscreenCursor.Location = new System.Drawing.Point(450, 120);
+            this.radioButton2_fullscreenCursor.Location = new System.Drawing.Point(480, 120);
             this.radioButton2_fullscreenCursor.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.radioButton2_fullscreenCursor.Name = "radioButton2_fullscreenCursor";
             this.radioButton2_fullscreenCursor.Size = new System.Drawing.Size(110, 34);
@@ -1958,6 +1984,8 @@
 		private global::System.Windows.Forms.ToolTip toolTip1;
         private HotkeyControl hotkeyControl1;
         private System.Windows.Forms.CheckBox checkBox_autoStartup;
+        private System.Windows.Forms.Label lblLanguage;
+        private System.Windows.Forms.ComboBox cmbLanguage;
         private System.Windows.Forms.CheckBox checkBox_topMost;
         private System.Windows.Forms.GroupBox groupBox13;
         private System.Windows.Forms.LinkLabel linkLabel2;

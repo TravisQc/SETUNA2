@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -31,13 +32,13 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x0600038C RID: 908 RVA: 0x000160A4 File Offset: 0x000142A4
         public override string GetDisplayName()
         {
-            return "收缩";
+            return Lang.T("StyleItem.Compact.DisplayName");
         }
 
         // Token: 0x0600038D RID: 909 RVA: 0x000160AB File Offset: 0x000142AB
         public override string GetDescription()
         {
-            return "将参考图的尺寸收缩。\n之后的自动操作将不被使用。";
+            return Lang.T("StyleItem.Compact.Description");
         }
 
         // Token: 0x0600038E RID: 910 RVA: 0x000160B2 File Offset: 0x000142B2

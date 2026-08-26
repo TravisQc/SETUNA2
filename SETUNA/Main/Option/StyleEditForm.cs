@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using SETUNA.Main.KeyItems;
 using SETUNA.Main.Style;
 using SETUNA.Main.StyleItems;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.Option
 {
@@ -105,7 +106,7 @@ namespace SETUNA.Main.Option
         {
             if (txtStyleName.Text.Trim().Length == 0)
             {
-                MessageBox.Show("请输入自动操作名。", Text, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                MessageBox.Show(Lang.T("Message.StyleNameRequired"), Text, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 txtStyleName.Focus();
                 return;
             }
@@ -264,10 +265,10 @@ namespace SETUNA.Main.Option
                     var keyItem = _keybook.FindKeyItem(keys);
                     if (keyItem != null)
                     {
-                        var text = "「登记」，然后按目前的分配方式。";
+                        var text = Lang.T("StyleEdit.HotkeyRegisterHint");
                         hotkey.PointToScreen(new Point(0, 0));
                         toolTip1.Active = true;
-                        toolTip1.ToolTipTitle = "「" + keyItem.ParentStyle.StyleName + "」被分配。";
+                        toolTip1.ToolTipTitle = Lang.T("StyleEdit.HotkeyAssignedTo", keyItem.ParentStyle.StyleName);
                         toolTip1.Show(text, label5);
                     }
                 }

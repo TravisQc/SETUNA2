@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
+using SETUNA.Main.Localization;
 
 namespace com.clearunit
 {
@@ -136,7 +137,7 @@ namespace com.clearunit
         {
             if (Auth.Length == 0)
             {
-                throw new Exception("您还没有登录Picasa服务。");
+                throw new Exception(Lang.T("Picasa.NotLoggedIn"));
             }
             var xmlDocument = new XmlDocument();
             var xmlElement = xmlDocument.CreateElement("entry");
@@ -208,7 +209,7 @@ namespace com.clearunit
         {
             if (Auth.Length == 0)
             {
-                throw new Exception("您还没有登录Picasa服务。");
+                throw new Exception(Lang.T("Picasa.NotLoggedIn"));
             }
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(AlbumFeedUrl);
             httpWebRequest.Method = "GET";

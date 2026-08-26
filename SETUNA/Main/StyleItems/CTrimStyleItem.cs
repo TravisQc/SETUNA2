@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -41,13 +42,13 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x06000395 RID: 917 RVA: 0x00016233 File Offset: 0x00014433
         public override string GetDisplayName()
         {
-            return "修剪";
+            return Lang.T("StyleItem.Trim.DisplayName");
         }
 
         // Token: 0x06000396 RID: 918 RVA: 0x0001623A File Offset: 0x0001443A
         public override string GetDescription()
         {
-            return "您可以删除不需要的部分。";
+            return Lang.T("StyleItem.Trim.Description");
         }
 
         // Token: 0x06000397 RID: 919 RVA: 0x00016241 File Offset: 0x00014441

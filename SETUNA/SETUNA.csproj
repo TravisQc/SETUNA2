@@ -180,6 +180,10 @@
     <Compile Include="Main\Window\WindowManager.cs" />
     <Compile Include="Main\Window\MainWindowGeometry.cs" />
     <Compile Include="Main\Runtime\RuntimeConfiguration.cs" />
+    <Compile Include="Main\Localization\AppLanguage.cs" />
+    <Compile Include="Main\Localization\LanguagePack.cs" />
+    <Compile Include="Main\Localization\Lang.cs" />
+    <Compile Include="Main\Localization\LocalizationApplier.cs" />
     <Compile Include="Main\ContextStyleMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -669,6 +673,11 @@
     <EmbeddedResource Include="Resources\Image.resx">
       <DependentUpon>Image.cs</DependentUpon>
     </EmbeddedResource>
+    <!-- 语言资源。文件名必须用下划线（Strings_en）而不是点号（Strings.en）：带区域
+         后缀的名字会让 MSBuild 生成卫星程序集 en\SETUNA.resources.dll，违反单文件
+         分发约束。用下划线时 MSBuild 视其为中性资源，直接嵌入主程序集。 -->
+    <EmbeddedResource Include="Resources\Lang\Strings.resx" />
+    <EmbeddedResource Include="Resources\Lang\Strings_en.resx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
@@ -713,6 +722,14 @@
     <!-- 单文件约束的强制点。这里不自行删除残留的配置文件：陈旧产物和「配置文件被
          重新引入」都必须由人处理，悄悄删掉会把真实回归发布出去。 -->
     <Error Condition="Exists('$(TargetPath).config')" Text="$(TargetFileName).config 存在于 $(TargetDir)，违反单文件分发约束。要么是上一次构建留下的陈旧产物（执行 Rebuild 或删除 bin 目录），要么是配置文件／绑定重定向生成被重新引入（检查 app.config 与 AutoGenerateBindingRedirects）。" />
+    <!-- 同一个约束的另一半：语言资源必须嵌在主程序集里，不能变成卫星程序集。
+         只要有人把某个 resx 改成带区域后缀的名字（Strings.en.resx 而不是
+         Strings_en.resx），MSBuild 就会产出 en\SETUNA.resources.dll，单文件约束被
+         悄悄破坏而构建本身不报错。与上面一致：不自行删除，交给人修正命名。 -->
+    <ItemGroup>
+      <SatelliteAssemblyLeftover Include="$(TargetDir)**\*.resources.dll" />
+    </ItemGroup>
+    <Error Condition="'@(SatelliteAssemblyLeftover)' != ''" Text="卫星资源程序集存在于 $(TargetDir)：@(SatelliteAssemblyLeftover->'%(RecursiveDir)%(Filename)%(Extension)', ', ')，违反单文件分发约束。要么是上一次构建留下的陈旧产物（执行 Rebuild 或删除 bin 目录），要么是某个语言资源被命名成带区域后缀的形式（应为 Resources\Lang\Strings_en.resx 这样的下划线命名，而不是 Strings.en.resx）。" />
     <MakeDir Directories="$(PackageOutputPath)" />
     <!-- 发布产物就是那个 exe 本身，不再套一层 ZIP；文件名带上配置与平台，使不同架构
          的产物能并存在同一目录。Copy 覆盖同名文件，重复调用可重复。 -->

@@ -1,4 +1,6 @@
-﻿namespace SETUNA.Main.Style
+﻿using SETUNA.Main.Localization;
+
+namespace SETUNA.Main.Style
 {
     // Token: 0x020000AF RID: 175
     public class CAllShowStyle : CPreStyle
@@ -7,7 +9,7 @@
         public CAllShowStyle()
         {
             _styleid = -3;
-            _stylename = "全部显示";
+            _stylename = Lang.T("Style.AllShow.Name");
         }
 
         // Token: 0x06000595 RID: 1429 RVA: 0x0002656A File Offset: 0x0002476A

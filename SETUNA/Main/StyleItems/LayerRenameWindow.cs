@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -27,7 +28,7 @@ namespace SETUNA.Main.StyleItems
             if (txtLayerName.TextLength == 0)
             {
                 errorProvider1.SetIconAlignment(txtLayerName, ErrorIconAlignment.TopLeft);
-                errorProvider1.SetError(txtLayerName, "没有输入图层名");
+                errorProvider1.SetError(txtLayerName, Lang.T("Message.LayerNameRequired"));
             }
         }
     }

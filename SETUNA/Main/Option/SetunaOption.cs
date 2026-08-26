@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SETUNA.Main.KeyItems;
+using SETUNA.Main.Localization;
 using SETUNA.Main.Style;
 using SETUNA.Main.StyleItems;
 
@@ -51,11 +52,16 @@ namespace SETUNA.Main.Option
             setunaOption.Setuna.FullscreenCursorColorB = Color.Orange.B;
             setunaOption.Setuna.BackgroundTransparentEnabled = false;
 
+            // 显式设为「跟随系统」而不是留成 null：两者解析结果相同，但 XmlSerializer
+            // 会整个省略值为 null 的字符串元素，新写出的配置里就看不到这一项。写成空串
+            // 使元素出现在配置文件里，手工编辑配置的用户能看到有这个设置存在。
+            setunaOption.Setuna.Language = Localization.AppLanguages.AutoValue;
+
 
             var cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "复制"
+                StyleName = Lang.T("DefaultStyle.Copy")
             };
             cstyle.AddStyle(new CCopyStyleItem
             {
@@ -67,7 +73,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "复制（有边框）"
+                StyleName = Lang.T("DefaultStyle.CopyWithBorder")
             };
             cstyle.AddStyle(new CCopyStyleItem
             {
@@ -78,7 +84,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "剪切"
+                StyleName = Lang.T("DefaultStyle.Cut")
             };
             cstyle.AddStyle(new CCopyStyleItem
             {
@@ -91,7 +97,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "剪切（有边框）"
+                StyleName = Lang.T("DefaultStyle.CutWithBorder")
             };
             cstyle.AddStyle(new CCopyStyleItem
             {
@@ -103,7 +109,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "粘贴"
+                StyleName = Lang.T("DefaultStyle.Paste")
             };
             var newCi = new CPasteStyleItem();
             cstyle.AddStyle(newCi);
@@ -113,7 +119,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "保存"
+                StyleName = Lang.T("DefaultStyle.Save")
             };
             cstyle.AddStyle(new CImagePngStyleItem
             {
@@ -128,7 +134,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "保存（有边框）"
+                StyleName = Lang.T("DefaultStyle.SaveWithBorder")
             };
             cstyle.AddStyle(new CImagePngStyleItem
             {
@@ -142,7 +148,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "旋转90度"
+                StyleName = Lang.T("DefaultStyle.Rotate90")
             };
             cstyle.AddStyle(new CRotateStyleItem
             {
@@ -154,7 +160,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "垂直翻转"
+                StyleName = Lang.T("DefaultStyle.FlipVertical")
             };
             cstyle.AddStyle(new CRotateStyleItem
             {
@@ -166,7 +172,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "水平翻转"
+                StyleName = Lang.T("DefaultStyle.FlipHorizontal")
             };
             cstyle.AddStyle(new CRotateStyleItem
             {
@@ -178,7 +184,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "扩大"
+                StyleName = Lang.T("DefaultStyle.Enlarge")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -191,7 +197,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "扩大（微调）"
+                StyleName = Lang.T("DefaultStyle.EnlargeFine")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -203,7 +209,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩小"
+                StyleName = Lang.T("DefaultStyle.Shrink")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -216,7 +222,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩小（微调）"
+                StyleName = Lang.T("DefaultStyle.ShrinkFine")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -228,7 +234,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "增加透明度"
+                StyleName = Lang.T("DefaultStyle.OpacityUp")
             };
             cstyle.AddStyle(new COpacityStyleItem
             {
@@ -240,7 +246,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "增加透明度（微调）"
+                StyleName = Lang.T("DefaultStyle.OpacityUpFine")
             };
             cstyle.AddStyle(new COpacityStyleItem
             {
@@ -252,7 +258,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "降低透明度"
+                StyleName = Lang.T("DefaultStyle.OpacityDown")
             };
             cstyle.AddStyle(new COpacityStyleItem
             {
@@ -264,7 +270,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "降低透明度（微调）"
+                StyleName = Lang.T("DefaultStyle.OpacityDownFine")
             };
             cstyle.AddStyle(new COpacityStyleItem
             {
@@ -276,7 +282,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "向上移动"
+                StyleName = Lang.T("DefaultStyle.MoveUp")
             };
             cstyle.AddStyle(new CMoveStyleItem
             {
@@ -287,7 +293,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "向上移动（微调）"
+                StyleName = Lang.T("DefaultStyle.MoveUpFine")
             };
             cstyle.AddStyle(new CMoveStyleItem
             {
@@ -298,7 +304,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "向下移动"
+                StyleName = Lang.T("DefaultStyle.MoveDown")
             };
             cstyle.AddStyle(new CMoveStyleItem
             {
@@ -309,7 +315,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "向下移动（微调）"
+                StyleName = Lang.T("DefaultStyle.MoveDownFine")
             };
             cstyle.AddStyle(new CMoveStyleItem
             {
@@ -320,7 +326,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "向左移动"
+                StyleName = Lang.T("DefaultStyle.MoveLeft")
             };
             cstyle.AddStyle(new CMoveStyleItem
             {
@@ -331,7 +337,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "向左移动（微调）"
+                StyleName = Lang.T("DefaultStyle.MoveLeftFine")
             };
             cstyle.AddStyle(new CMoveStyleItem
             {
@@ -342,7 +348,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "向右移动"
+                StyleName = Lang.T("DefaultStyle.MoveRight")
             };
             cstyle.AddStyle(new CMoveStyleItem
             {
@@ -353,7 +359,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "向右移动（微调）"
+                StyleName = Lang.T("DefaultStyle.MoveRightFine")
             };
             cstyle.AddStyle(new CMoveStyleItem
             {
@@ -364,7 +370,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩放为50%"
+                StyleName = Lang.T("DefaultStyle.Scale50")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -377,7 +383,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩放为60%"
+                StyleName = Lang.T("DefaultStyle.Scale60")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -389,7 +395,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩放为70%"
+                StyleName = Lang.T("DefaultStyle.Scale70")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -401,7 +407,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩放为80%"
+                StyleName = Lang.T("DefaultStyle.Scale80")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -413,7 +419,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩放为90%"
+                StyleName = Lang.T("DefaultStyle.Scale90")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -425,7 +431,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩放为100%"
+                StyleName = Lang.T("DefaultStyle.Scale100")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -438,7 +444,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "缩放为150%"
+                StyleName = Lang.T("DefaultStyle.Scale150")
             };
             cstyle.AddStyle(new CScaleStyleItem
             {
@@ -450,7 +456,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "立体边框"
+                StyleName = Lang.T("DefaultStyle.Border3D")
             };
             cstyle.AddStyle(new CMarginStyleItem
             {
@@ -461,7 +467,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "单色边框"
+                StyleName = Lang.T("DefaultStyle.BorderSolid")
             };
             cstyle.AddStyle(new CMarginStyleItem
             {
@@ -476,7 +482,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "窗口化"
+                StyleName = Lang.T("DefaultStyle.Windowed")
             };
             cstyle.AddStyle(new CMarginStyleItem
             {
@@ -487,7 +493,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "无边框"
+                StyleName = Lang.T("DefaultStyle.NoBorder")
             };
             cstyle.AddStyle(new CMarginStyleItem
             {
@@ -499,7 +505,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "关闭"
+                StyleName = Lang.T("DefaultStyle.Close")
             };
             var newCi2 = new CCloseStyleItem();
             cstyle.AddStyle(newCi2);
@@ -509,7 +515,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "基本自动操作"
+                StyleName = Lang.T("DefaultStyle.Basic")
             };
             cstyle.AddStyle(new CMarginStyleItem
             {
@@ -525,7 +531,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "收缩"
+                StyleName = Lang.T("DefaultStyle.Compact")
             };
             cstyle.AddStyle(new CCompactStyleItem
             {
@@ -538,7 +544,7 @@ namespace SETUNA.Main.Option
             cstyle = new CStyle
             {
                 StyleID = num++,
-                StyleName = "修剪"
+                StyleName = Lang.T("DefaultStyle.Trim")
             };
             var newCi3 = new CTrimStyleItem();
             cstyle.AddStyle(newCi3);
@@ -1140,6 +1146,20 @@ namespace SETUNA.Main.Option
             public byte FullscreenCursorColorR;
             public byte FullscreenCursorColorG;
             public byte FullscreenCursorColorB;
+
+            /// <summary>
+            /// 界面语言。空串或元素缺失表示「跟随系统区域设置」。
+            /// <para>
+            /// 用字符串而不是枚举：<see cref="System.Xml.Serialization.XmlSerializer"/>
+            /// 遇到无法识别的枚举值会抛异常，那会让「新版本写入了未来语言的配置被旧版本
+            /// 读取」变成启动失败。字符串则退化成一个未知值，可以安全地按「跟随系统」处理。
+            /// </para>
+            /// <para>
+            /// 新增一个 XML 元素本身是向后兼容的：旧配置文件缺这个元素时反序列化得到
+            /// <c>null</c>，与空串同义，因此不需要迁移代码。
+            /// </para>
+            /// </summary>
+            public string Language;
 
 
 

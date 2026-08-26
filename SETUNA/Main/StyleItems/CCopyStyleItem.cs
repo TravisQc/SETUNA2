@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -61,13 +62,13 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x060000DF RID: 223 RVA: 0x00006967 File Offset: 0x00004B67
         public override string GetDisplayName()
         {
-            return "复制到剪贴板";
+            return Lang.T("StyleItem.Copy.DisplayName");
         }
 
         // Token: 0x060000E0 RID: 224 RVA: 0x0000696E File Offset: 0x00004B6E
         public override string GetDescription()
         {
-            return "将参考图作为图像复制到剪贴板里。";
+            return Lang.T("StyleItem.Copy.Description");
         }
 
         // Token: 0x060000E1 RID: 225 RVA: 0x00006975 File Offset: 0x00004B75

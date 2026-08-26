@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -40,13 +41,13 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x060000BF RID: 191 RVA: 0x00005672 File Offset: 0x00003872
         public override string GetDisplayName()
         {
-            return "保存为PNG格式";
+            return Lang.T("StyleItem.ImagePng.DisplayName");
         }
 
         // Token: 0x060000C0 RID: 192 RVA: 0x00005679 File Offset: 0x00003879
         public override string GetDescription()
         {
-            return "用PNG格式的图像保存参考图。";
+            return Lang.T("StyleItem.ImagePng.Description");
         }
 
         // Token: 0x060000C1 RID: 193 RVA: 0x00005680 File Offset: 0x00003880
@@ -75,7 +76,7 @@ namespace SETUNA.Main.StyleItems
 
         // Token: 0x17000039 RID: 57
         // (get) Token: 0x060000C4 RID: 196 RVA: 0x00005703 File Offset: 0x00003903
-        protected override string FileFilter => "Png格式(.png)|*.png|所有文件 (*.*)|*.*";
+        protected override string FileFilter => Lang.T("Filter.Png");
 
         // Token: 0x060000C5 RID: 197 RVA: 0x0000570A File Offset: 0x0000390A
         public override Bitmap GetIcon()

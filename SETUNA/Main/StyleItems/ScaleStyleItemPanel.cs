@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing.Drawing2D;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -16,12 +17,7 @@ namespace SETUNA.Main.StyleItems
         {
             var cscaleStyleItem = (CScaleStyleItem)style;
             InitializeComponent();
-            cmbInterpolation.Items.Clear();
-            cmbInterpolation.Items.Add(new ScaleStyleItemPanel.ComboItem<InterpolationMode>("不要更改", InterpolationMode.Invalid));
-            cmbInterpolation.Items.Add(new ScaleStyleItemPanel.ComboItem<InterpolationMode>("最近邻法", InterpolationMode.NearestNeighbor));
-            cmbInterpolation.Items.Add(new ScaleStyleItemPanel.ComboItem<InterpolationMode>("标准", InterpolationMode.High));
-            cmbInterpolation.Items.Add(new ScaleStyleItemPanel.ComboItem<InterpolationMode>("双线性", InterpolationMode.HighQualityBilinear));
-            cmbInterpolation.Items.Add(new ScaleStyleItemPanel.ComboItem<InterpolationMode>("两次立方", InterpolationMode.HighQualityBicubic));
+            BuildInterpolationItems();
             Text = cscaleStyleItem.GetDisplayName();
             numFixedScale.Minimum = 10m;
             numFixedScale.Maximum = 200m;
@@ -46,11 +42,52 @@ namespace SETUNA.Main.StyleItems
             {
                 numRelativeScale.Value = cscaleStyleItem.Value;
             }
+            SelectInterpolation(cscaleStyleItem.InterpolationMode);
+        }
+
+        /// <summary>
+        /// 插值方法的条目是代码拼出来的，不在控件的设计器文字里，本地化应用器看不到它们，
+        /// 所以换语言时必须自己重建一遍——与选项对话框里的语言下拉框同理。
+        /// </summary>
+        protected override void ApplyLanguage()
+        {
+            base.ApplyLanguage();
+
+            BuildInterpolationItems();
+        }
+
+        /// <summary>
+        /// 用当前语言重建插值方法条目，并保留原来选中的插值方式。
+        /// </summary>
+        private void BuildInterpolationItems()
+        {
+            // 选中项按 InterpolationMode 记住再写回，而不是按序号或文字：重建前后只有它
+            // 是稳定的，而这个值最终会存进自动操作里。
+            var selected = cmbInterpolation.SelectedItem as ComboItem<InterpolationMode>;
+            var mode = selected == null ? InterpolationMode.Invalid : selected.Item;
+
+            cmbInterpolation.BeginUpdate();
+            cmbInterpolation.Items.Clear();
+            cmbInterpolation.Items.Add(new ComboItem<InterpolationMode>(Lang.T("Scale.Interpolation.Unchanged"), InterpolationMode.Invalid));
+            cmbInterpolation.Items.Add(new ComboItem<InterpolationMode>(Lang.T("Scale.Interpolation.NearestNeighbor"), InterpolationMode.NearestNeighbor));
+            cmbInterpolation.Items.Add(new ComboItem<InterpolationMode>(Lang.T("Scale.Interpolation.Default"), InterpolationMode.High));
+            cmbInterpolation.Items.Add(new ComboItem<InterpolationMode>(Lang.T("Scale.Interpolation.Bilinear"), InterpolationMode.HighQualityBilinear));
+            cmbInterpolation.Items.Add(new ComboItem<InterpolationMode>(Lang.T("Scale.Interpolation.Bicubic"), InterpolationMode.HighQualityBicubic));
+            cmbInterpolation.EndUpdate();
+
+            SelectInterpolation(mode);
+        }
+
+        /// <summary>
+        /// 选中 <paramref name="mode"/> 对应的条目；找不到时退回第一项（「不要更改」）。
+        /// </summary>
+        private void SelectInterpolation(InterpolationMode mode)
+        {
             cmbInterpolation.SelectedIndex = 0;
             foreach (var obj in cmbInterpolation.Items)
             {
-                var comboItem = (ScaleStyleItemPanel.ComboItem<InterpolationMode>)obj;
-                if (comboItem.Item == cscaleStyleItem.InterpolationMode)
+                var comboItem = (ComboItem<InterpolationMode>)obj;
+                if (comboItem.Item == mode)
                 {
                     cmbInterpolation.SelectedItem = comboItem;
                 }

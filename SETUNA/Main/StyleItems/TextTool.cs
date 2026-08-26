@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -58,7 +59,7 @@ namespace SETUNA.Main.StyleItems
                 ResetTextBox();
                 ClearCommand();
                 base.Start();
-                parentCommand = new AddTextLayerCommand("文字层", _parent.SelectionLayerIndex());
+                parentCommand = new AddTextLayerCommand(Lang.T("Paint.TextLayerName"), _parent.SelectionLayerIndex());
                 _parent.AddLayerCommand(parentCommand);
                 textbox.Parent = _parent;
                 _parent.Controls.Add(textbox);

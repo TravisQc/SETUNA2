@@ -94,7 +94,11 @@
             // 
             this.btnPreview.Location = new System.Drawing.Point(6, 152);
             this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Size = new System.Drawing.Size(96, 23);
+            // 宽度的上限是右边的 numPreview：它从 x=108 开始，按钮再宽就会压在预览数值上
+            // ——为了塞下 "Apply relative value" 而加宽到 140 时就是这样，界面上看不出来，
+            // 因为按钮画在数值上面。英文因此缩短成 "Apply relative"，中文「应用相对值」
+            // 也在 100px 之内。
+            this.btnPreview.Size = new System.Drawing.Size(100, 23);
             this.btnPreview.TabIndex = 0;
             this.btnPreview.Text = "应用相对值";
             this.btnPreview.UseVisualStyleBackColor = true;
@@ -113,9 +117,9 @@
             // barOpacity2
             // 
             this.barOpacity2.AutoSize = false;
-            this.barOpacity2.Location = new System.Drawing.Point(107, 79);
+            this.barOpacity2.Location = new System.Drawing.Point(121, 79);
             this.barOpacity2.Name = "barOpacity2";
-            this.barOpacity2.Size = new System.Drawing.Size(123, 20);
+            this.barOpacity2.Size = new System.Drawing.Size(109, 20);
             this.barOpacity2.TabIndex = 6;
             this.barOpacity2.TickFrequency = 10;
             this.barOpacity2.Scroll += new System.EventHandler(this.barOpacity_Scroll);
@@ -123,11 +127,11 @@
             // barOpacity
             // 
             this.barOpacity.AutoSize = false;
-            this.barOpacity.Location = new System.Drawing.Point(107, 50);
+            this.barOpacity.Location = new System.Drawing.Point(121, 50);
             this.barOpacity.Maximum = 100;
             this.barOpacity.Minimum = 1;
             this.barOpacity.Name = "barOpacity";
-            this.barOpacity.Size = new System.Drawing.Size(123, 20);
+            this.barOpacity.Size = new System.Drawing.Size(109, 20);
             this.barOpacity.TabIndex = 2;
             this.barOpacity.TickFrequency = 10;
             this.barOpacity.Value = 1;

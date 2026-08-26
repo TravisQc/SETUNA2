@@ -1,5 +1,7 @@
 ﻿using System.Windows.Forms;
 
+using SETUNA.Main.Localization;
+
 namespace SETUNA.Main.Style
 {
     // Token: 0x02000067 RID: 103
@@ -9,7 +11,7 @@ namespace SETUNA.Main.Style
         public CSeparatorStyle()
         {
             _styleid = -4;
-            _stylename = "[分隔符]";
+            _stylename = Lang.T("Style.Separator.Name");
         }
 
         // Token: 0x0600039C RID: 924 RVA: 0x00016275 File Offset: 0x00014475

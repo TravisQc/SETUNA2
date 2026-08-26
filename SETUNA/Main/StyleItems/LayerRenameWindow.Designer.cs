@@ -37,10 +37,10 @@
             // 
             // txtLayerName
             // 
-            this.txtLayerName.Location = new System.Drawing.Point(80, 18);
+            this.txtLayerName.Location = new System.Drawing.Point(92, 18);
             this.txtLayerName.MaxLength = 50;
             this.txtLayerName.Name = "txtLayerName";
-            this.txtLayerName.Size = new System.Drawing.Size(141, 21);
+            this.txtLayerName.Size = new System.Drawing.Size(129, 21);
             this.txtLayerName.TabIndex = 0;
             this.txtLayerName.Validating += new System.ComponentModel.CancelEventHandler(this.textBox1_Validating);
             // 

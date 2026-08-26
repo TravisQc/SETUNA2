@@ -88,6 +88,13 @@
     <Compile Include="Main\Common\SvgRasterizationTests.cs" />
     <Compile Include="Main\Common\WindowEnumerationTests.cs" />
     <Compile Include="Main\Layer\LayerSortingTests.cs" />
+    <Compile Include="Main\Localization\LocalizationTests.cs" />
+    <Compile Include="Main\Localization\LocalizationApplierTests.cs" />
+    <Compile Include="Main\Localization\LanguageOptionTests.cs" />
+    <Compile Include="Main\Localization\LocalizationSweepTests.cs" />
+    <Compile Include="Main\Localization\EnglishTextFitTests.cs" />
+    <Compile Include="Main\Localization\LanguageSwitchIntegrationTests.cs" />
+    <Compile Include="Main\Localization\EnglishLayoutFitTests.cs" />
     <Compile Include="Main\Option\HotKeyRegistrationTests.cs" />
     <Compile Include="Main\CaptureResourceTests.cs" />
     <Compile Include="Main\ScrapGeometryTests.cs" />

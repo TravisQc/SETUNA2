@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -82,13 +83,13 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x0600001A RID: 26 RVA: 0x00003255 File Offset: 0x00001455
         public override string GetDisplayName()
         {
-            return "边框";
+            return Lang.T("StyleItem.Margin.DisplayName");
         }
 
         // Token: 0x0600001B RID: 27 RVA: 0x0000325C File Offset: 0x0000145C
         public override string GetDescription()
         {
-            return "设置参考图的边框的种类。";
+            return Lang.T("StyleItem.Margin.Description");
         }
 
         // Token: 0x0600001C RID: 28 RVA: 0x00003263 File Offset: 0x00001463
@@ -117,13 +118,13 @@ namespace SETUNA.Main.StyleItems
                 switch (BorderStyle)
                 {
                     case 0:
-                        result = "立体边框";
+                        result = Lang.T("StyleItem.Margin.State3D");
                         break;
                     case 1:
-                        result = "单色边框";
+                        result = Lang.T("StyleItem.Margin.StateSolid");
                         break;
                     case 2:
-                        result = "窗口";
+                        result = Lang.T("StyleItem.Margin.StateWindow");
                         break;
                 }
                 return result;

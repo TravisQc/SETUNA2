@@ -1,4 +1,6 @@
-﻿namespace SETUNA.Main.Style
+﻿using SETUNA.Main.Localization;
+
+namespace SETUNA.Main.Style
 {
     // Token: 0x02000049 RID: 73
     public class CDustEraseStyle : CPreStyle
@@ -7,7 +9,7 @@
         public CDustEraseStyle()
         {
             _styleid = -8;
-            _stylename = "清空回收站";
+            _stylename = Lang.T("Style.DustErase.Name");
         }
 
         // Token: 0x060002BF RID: 703 RVA: 0x0000F53B File Offset: 0x0000D73B

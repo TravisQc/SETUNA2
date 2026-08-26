@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -36,7 +37,7 @@ namespace SETUNA.Main.StyleItems
         {
             if (erasemode)
             {
-                Text = "橡皮擦工具";
+                Text = Lang.T("Paint.EraserToolTitle");
                 pnlOpacity.Visible = false;
                 pnlCap.Visible = false;
                 foreach (var penButton in penButtons)

@@ -61,7 +61,7 @@
             "覆盖",
             "追加序号",
             "重复时指定"});
-            this.cmbDupli.Location = new System.Drawing.Point(129, 127);
+            this.cmbDupli.Location = new System.Drawing.Point(164, 127);
             this.cmbDupli.Name = "cmbDupli";
             this.cmbDupli.Size = new System.Drawing.Size(133, 20);
             this.cmbDupli.TabIndex = 9;
@@ -78,7 +78,7 @@
             // rdoSaveAs
             // 
             this.rdoSaveAs.AutoSize = true;
-            this.rdoSaveAs.Location = new System.Drawing.Point(82, 66);
+            this.rdoSaveAs.Location = new System.Drawing.Point(94, 66);
             this.rdoSaveAs.Name = "rdoSaveAs";
             this.rdoSaveAs.Size = new System.Drawing.Size(83, 16);
             this.rdoSaveAs.TabIndex = 4;
@@ -89,16 +89,16 @@
             // 
             // txtName
             // 
-            this.txtName.Location = new System.Drawing.Point(99, 104);
+            this.txtName.Location = new System.Drawing.Point(111, 104);
             this.txtName.MaxLength = 255;
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(223, 21);
+            this.txtName.Size = new System.Drawing.Size(211, 21);
             this.txtName.TabIndex = 7;
             // 
             // rdoScrapName
             // 
             this.rdoScrapName.AutoSize = true;
-            this.rdoScrapName.Location = new System.Drawing.Point(82, 86);
+            this.rdoScrapName.Location = new System.Drawing.Point(94, 86);
             this.rdoScrapName.Name = "rdoScrapName";
             this.rdoScrapName.Size = new System.Drawing.Size(95, 16);
             this.rdoScrapName.TabIndex = 5;
@@ -110,7 +110,7 @@
             // rdoName
             // 
             this.rdoName.AutoSize = true;
-            this.rdoName.Location = new System.Drawing.Point(82, 107);
+            this.rdoName.Location = new System.Drawing.Point(94, 107);
             this.rdoName.Name = "rdoName";
             this.rdoName.Size = new System.Drawing.Size(14, 13);
             this.rdoName.TabIndex = 6;
@@ -159,9 +159,9 @@
             // 
             // txtFolder
             // 
-            this.txtFolder.Location = new System.Drawing.Point(72, 32);
+            this.txtFolder.Location = new System.Drawing.Point(105, 32);
             this.txtFolder.Name = "txtFolder";
-            this.txtFolder.Size = new System.Drawing.Size(250, 21);
+            this.txtFolder.Size = new System.Drawing.Size(217, 21);
             this.txtFolder.TabIndex = 1;
             // 
             // label1

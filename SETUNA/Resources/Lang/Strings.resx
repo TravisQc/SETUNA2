@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Neutral (Simplified Chinese) strings. Runtime keys only; designer-owned control text stays in the .Designer.cs files, where a missing key means the control keeps its existing text.
+
+    Keys come in two families:
+      FormType.controlName[.ToolTip]        designer-owned control text
+      FormType.controlName.Items.N          designer-preset combo/list items
+      Area.Name                             runtime text read by key
+
+    Do not rename this file with a culture suffix (Strings.en.resx): that makes
+    MSBuild emit a satellite assembly, which breaks single-file distribution.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Capture.Blue" xml:space="preserve">
+    <value>蓝：</value>
+  </data>
+  <data name="Capture.Green" xml:space="preserve">
+    <value>绿：</value>
+  </data>
+  <data name="Capture.Red" xml:space="preserve">
+    <value>红：</value>
+  </data>
+  <data name="Common.No" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="Common.None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Common.Yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="DefaultStyle.Basic" xml:space="preserve">
+    <value>基本自动操作</value>
+  </data>
+  <data name="DefaultStyle.Border3D" xml:space="preserve">
+    <value>立体边框</value>
+  </data>
+  <data name="DefaultStyle.BorderSolid" xml:space="preserve">
+    <value>单色边框</value>
+  </data>
+  <data name="DefaultStyle.Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="DefaultStyle.Compact" xml:space="preserve">
+    <value>收缩</value>
+  </data>
+  <data name="DefaultStyle.Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="DefaultStyle.CopyWithBorder" xml:space="preserve">
+    <value>复制（有边框）</value>
+  </data>
+  <data name="DefaultStyle.Cut" xml:space="preserve">
+    <value>剪切</value>
+  </data>
+  <data name="DefaultStyle.CutWithBorder" xml:space="preserve">
+    <value>剪切（有边框）</value>
+  </data>
+  <data name="DefaultStyle.Enlarge" xml:space="preserve">
+    <value>扩大</value>
+  </data>
+  <data name="DefaultStyle.EnlargeFine" xml:space="preserve">
+    <value>扩大（微调）</value>
+  </data>
+  <data name="DefaultStyle.FlipHorizontal" xml:space="preserve">
+    <value>水平翻转</value>
+  </data>
+  <data name="DefaultStyle.FlipVertical" xml:space="preserve">
+    <value>垂直翻转</value>
+  </data>
+  <data name="DefaultStyle.MoveDown" xml:space="preserve">
+    <value>向下移动</value>
+  </data>
+  <data name="DefaultStyle.MoveDownFine" xml:space="preserve">
+    <value>向下移动（微调）</value>
+  </data>
+  <data name="DefaultStyle.MoveLeft" xml:space="preserve">
+    <value>向左移动</value>
+  </data>
+  <data name="DefaultStyle.MoveLeftFine" xml:space="preserve">
+    <value>向左移动（微调）</value>
+  </data>
+  <data name="DefaultStyle.MoveRight" xml:space="preserve">
+    <value>向右移动</value>
+  </data>
+  <data name="DefaultStyle.MoveRightFine" xml:space="preserve">
+    <value>向右移动（微调）</value>
+  </data>
+  <data name="DefaultStyle.MoveUp" xml:space="preserve">
+    <value>向上移动</value>
+  </data>
+  <data name="DefaultStyle.MoveUpFine" xml:space="preserve">
+    <value>向上移动（微调）</value>
+  </data>
+  <data name="DefaultStyle.NoBorder" xml:space="preserve">
+    <value>无边框</value>
+  </data>
+  <data name="DefaultStyle.OpacityDown" xml:space="preserve">
+    <value>降低透明度</value>
+  </data>
+  <data name="DefaultStyle.OpacityDownFine" xml:space="preserve">
+    <value>降低透明度（微调）</value>
+  </data>
+  <data name="DefaultStyle.OpacityUp" xml:space="preserve">
+    <value>增加透明度</value>
+  </data>
+  <data name="DefaultStyle.OpacityUpFine" xml:space="preserve">
+    <value>增加透明度（微调）</value>
+  </data>
+  <data name="DefaultStyle.Paste" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="DefaultStyle.Rotate90" xml:space="preserve">
+    <value>旋转90度</value>
+  </data>
+  <data name="DefaultStyle.Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="DefaultStyle.SaveWithBorder" xml:space="preserve">
+    <value>保存（有边框）</value>
+  </data>
+  <data name="DefaultStyle.Scale100" xml:space="preserve">
+    <value>缩放为100%</value>
+  </data>
+  <data name="DefaultStyle.Scale150" xml:space="preserve">
+    <value>缩放为150%</value>
+  </data>
+  <data name="DefaultStyle.Scale50" xml:space="preserve">
+    <value>缩放为50%</value>
+  </data>
+  <data name="DefaultStyle.Scale60" xml:space="preserve">
+    <value>缩放为60%</value>
+  </data>
+  <data name="DefaultStyle.Scale70" xml:space="preserve">
+    <value>缩放为70%</value>
+  </data>
+  <data name="DefaultStyle.Scale80" xml:space="preserve">
+    <value>缩放为80%</value>
+  </data>
+  <data name="DefaultStyle.Scale90" xml:space="preserve">
+    <value>缩放为90%</value>
+  </data>
+  <data name="DefaultStyle.Shrink" xml:space="preserve">
+    <value>缩小</value>
+  </data>
+  <data name="DefaultStyle.ShrinkFine" xml:space="preserve">
+    <value>缩小（微调）</value>
+  </data>
+  <data name="DefaultStyle.Trim" xml:space="preserve">
+    <value>修剪</value>
+  </data>
+  <data name="DefaultStyle.Windowed" xml:space="preserve">
+    <value>窗口化</value>
+  </data>
+  <data name="Filter.AllFiles" xml:space="preserve">
+    <value>所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="Filter.Bmp" xml:space="preserve">
+    <value>Bitmap格式 (.bmp)|*.bmp|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="Filter.Jpeg" xml:space="preserve">
+    <value>Jpeg格式 (.jpg)|*.jpg|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="Filter.Png" xml:space="preserve">
+    <value>Png格式(.png)|*.png|所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="Message.AutoStartupDisableFailed" xml:space="preserve">
+    <value>无法取消开机启动。</value>
+  </data>
+  <data name="Message.AutoStartupEnableFailed" xml:space="preserve">
+    <value>无法设置开机启动。</value>
+  </data>
+  <data name="Message.AutoStartupRegistryUnavailable" xml:space="preserve">
+    <value>无法访问开机启动项的注册表位置。</value>
+  </data>
+  <data name="Message.ConfigLoadFailed" xml:space="preserve">
+    <value>无法读取配置文件。
+使用默认设置。</value>
+  </data>
+  <data name="Message.ConfigSaveFailed" xml:space="preserve">
+    <value>无法保存配置文件。</value>
+  </data>
+  <data name="Message.ConfirmCaption" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="Message.ConfirmCloseAllScraps" xml:space="preserve">
+    <value>是否关闭所有截图</value>
+  </data>
+  <data name="Message.ConfirmDeleteLayer" xml:space="preserve">
+    <value>{0}我如何删除？</value>
+  </data>
+  <data name="Message.ConfirmOverwrite" xml:space="preserve">
+    <value>相同的文件名已存在。
+覆盖？</value>
+  </data>
+  <data name="Message.ConfirmResetSettings" xml:space="preserve">
+    <value>进行设置内容的初始化。</value>
+  </data>
+  <data name="Message.FileNameMissing" xml:space="preserve">
+    <value>没有指定文件名。</value>
+  </data>
+  <data name="Message.InvalidFileName" xml:space="preserve">
+    <value>文件名无效。</value>
+  </data>
+  <data name="Message.InvalidFolderName" xml:space="preserve">
+    <value>文件夹名无效。</value>
+  </data>
+  <data name="Message.LayerNameRequired" xml:space="preserve">
+    <value>没有输入图层名</value>
+  </data>
+  <data name="Message.NoEncoderFound" xml:space="preserve">
+    <value>因为利用可以的编码器没找到，不能保存图像。</value>
+  </data>
+  <data name="Message.OtherVersionRunning" xml:space="preserve">
+    <value>SETUNA已经运行在不同的版本。</value>
+  </data>
+  <data name="Message.SaveFailed" xml:space="preserve">
+    <value>{0}
+无法保存。</value>
+  </data>
+  <data name="Message.StyleNameRequired" xml:space="preserve">
+    <value>请输入自动操作名。</value>
+  </data>
+  <data name="Option.CommentAll" xml:space="preserve">
+    <value>SETUNA常规设置。</value>
+  </data>
+  <data name="Option.CommentCapture" xml:space="preserve">
+    <value>进行有关截取的设置。</value>
+  </data>
+  <data name="Option.CommentMisc" xml:space="preserve">
+    <value>鼠标样式设置等等。</value>
+  </data>
+  <data name="Option.CommentScrap" xml:space="preserve">
+    <value>进行参考图的常规设置。</value>
+  </data>
+  <data name="Option.CommentScrapMenu" xml:space="preserve">
+    <value>设置右键单击参考图时的菜单。</value>
+  </data>
+  <data name="Option.CommentStyle" xml:space="preserve">
+    <value>创建一个由自动操作组合而成的自动操作。</value>
+  </data>
+  <data name="Option.EditStyleTitle" xml:space="preserve">
+    <value>{0}的相关编辑</value>
+  </data>
+  <data name="Option.LanguageAuto" xml:space="preserve">
+    <value>跟随系统区域设置</value>
+  </data>
+  <data name="Option.LanguageChineseSimplified" xml:space="preserve">
+    <value>简体中文</value>
+  </data>
+  <data name="Option.LanguageEnglish" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Option.LinkOfficial" xml:space="preserve">
+    <value>官方版本（地址已挂）</value>
+  </data>
+  <data name="Option.LinkOptimized" xml:space="preserve">
+    <value>优化版本 by TravisQc. Version: {0}</value>
+  </data>
+  <data name="Option.NewStyleTitle" xml:space="preserve">
+    <value>新建自动操作</value>
+  </data>
+  <data name="Paint.EraserToolTitle" xml:space="preserve">
+    <value>橡皮擦工具</value>
+  </data>
+  <data name="Paint.LayerName" xml:space="preserve">
+    <value>层{0}</value>
+  </data>
+  <data name="Paint.TextLayerName" xml:space="preserve">
+    <value>文字层</value>
+  </data>
+  <data name="Picasa.AccountAndPasswordRequired" xml:space="preserve">
+    <value>请输入帐号和密码。</value>
+  </data>
+  <data name="Picasa.AccountRequired" xml:space="preserve">
+    <value>请输入帐号。</value>
+  </data>
+  <data name="Picasa.AlbumCreateFailed" xml:space="preserve">
+    <value>无法创建相册。
+
+※要使用此功能，您需要同意使用Picasa服务协议。
+请登陆 https://picasaweb.google.com/ 详细确认。</value>
+  </data>
+  <data name="Picasa.ConnectionError" xml:space="preserve">
+    <value>无法连接。</value>
+  </data>
+  <data name="Picasa.Forbidden" xml:space="preserve">
+    <value>访问被禁止。</value>
+  </data>
+  <data name="Picasa.InternalServerError" xml:space="preserve">
+    <value>内部服务器错误。</value>
+  </data>
+  <data name="Picasa.LoginFailed" xml:space="preserve">
+    <value>无法登录。</value>
+  </data>
+  <data name="Picasa.LoginFailedGeneric" xml:space="preserve">
+    <value>登录失败。</value>
+  </data>
+  <data name="Picasa.LoginGroupTitle" xml:space="preserve">
+    <value>输入您的谷歌帐户</value>
+  </data>
+  <data name="Picasa.NoEncoderFound" xml:space="preserve">
+    <value>因为没找到可以利用的编码器，不能保存图像。</value>
+  </data>
+  <data name="Picasa.NotFound" xml:space="preserve">
+    <value>无法找到所需的数据。</value>
+  </data>
+  <data name="Picasa.NotLoggedIn" xml:space="preserve">
+    <value>您还没有登录Picasa服务。</value>
+  </data>
+  <data name="Picasa.ServiceDisabled" xml:space="preserve">
+    <value>Picasa服务当前无法使用。</value>
+  </data>
+  <data name="Picasa.ServiceUnavailable" xml:space="preserve">
+    <value>Picasa服务未启动。</value>
+  </data>
+  <data name="Picasa.TermsNotAgreed" xml:space="preserve">
+    <value>不同意的条款和条件。</value>
+  </data>
+  <data name="Picasa.UploadFailed" xml:space="preserve">
+    <value>上传失败。</value>
+  </data>
+  <data name="Picasa.UploadTitle" xml:space="preserve">
+    <value>上传到Picasa</value>
+  </data>
+  <data name="Scale.Interpolation.Bicubic" xml:space="preserve">
+    <value>两次立方</value>
+  </data>
+  <data name="Scale.Interpolation.Bilinear" xml:space="preserve">
+    <value>双线性</value>
+  </data>
+  <data name="Scale.Interpolation.Default" xml:space="preserve">
+    <value>标准</value>
+  </data>
+  <data name="Scale.Interpolation.NearestNeighbor" xml:space="preserve">
+    <value>最近邻法</value>
+  </data>
+  <data name="Scale.Interpolation.Unchanged" xml:space="preserve">
+    <value>不要更改</value>
+  </data>
+  <data name="Style.AllHide.Name" xml:space="preserve">
+    <value>全部隐藏</value>
+  </data>
+  <data name="Style.AllShow.Name" xml:space="preserve">
+    <value>全部显示</value>
+  </data>
+  <data name="Style.Capture.Name" xml:space="preserve">
+    <value>制作参考图</value>
+  </data>
+  <data name="Style.Close.Name" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Style.DustBox.Name" xml:space="preserve">
+    <value>回收站</value>
+  </data>
+  <data name="Style.DustErase.Name" xml:space="preserve">
+    <value>清空回收站</value>
+  </data>
+  <data name="Style.DustScrap.Name" xml:space="preserve">
+    <value>关闭所有截图</value>
+  </data>
+  <data name="Style.Option.Name" xml:space="preserve">
+    <value>选项</value>
+  </data>
+  <data name="Style.Paste.Name" xml:space="preserve">
+    <value>从剪贴板中粘贴截图</value>
+  </data>
+  <data name="Style.ScrapList.Name" xml:space="preserve">
+    <value>参考图名单</value>
+  </data>
+  <data name="Style.Separator.Name" xml:space="preserve">
+    <value>[分隔符]</value>
+  </data>
+  <data name="Style.ShowVersion.Name" xml:space="preserve">
+    <value>版本信息</value>
+  </data>
+  <data name="Style.ShutDown.Name" xml:space="preserve">
+    <value>退出SETUNA</value>
+  </data>
+  <data name="StyleEdit.HotkeyAssignedTo" xml:space="preserve">
+    <value>「{0}」被分配。</value>
+  </data>
+  <data name="StyleEdit.HotkeyRegisterHint" xml:space="preserve">
+    <value>「登记」，然后按目前的分配方式。</value>
+  </data>
+  <data name="StyleItem.Close.Description" xml:space="preserve">
+    <value>关闭参考图。
+之后的自动操作将不被使用。</value>
+  </data>
+  <data name="StyleItem.Close.DisplayName" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="StyleItem.Compact.Description" xml:space="preserve">
+    <value>将参考图的尺寸收缩。
+之后的自动操作将不被使用。</value>
+  </data>
+  <data name="StyleItem.Compact.DisplayName" xml:space="preserve">
+    <value>收缩</value>
+  </data>
+  <data name="StyleItem.Copy.Description" xml:space="preserve">
+    <value>将参考图作为图像复制到剪贴板里。</value>
+  </data>
+  <data name="StyleItem.Copy.DisplayName" xml:space="preserve">
+    <value>复制到剪贴板</value>
+  </data>
+  <data name="StyleItem.ImageBmp.Description" xml:space="preserve">
+    <value>用BMP格式的图像保存参考图。</value>
+  </data>
+  <data name="StyleItem.ImageBmp.DisplayName" xml:space="preserve">
+    <value>保存为BMP格式</value>
+  </data>
+  <data name="StyleItem.ImageJpeg.Description" xml:space="preserve">
+    <value>用JPEG格式的图像保存参考图。</value>
+  </data>
+  <data name="StyleItem.ImageJpeg.DisplayName" xml:space="preserve">
+    <value>保存为JPEG格式</value>
+  </data>
+  <data name="StyleItem.ImagePng.Description" xml:space="preserve">
+    <value>用PNG格式的图像保存参考图。</value>
+  </data>
+  <data name="StyleItem.ImagePng.DisplayName" xml:space="preserve">
+    <value>保存为PNG格式</value>
+  </data>
+  <data name="StyleItem.Margin.Description" xml:space="preserve">
+    <value>设置参考图的边框的种类。</value>
+  </data>
+  <data name="StyleItem.Margin.DisplayName" xml:space="preserve">
+    <value>边框</value>
+  </data>
+  <data name="StyleItem.Margin.State3D" xml:space="preserve">
+    <value>立体边框</value>
+  </data>
+  <data name="StyleItem.Margin.StateSolid" xml:space="preserve">
+    <value>单色边框</value>
+  </data>
+  <data name="StyleItem.Margin.StateWindow" xml:space="preserve">
+    <value>窗口</value>
+  </data>
+  <data name="StyleItem.Move.Description" xml:space="preserve">
+    <value>上下左右移动参考图。</value>
+  </data>
+  <data name="StyleItem.Move.DisplayName" xml:space="preserve">
+    <value>参考图的移动</value>
+  </data>
+  <data name="StyleItem.Move.StateDown" xml:space="preserve">
+    <value>下：{0}px </value>
+  </data>
+  <data name="StyleItem.Move.StateLeft" xml:space="preserve">
+    <value>左：{0}px </value>
+  </data>
+  <data name="StyleItem.Move.StateRight" xml:space="preserve">
+    <value>右：{0}px </value>
+  </data>
+  <data name="StyleItem.Move.StateUp" xml:space="preserve">
+    <value>上：{0}px </value>
+  </data>
+  <data name="StyleItem.Opacity.Description" xml:space="preserve">
+    <value>设置不透明的参考图。</value>
+  </data>
+  <data name="StyleItem.Opacity.DisplayName" xml:space="preserve">
+    <value>不透明度</value>
+  </data>
+  <data name="StyleItem.Paint.Description" xml:space="preserve">
+    <value>可以直接在参考图上绘制。</value>
+  </data>
+  <data name="StyleItem.Paint.DisplayName" xml:space="preserve">
+    <value>绘制</value>
+  </data>
+  <data name="StyleItem.Paste.Description" xml:space="preserve">
+    <value>将剪贴板内的图像作为参考图。</value>
+  </data>
+  <data name="StyleItem.Paste.DisplayName" xml:space="preserve">
+    <value>从剪贴板粘贴</value>
+  </data>
+  <data name="StyleItem.PicasaUploader.AlbumComment" xml:space="preserve">
+    <value>用SETUNA上传的相册。</value>
+  </data>
+  <data name="StyleItem.PicasaUploader.Description" xml:space="preserve">
+    <value>把参考图上传到Picasa网络相册。</value>
+  </data>
+  <data name="StyleItem.PicasaUploader.DisplayName" xml:space="preserve">
+    <value>上传到Picasa</value>
+  </data>
+  <data name="StyleItem.Rotate.Description" xml:space="preserve">
+    <value>旋转和翻转参考图。</value>
+  </data>
+  <data name="StyleItem.Rotate.DisplayName" xml:space="preserve">
+    <value>旋转和翻转</value>
+  </data>
+  <data name="StyleItem.Scale.Description" xml:space="preserve">
+    <value>用于缩小/扩大参考图。</value>
+  </data>
+  <data name="StyleItem.Scale.DisplayName" xml:space="preserve">
+    <value>缩放参考图</value>
+  </data>
+  <data name="StyleItem.Scale.StateEnlarge" xml:space="preserve">
+    <value>{0}% 扩大</value>
+  </data>
+  <data name="StyleItem.Scale.StateFixed" xml:space="preserve">
+    <value>{0}% 固定</value>
+  </data>
+  <data name="StyleItem.Scale.StateOriginal" xml:space="preserve">
+    <value>原始大小</value>
+  </data>
+  <data name="StyleItem.Scale.StateShrink" xml:space="preserve">
+    <value>{0}% 缩小</value>
+  </data>
+  <data name="StyleItem.Timer.Description" xml:space="preserve">
+    <value>指定的时间内，暂停。</value>
+  </data>
+  <data name="StyleItem.Timer.DisplayName" xml:space="preserve">
+    <value>定时器</value>
+  </data>
+  <data name="StyleItem.ToneReverse.Description" xml:space="preserve">
+    <value>进行灰度等级翻转。</value>
+  </data>
+  <data name="StyleItem.ToneReverse.DisplayName" xml:space="preserve">
+    <value>灰度等级翻转</value>
+  </data>
+  <data name="StyleItem.Trim.Description" xml:space="preserve">
+    <value>您可以删除不需要的部分。</value>
+  </data>
+  <data name="StyleItem.Trim.DisplayName" xml:space="preserve">
+    <value>修剪</value>
+  </data>
+  <data name="StyleItem.Window.Description" xml:space="preserve">
+    <value>为参考图加上窗口边框。</value>
+  </data>
+  <data name="StyleItem.Window.DisplayName" xml:space="preserve">
+    <value>窗口化</value>
+  </data>
+</root>

@@ -1,4 +1,6 @@
-﻿namespace SETUNA.Main.Style
+﻿using SETUNA.Main.Localization;
+
+namespace SETUNA.Main.Style
 {
     // Token: 0x0200004B RID: 75
     public class CShowVersionStyle : CPreStyle
@@ -7,7 +9,7 @@
         public CShowVersionStyle()
         {
             _styleid = -5;
-            _stylename = "版本信息";
+            _stylename = Lang.T("Style.ShowVersion.Name");
         }
 
         // Token: 0x060002C3 RID: 707 RVA: 0x0000F5A0 File Offset: 0x0000D7A0

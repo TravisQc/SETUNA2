@@ -1,4 +1,6 @@
-﻿namespace SETUNA.Main.Style
+﻿using SETUNA.Main.Localization;
+
+namespace SETUNA.Main.Style
 {
     // Token: 0x0200004C RID: 76
     public class COptionStyle : CPreStyle
@@ -7,7 +9,7 @@
         public COptionStyle()
         {
             _styleid = -10;
-            _stylename = "选项";
+            _stylename = Lang.T("Style.Option.Name");
         }
 
         // Token: 0x060002C5 RID: 709 RVA: 0x0000F5D8 File Offset: 0x0000D7D8

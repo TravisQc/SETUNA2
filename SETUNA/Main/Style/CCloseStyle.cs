@@ -1,6 +1,8 @@
 ﻿using System.Drawing;
 using SETUNA.Main.StyleItems;
 
+using SETUNA.Main.Localization;
+
 namespace SETUNA.Main.Style
 {
     // Token: 0x02000085 RID: 133
@@ -10,7 +12,7 @@ namespace SETUNA.Main.Style
         public CCloseStyle()
         {
             _styleid = -1;
-            _stylename = "关闭";
+            _stylename = Lang.T("Style.Close.Name");
         }
 
         // Token: 0x0600046A RID: 1130 RVA: 0x0001C9E8 File Offset: 0x0001ABE8

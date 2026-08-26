@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -71,7 +72,7 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x060000F3 RID: 243 RVA: 0x00006AFC File Offset: 0x00004CFC
         private void ScrapPaintLayer_Shown(object sender, EventArgs e)
         {
-            var addLayerCommand = new AddLayerCommand("层" + (_layers.Count + 1).ToString(), SelectionIndex);
+            var addLayerCommand = new AddLayerCommand(Lang.T("Paint.LayerName", _layers.Count + 1), SelectionIndex);
             addLayerCommand.AddLayer += addCmd_AddLayer;
             AddCommand(addLayerCommand);
             layer_SelectLayer(_layers[0]);
@@ -80,7 +81,7 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x060000F4 RID: 244 RVA: 0x00006B60 File Offset: 0x00004D60
         public void AddLayer()
         {
-            var addLayerCommand = new AddLayerCommand("层" + (_layers.Count + 1).ToString(), SelectionIndex);
+            var addLayerCommand = new AddLayerCommand(Lang.T("Paint.LayerName", _layers.Count + 1), SelectionIndex);
             addLayerCommand.AddLayer += addCmd_AddLayer;
             _parent.AddLayerCommand(addLayerCommand);
         }
@@ -133,7 +134,7 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x060000F8 RID: 248 RVA: 0x00006D60 File Offset: 0x00004F60
         private void DeleteLayer()
         {
-            if (_select != null && MessageBox.Show(_select.LayerName + "我如何删除？", base.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            if (_select != null && MessageBox.Show(Lang.T("Message.ConfirmDeleteLayer", _select.LayerName), base.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
                 var deleteLayerCommand = new DeleteLayerCommand(SelectionLayer.LayerID);
                 deleteLayerCommand.DeleteLayer += delCmd_DeleteLayer;

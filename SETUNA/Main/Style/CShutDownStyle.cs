@@ -1,4 +1,6 @@
-﻿namespace SETUNA.Main.Style
+﻿using SETUNA.Main.Localization;
+
+namespace SETUNA.Main.Style
 {
     // Token: 0x0200004D RID: 77
     public class CShutDownStyle : CPreStyle
@@ -7,7 +9,7 @@
         public CShutDownStyle()
         {
             _styleid = -11;
-            _stylename = "退出SETUNA";
+            _stylename = Lang.T("Style.ShutDown.Name");
         }
 
         // Token: 0x060002C7 RID: 711 RVA: 0x0000F614 File Offset: 0x0000D814

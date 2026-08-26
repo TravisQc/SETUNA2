@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -110,7 +111,7 @@ namespace SETUNA.Main.StyleItems
                 }
                 catch
                 {
-                    MessageBox.Show("文件夹名无效。", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(Lang.T("Message.InvalidFolderName"), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     txtFolder.Focus();
                     return;
                 }
@@ -119,7 +120,7 @@ namespace SETUNA.Main.StyleItems
             {
                 if (txtName.Text == "")
                 {
-                    MessageBox.Show("没有指定文件名。", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(Lang.T("Message.FileNameMissing"), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     txtName.Focus();
                     return;
                 }
@@ -128,7 +129,7 @@ namespace SETUNA.Main.StyleItems
                 {
                     if (txtName.Text.IndexOf(value) > -1)
                     {
-                        MessageBox.Show("文件名无效。", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show(Lang.T("Message.InvalidFileName"), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         txtName.Focus();
                         return;
                     }

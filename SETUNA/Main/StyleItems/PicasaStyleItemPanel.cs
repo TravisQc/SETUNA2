@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -45,13 +46,13 @@ namespace SETUNA.Main.StyleItems
             if (comboBox1.SelectedIndex == 0 && (txtID.TextLength == 0 || txtPass.TextLength == 0))
             {
                 cancel = true;
-                MessageBox.Show("请输入帐号和密码。");
+                MessageBox.Show(Lang.T("Picasa.AccountAndPasswordRequired"));
                 return;
             }
             if (comboBox1.SelectedIndex == 0 && txtID.TextLength == 0)
             {
                 cancel = true;
-                MessageBox.Show("请输入帐号。");
+                MessageBox.Show(Lang.T("Picasa.AccountRequired"));
             }
         }
 

@@ -51,7 +51,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(182, 179);
+            this.button1.Location = new System.Drawing.Point(206, 179);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(64, 23);
             this.button1.TabIndex = 8;
@@ -103,17 +103,17 @@
             // 
             // txtPass
             // 
-            this.txtPass.Location = new System.Drawing.Point(88, 62);
+            this.txtPass.Location = new System.Drawing.Point(126, 62);
             this.txtPass.Name = "txtPass";
             this.txtPass.PasswordChar = '*';
-            this.txtPass.Size = new System.Drawing.Size(158, 21);
+            this.txtPass.Size = new System.Drawing.Size(120, 21);
             this.txtPass.TabIndex = 3;
             // 
             // txtID
             // 
-            this.txtID.Location = new System.Drawing.Point(88, 28);
+            this.txtID.Location = new System.Drawing.Point(126, 28);
             this.txtID.Name = "txtID";
-            this.txtID.Size = new System.Drawing.Size(158, 21);
+            this.txtID.Size = new System.Drawing.Size(120, 21);
             this.txtID.TabIndex = 2;
             // 
             // label2
