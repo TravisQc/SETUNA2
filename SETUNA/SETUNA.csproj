@@ -172,6 +172,7 @@
     <Compile Include="Main\Magnifier.Designer.cs">
       <DependentUpon>Magnifier.cs</DependentUpon>
     </Compile>
+    <Compile Include="Main\MagnifierGeometry.cs" />
     <Compile Include="Main\ScrapGeometry.cs" />
     <Compile Include="Main\ScrapSourceUrl.cs" />
     <Compile Include="Main\Style\CPasteStyle.cs" />

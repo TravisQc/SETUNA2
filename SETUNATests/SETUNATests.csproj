@@ -97,6 +97,8 @@
     <Compile Include="Main\Localization\EnglishLayoutFitTests.cs" />
     <Compile Include="Main\Option\HotKeyRegistrationTests.cs" />
     <Compile Include="Main\CaptureResourceTests.cs" />
+    <Compile Include="Main\MagnifierGeometryTests.cs" />
+    <Compile Include="Main\MagnifierRenderTests.cs" />
     <Compile Include="Main\ScrapGeometryTests.cs" />
     <Compile Include="Main\Startup\AutoStartupTests.cs" />
     <Compile Include="Main\Option\OptionPersistenceTests.cs" />

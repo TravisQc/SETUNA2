@@ -407,7 +407,7 @@ namespace SETUNA.Main
 
             if (Mainform.Instance.optSetuna.Setuna.MagnifierEnabled)
             {
-                magnifier.SetLocation(magnifier.LocationType);
+                magnifier.Reseat();
                 magnifier.Opacity = base.Opacity;
             }
         }
@@ -613,19 +613,17 @@ namespace SETUNA.Main
 
             if (Mainform.Instance.optSetuna.Setuna.MagnifierEnabled)
             {
-                var cursorPos = Cursor.Position;
-                var point = Point.Empty;
-                var point2 = Point.Empty;
+                var selection = Size.Empty;
 
                 if (blDrag)
                 {
-                    point.X = Math.Min(ptStart.X, ptEnd.X);
-                    point.Y = Math.Min(ptStart.Y, ptEnd.Y);
-                    point2.X = Math.Max(ptStart.X, ptEnd.X);
-                    point2.Y = Math.Max(ptStart.Y, ptEnd.Y);
+                    selection = new Size(
+                        Math.Abs(ptEnd.X - ptStart.X),
+                        Math.Abs(ptEnd.Y - ptStart.Y));
                 }
 
-                magnifier.SetText(cursorPos.X, cursorPos.Y, point2.X - point.X, point2.Y - point.Y);
+                // 位置、标签、画面都从这一个入口更新，光标没动时它自己短路。
+                magnifier.Track(Cursor.Position, selection);
             }
         }
 

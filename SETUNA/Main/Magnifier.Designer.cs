@@ -8,16 +8,28 @@ namespace SETUNA.Main
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        bool ownedResourcesDisposed;
+
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            // Component.Dispose() 不做防重入，Close() 之后再 Dispose() 会走两遍这条路径，
+            // 所以缓冲区和定时器的释放要自己保证只执行一次。
+            if (disposing && !ownedResourcesDisposed)
             {
-                components.Dispose();
+                ownedResourcesDisposed = true;
+
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+
+                DisposeOwnedResources();
             }
+
             base.Dispose(disposing);
         }
 
@@ -40,7 +52,7 @@ namespace SETUNA.Main
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(1);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(246, 246);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Normal;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
