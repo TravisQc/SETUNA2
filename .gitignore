@@ -352,3 +352,5 @@ MigrationBackup/
 /.codex
 /openspec
 /.dpiprobe
+/.agents
+skills-lock.json
