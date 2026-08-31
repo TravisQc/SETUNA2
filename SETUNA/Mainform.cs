@@ -475,22 +475,42 @@ namespace SETUNA
             }
         }
 
-        // 只在启动时按当前 DPI 换算一次：单文件分发没有 app.config，WinForms 4.7+
-        // 的动态 DPI 特性（DpiChanged 事件、跨显示器自动重排）随之关闭，窗口移动到
-        // 其他缩放比例的显示器时不会有通知，也不会被 WinForms 改动 MinimumSize。
-        private void ApplyMinimumWindowSize(int dpi)
-        {
-            // 最大尺寸是固定像素值，不随 DPI 换算；在代码里设置使 MainWindowGeometry
-            // 成为运行时约束的唯一来源，设计器里的字面量只服务于设计时预览。
-            MaximumSize = MainWindowGeometry.Maximum;
+        /// <summary>
+        /// 主窗口随所处显示器的 DPI 重排。
+        /// </summary>
+        protected override bool ScalesWithMonitorDpi => true;
 
+        /// <summary>
+        /// 按 <paramref name="dpi"/> 施加尺寸边界。两个边界都有 175%（168 DPI）下的实测基线，
+        /// 按当前显示器的 DPI 换算，因此在每台显示器上是同一个物理尺寸。
+        /// <para>
+        /// 在代码里设置使 <see cref="MainWindowGeometry"/> 成为运行时约束的唯一来源，
+        /// 设计器里的字面量只服务于设计时预览。
+        /// </para>
+        /// </summary>
+        private void ApplyWindowSizeBounds(int dpi)
+        {
             var minimum = MainWindowGeometry.ScaleMinimum(dpi);
-            if (minimum.IsEmpty)
+            var maximum = MainWindowGeometry.ScaleMaximum(dpi);
+
+            // Size.Empty 表示「DPI 取不到，不应改动当前边界」。
+            if (minimum.IsEmpty || maximum.IsEmpty)
             {
                 return;
             }
 
+            // 先放开上限再收下限：反过来时若新下限大于旧上限，中间状态会被旧上限钳住。
+            MaximumSize = maximum;
             MinimumSize = minimum;
+        }
+
+        /// <summary>
+        /// 重排时按基线重算边界，而不是按 DPI 之比缩放重排前的值——后者反复跨屏会累积
+        /// 四舍五入误差，而这两个边界有确定的基线可以直接算。
+        /// </summary>
+        protected override void ApplySizeBounds(int newDpi, int oldDpi, Size previousMinimum, Size previousMaximum)
+        {
+            ApplyWindowSizeBounds(newDpi);
         }
 
         private void RestoreMainWindowSize()
@@ -502,7 +522,7 @@ namespace SETUNA
                 return;
             }
 
-            Size = MainWindowGeometry.Clamp(optSetuna.MainWindowWidth, optSetuna.MainWindowHeight, MinimumSize);
+            Size = MainWindowGeometry.Clamp(optSetuna.MainWindowWidth, optSetuna.MainWindowHeight, MinimumSize, MaximumSize);
         }
 
         private void SaveMainWindowSize()
@@ -512,7 +532,7 @@ namespace SETUNA
                 return;
             }
 
-            var clamped = MainWindowGeometry.Clamp(Size.Width, Size.Height, MinimumSize);
+            var clamped = MainWindowGeometry.Clamp(Size.Width, Size.Height, MinimumSize, MaximumSize);
             optSetuna.MainWindowWidth = clamped.Width;
             optSetuna.MainWindowHeight = clamped.Height;
         }
@@ -738,7 +758,9 @@ namespace SETUNA
         {
             base.Visible = false;
             LoadOption();
-            ApplyMinimumWindowSize(DeviceDpi);
+            // 用窗口真实的 DPI，不用 Control.DeviceDpi——后者在本配置下恒为 96，
+            // 会把边界算成 100% 缩放下的值（见 WindowsAPI.GetWindowDpi）。
+            ApplyWindowSizeBounds(WindowsAPI.GetWindowDpi(Handle));
             RestoreMainWindowSize();
             OptionApply();
             SaveOption();

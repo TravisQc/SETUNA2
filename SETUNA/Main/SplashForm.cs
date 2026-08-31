@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using SETUNA.Main.Common;
 
 namespace SETUNA.Main
 {
@@ -13,6 +14,10 @@ namespace SETUNA.Main
 
             lblVer.Text = base.ProductName + " " + Application.ProductVersion;
             label1.Text = URLUtils.NewURL;
+
+            // Logo 素材是 400x126，控件按环境字体缩放后在 175% 下约 758x244，等于放大 1.9 倍。
+            // 设计器给的 SizeMode = Zoom 走 GDI+ 默认插值，放大出来是糊的。
+            SmoothImage.Attach(pictureBox1);
         }
 
         // Token: 0x06000274 RID: 628 RVA: 0x0000D565 File Offset: 0x0000B765

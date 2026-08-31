@@ -1,12 +1,14 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Text;
 using SETUNA.Main.StyleItems;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main
 {
     // Token: 0x02000083 RID: 131
-    internal class StyleItemListBox : SetunaListBox
+    internal class StyleItemListBox : SetunaListBox, IDpiRelayoutListener
     {
         // Token: 0x170000A9 RID: 169
         // (get) Token: 0x0600045D RID: 1117 RVA: 0x0001C809 File Offset: 0x0001AA09
@@ -37,6 +39,37 @@ namespace SETUNA.Main
             TerminateEnd = false;
             HelpFont = new Font(Font, FontStyle.Regular);
             HelpForeColor = Color.Gray;
+        }
+
+        /// <summary>
+        /// DPI 变化时换算 <see cref="HelpFont"/>。
+        /// <para>
+        /// 它是独立的字体属性，不在控件树的字体继承链上，窗体重排换不到它。而它的像素大小本来
+        /// 是随系统 DPI 变的：设计器给的 8pt 在 96 DPI 下是 11 像素、在 168 DPI 下是 19 像素。
+        /// 重排把窗体其余部分换到了新 DPI 的等效字号，这里不跟上，说明文字就会停在旧 DPI 的
+        /// 大小上，把每一项的两行文字挤成一团。
+        /// </para>
+        /// <para>
+        /// <see cref="System.Windows.Forms.ListBox.ItemHeight"/>、
+        /// <see cref="SetunaListBox.LeftSpace"/> 和图标的绘制尺寸刻意不换算：它们在原实现里
+        /// 于任何 DPI 下都是同一个像素值（在 96 与 168 DPI 上实测均为 39 与 34），换算反而会
+        /// 让重排结果偏离该 DPI 下的原生排版，并且把固定尺寸的图标挤出行高。行高不随 DPI 变化
+        /// 是既有问题，与跨显示器重排无关。
+        /// </para>
+        /// </summary>
+        public void OnDpiRelayout(int newDpi, int oldDpi)
+        {
+            if (HelpFont == null)
+            {
+                return;
+            }
+
+            var previous = HelpFont;
+            HelpFont = DpiRelayout.ScaleFont(previous, newDpi, oldDpi);
+
+            // 这个字体只由本属性持有（构造函数或设计器各自 new 出来的），换掉之后没人再引用，
+            // 必须还回 GDI 句柄。
+            previous.Dispose();
         }
 
         // Token: 0x06000463 RID: 1123 RVA: 0x0001C870 File Offset: 0x0001AA70

@@ -37,6 +37,9 @@ namespace SETUNA.Main
             InitializeComponent();
         }
 
+        /// <summary>本窗体随所处显示器的 DPI 重排：只有说明文字与按键标签，没有位图与自绘控件。</summary>
+        protected override bool ScalesWithMonitorDpi => true;
+
         // Token: 0x0600030B RID: 779 RVA: 0x000150E6 File Offset: 0x000132E6
         private void btnClose_Click(object sender, EventArgs e)
         {

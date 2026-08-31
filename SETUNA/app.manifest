@@ -39,8 +39,11 @@
 	     设定 awareness context，早于任何托管代码，也不可能与主程序失散。
 	     .NET Framework 4.7+ 那套 WinForms 高 DPI 特性（DpiChanged 事件、跨显示器
 	     自动重排）只能由 app.config 的 System.Windows.Forms.ApplicationConfigurationSection
-	     开启，与单文件分发不共存，已有意放弃：窗体按启动时的系统 DPI 缩放一次，
-	     需要按 DPI 换算的尺寸由应用代码自行计算（见 MainWindowGeometry）。
+	     开启，与单文件分发不共存，已有意放弃：框架不会替应用重排任何窗口内容。
+	     但「不重排」不等于「没有通知」——PerMonitorV2 下系统照样发 WM_DPICHANGED，
+	     而且会在自己的拖拽循环里把窗口矩形按新旧 DPI 之比改掉。于是重排责任落在
+	     应用自己身上，入口是 BaseForm 对该消息的处理（见 Main/Window/DpiRelayout.cs），
+	     按 DPI 换算的尺寸由应用代码自行计算（见 MainWindowGeometry）。
 	     dpiAware=true/pm 是 Windows 8.1 的回退键，dpiAwareness 在 Windows 10 1703+
 	     生效并覆盖它，两者并存是推荐写法。 -->
 	<asmv3:application xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">

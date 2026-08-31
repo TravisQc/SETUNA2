@@ -22,8 +22,8 @@ namespace SETUNA.Main.Window.Tests
         [TestMethod]
         public void MinimumStaysBelowTheDefaultOuterSizeAndTheMaximum()
         {
-            Assert.IsTrue(MainWindowGeometry.MinimumBaselineWidth < MainWindowGeometry.MaximumWidth);
-            Assert.IsTrue(MainWindowGeometry.MinimumBaselineHeight < MainWindowGeometry.MaximumHeight);
+            Assert.IsTrue(MainWindowGeometry.MinimumBaselineWidth < MainWindowGeometry.MaximumBaselineWidth);
+            Assert.IsTrue(MainWindowGeometry.MinimumBaselineHeight < MainWindowGeometry.MaximumBaselineHeight);
 
             // Windows' own minimum track size on a 175% display is 236x64; the
             // configured minimum has to exceed it to have any effect there.
@@ -32,49 +32,68 @@ namespace SETUNA.Main.Window.Tests
         }
 
         [TestMethod]
-        public void ScaledMinimumStaysInsideTheFixedMaximumAtEveryCommonScale()
+        public void ScaledMinimumStaysInsideTheScaledMaximumAtEveryCommonScale()
         {
-            // 96 = 100%, 120 = 125%, 168 = 175%, 240 = 250%, 288 = 300%. The
-            // maximum is a plain pixel value that WinForms never rescales, so the
-            // scaled minimum has to stay under it on every monitor.
+            // 96 = 100%, 120 = 125%, 168 = 175%, 240 = 250%, 288 = 300%. Both bounds
+            // are measured at 168 DPI and scaled from there, so the ordering has to
+            // hold on every monitor.
             foreach (var dpi in new[] { 96, 120, 144, 168, 192, 240, 288 })
             {
                 var minimum = MainWindowGeometry.ScaleMinimum(dpi);
+                var maximum = MainWindowGeometry.ScaleMaximum(dpi);
 
-                Assert.IsTrue(minimum.Width < MainWindowGeometry.MaximumWidth, "Minimum width exceeds the maximum at " + dpi + " DPI.");
-                Assert.IsTrue(minimum.Height < MainWindowGeometry.MaximumHeight, "Minimum height exceeds the maximum at " + dpi + " DPI.");
+                Assert.IsTrue(minimum.Width < maximum.Width, "Minimum width exceeds the maximum at " + dpi + " DPI.");
+                Assert.IsTrue(minimum.Height < maximum.Height, "Minimum height exceeds the maximum at " + dpi + " DPI.");
             }
         }
 
         [TestMethod]
-        public void ScaledMinimumReturnsTheMeasuredBaselineAtItsOwnDpi()
+        public void BothScaledBoundsReturnTheMeasuredBaselineAtTheBaselineDpi()
         {
-            var baseline = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
+            var minimum = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.BaselineDpi);
+            var maximum = MainWindowGeometry.ScaleMaximum(MainWindowGeometry.BaselineDpi);
 
-            Assert.AreEqual(MainWindowGeometry.MinimumBaselineWidth, baseline.Width);
-            Assert.AreEqual(MainWindowGeometry.MinimumBaselineHeight, baseline.Height);
+            Assert.AreEqual(MainWindowGeometry.MinimumBaselineWidth, minimum.Width);
+            Assert.AreEqual(MainWindowGeometry.MinimumBaselineHeight, minimum.Height);
+            Assert.AreEqual(MainWindowGeometry.MaximumBaselineWidth, maximum.Width);
+            Assert.AreEqual(MainWindowGeometry.MaximumBaselineHeight, maximum.Height);
         }
 
         [TestMethod]
-        public void ScaledMinimumShrinksOnLowerDpiAndGrowsOnHigherDpi()
+        public void BothScaledBoundsShrinkOnLowerDpiAndGrowOnHigherDpi()
         {
             var low = MainWindowGeometry.ScaleMinimum(96);
-            var baseline = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
+            var baseline = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.BaselineDpi);
             var high = MainWindowGeometry.ScaleMinimum(288);
 
             Assert.AreEqual(148, low.Width);
             Assert.AreEqual(91, low.Height);
             Assert.IsTrue(low.Width < baseline.Width && baseline.Width < high.Width);
             Assert.IsTrue(low.Height < baseline.Height && baseline.Height < high.Height);
+
+            // The maximum used to be a plain pixel value that nothing rescaled. That
+            // does not survive per-monitor relayout: the layout grows with the DPI
+            // while a fixed ceiling does not, so the window gets clamped and its
+            // content clipped on the higher-DPI monitor.
+            var maximumLow = MainWindowGeometry.ScaleMaximum(96);
+            var maximumHigh = MainWindowGeometry.ScaleMaximum(288);
+
+            Assert.AreEqual(365, maximumLow.Width);
+            Assert.AreEqual(205, maximumLow.Height);
+            Assert.IsTrue(maximumLow.Width < MainWindowGeometry.MaximumBaselineWidth);
+            Assert.IsTrue(MainWindowGeometry.MaximumBaselineWidth < maximumHigh.Width);
         }
 
         [TestMethod]
-        public void ScaledMinimumIsSkippedForANonPositiveDpi()
+        public void BothScaledBoundsAreSkippedForANonPositiveDpi()
         {
-            // Size.Empty tells the caller to leave the current MinimumSize alone
-            // rather than collapsing the window to nothing.
+            // Size.Empty tells the caller to leave the current bound alone rather
+            // than collapsing the window to nothing — or, for the maximum, telling
+            // WinForms "unbounded".
             Assert.IsTrue(MainWindowGeometry.ScaleMinimum(0).IsEmpty);
             Assert.IsTrue(MainWindowGeometry.ScaleMinimum(-96).IsEmpty);
+            Assert.IsTrue(MainWindowGeometry.ScaleMaximum(0).IsEmpty);
+            Assert.IsTrue(MainWindowGeometry.ScaleMaximum(-96).IsEmpty);
         }
 
         [TestMethod]
@@ -84,7 +103,7 @@ namespace SETUNA.Main.Window.Tests
             // 168 DPI. The default is a client size, so the reachable outer
             // default is the client default plus that chrome.
             AssertDefaultReachable(96, 16, 39);
-            AssertDefaultReachable(MainWindowGeometry.MinimumBaselineDpi, 24, 64);
+            AssertDefaultReachable(MainWindowGeometry.BaselineDpi, 24, 64);
         }
 
         static void AssertDefaultReachable(int dpi, int chromeWidth, int chromeHeight)
@@ -102,20 +121,18 @@ namespace SETUNA.Main.Window.Tests
         [TestMethod]
         public void ClampPullsAnOversizedPersistedSizeDownToTheMaximum()
         {
-            var minimum = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
+            var clamped = MainWindowGeometry.Clamp(9999, 9999, Minimum(), Maximum());
 
-            var clamped = MainWindowGeometry.Clamp(9999, 9999, minimum);
-
-            Assert.AreEqual(MainWindowGeometry.MaximumWidth, clamped.Width);
-            Assert.AreEqual(MainWindowGeometry.MaximumHeight, clamped.Height);
+            Assert.AreEqual(MainWindowGeometry.MaximumBaselineWidth, clamped.Width);
+            Assert.AreEqual(MainWindowGeometry.MaximumBaselineHeight, clamped.Height);
         }
 
         [TestMethod]
         public void ClampPushesAnUndersizedPersistedSizeUpToTheScaledMinimum()
         {
-            var minimum = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
+            var minimum = Minimum();
 
-            var clamped = MainWindowGeometry.Clamp(10, 10, minimum);
+            var clamped = MainWindowGeometry.Clamp(10, 10, minimum, Maximum());
 
             Assert.AreEqual(minimum.Width, clamped.Width);
             Assert.AreEqual(minimum.Height, clamped.Height);
@@ -124,9 +141,7 @@ namespace SETUNA.Main.Window.Tests
         [TestMethod]
         public void ClampLeavesAnInRangePersistedSizeUntouched()
         {
-            var minimum = MainWindowGeometry.ScaleMinimum(MainWindowGeometry.MinimumBaselineDpi);
-
-            var clamped = MainWindowGeometry.Clamp(520, 300, minimum);
+            var clamped = MainWindowGeometry.Clamp(520, 300, Minimum(), Maximum());
 
             Assert.AreEqual(520, clamped.Width);
             Assert.AreEqual(300, clamped.Height);
@@ -135,14 +150,25 @@ namespace SETUNA.Main.Window.Tests
         [TestMethod]
         public void ClampHonoursTheMinimumEvenWhenItExceedsTheMaximum()
         {
-            // A hypothetical very-high-DPI monitor must never yield a size below
-            // the minimum the caller asked for, even if that beats the maximum.
-            var minimum = new System.Drawing.Size(MainWindowGeometry.MaximumWidth + 40, MainWindowGeometry.MaximumHeight + 40);
+            // A persisted size restored while the bounds belong to a different DPI can
+            // arrive with a minimum that beats the maximum. The result must never fall
+            // below the minimum the caller asked for.
+            var minimum = new System.Drawing.Size(MainWindowGeometry.MaximumBaselineWidth + 40, MainWindowGeometry.MaximumBaselineHeight + 40);
 
-            var clamped = MainWindowGeometry.Clamp(100, 100, minimum);
+            var clamped = MainWindowGeometry.Clamp(100, 100, minimum, Maximum());
 
             Assert.AreEqual(minimum.Width, clamped.Width);
             Assert.AreEqual(minimum.Height, clamped.Height);
+        }
+
+        static System.Drawing.Size Minimum()
+        {
+            return MainWindowGeometry.ScaleMinimum(MainWindowGeometry.BaselineDpi);
+        }
+
+        static System.Drawing.Size Maximum()
+        {
+            return MainWindowGeometry.ScaleMaximum(MainWindowGeometry.BaselineDpi);
         }
 
         [TestMethod]

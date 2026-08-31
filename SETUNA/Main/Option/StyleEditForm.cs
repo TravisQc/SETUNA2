@@ -5,6 +5,7 @@ using SETUNA.Main.KeyItems;
 using SETUNA.Main.Style;
 using SETUNA.Main.StyleItems;
 using SETUNA.Main.Localization;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main.Option
 {
@@ -34,6 +35,16 @@ namespace SETUNA.Main.Option
         // (get) Token: 0x06000440 RID: 1088 RVA: 0x0001C175 File Offset: 0x0001A375
         public CStyle Style => _trgStyle;
 
+        /// <summary>
+        /// 本窗体随所处显示器的 DPI 重排。
+        /// <para>
+        /// 三个列表是自绘的（<see cref="SetunaListBox"/> 派生），绘制用的是控件当前字体，因此
+        /// 跟着重排走。<see cref="StyleItemListBox"/> 另有一个独立的说明字体属性，它自己实现
+        /// <see cref="IDpiRelayoutListener"/> 来换算——那个属性不在字体继承链上，光换窗体字体
+        /// 到不了它。
+        /// </para>
+        /// </summary>
+        protected override bool ScalesWithMonitorDpi => true;
         // Token: 0x06000441 RID: 1089 RVA: 0x0001C180 File Offset: 0x0001A380
         private void RefreshStyleItemList()
         {

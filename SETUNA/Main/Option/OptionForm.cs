@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using SETUNA.Main.Common;
 using SETUNA.Main.KeyItems;
 using SETUNA.Main.Localization;
 using SETUNA.Main.Style;
@@ -25,7 +26,26 @@ namespace SETUNA.Main.Option
             ApplyAboutLinks();
             linkLabel1.LinkClicked += LinkLabel1_LinkClicked;
             linkLabel2.LinkClicked += LinkLabel2_LinkClicked;
+
+            // 左下角的 logo 交给高质量重采样画，否则跨到缩放比接近 1 的显示器上会发虚。
+            SmoothImage.Attach(pictureBox1);
         }
+
+        /// <summary>
+        /// 选项窗体随所处显示器的 DPI 重排。
+        /// <para>
+        /// 导航标签的字体由 <see cref="tabControl1_TabIndexChanged"/> 在选中项变化时重设，
+        /// 那里是从标签当前的字体派生加粗版本，因此重设出来的字号就是当前 DPI 下的字号，
+        /// 不会把重排的结果退回设计时的大小。
+        /// </para>
+        /// <para>
+        /// 窗体里唯一带位图的控件是左下角的 <c>pictureBox1</c>，它跟着控件尺寸等比缩放，绘制
+        /// 交给 <see cref="SmoothImage"/>——设计器给的 <c>SizeMode = Zoom</c> 走 GDI+ 默认插值，
+        /// 缩放比接近 1 时会把图糊掉；其余三个 <c>PictureBox</c> 只用 <c>BackColor</c> 显示颜色，
+        /// 没有图像。
+        /// </para>
+        /// </summary>
+        protected override bool ScalesWithMonitorDpi => true;
 
         /// <summary>
         /// 设置「信息」区两个链接的文字与热区。
