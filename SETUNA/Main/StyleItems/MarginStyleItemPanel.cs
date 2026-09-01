@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
+using SETUNA.Main.Common;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -18,11 +18,7 @@ namespace SETUNA.Main.StyleItems
         {
             var cmarginStyleItem = (CMarginStyleItem)style;
             InitializeComponent();
-            imgBackground = new Bitmap(picPreview.Width, picPreview.Height, PixelFormat.Format24bppRgb);
-            using (var graphics = Graphics.FromImage(imgBackground))
-            {
-                graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), imgBackground.Size);
-            }
+            imgBackground = PreviewBackdrop.Capture(picPreview.Size);
             imgScrap = SETUNA.Resources.Image.SampleImage;
             picSample = new PictureBox
             {
@@ -58,6 +54,33 @@ namespace SETUNA.Main.StyleItems
             Text = cmarginStyleItem.GetDisplayName();
             rdoWindow_CheckedChanged(null, null);
             frmPrev.Paint += Sample_Paint;
+        }
+
+        /// <summary>
+        /// 预览里的两样东西跟上重排结果：按预览框尺寸抓的背景，以及浮在背景上那个示例窗口。
+        /// <para>
+        /// 示例窗口是个 <c>TopLevel = false</c> 的子窗体，连同里面的 <c>picSample</c> 一起挂在
+        /// <c>picPreview</c> 下，所以 <c>AutoScaleMode.Font</c> 会把它们的矩形一并放大。可它们
+        /// 表示的是「贴图加上 N 像素边距之后的样子」，边距的单位就是像素——放大之后示例图周围
+        /// 会多出一圈与设定值无关的空白，<see cref="ResizeSample"/> 又按 <c>picSample.Width</c>
+        /// 反算边框，误差会一路传下去。因此把 <c>picSample</c> 按原图尺寸钉回去，再让
+        /// <see cref="ResizeSample"/> 重新算一遍边框与居中位置——它读的是 <c>picPreview</c> 的
+        /// 当前尺寸，所以放大后的预览框里仍然居中。
+        /// </para>
+        /// </summary>
+        protected override void OnDpiRelayout(int newDpi, int oldDpi)
+        {
+            base.OnDpiRelayout(newDpi, oldDpi);
+
+            imgBackground = PreviewBackdrop.Resize(imgBackground, picPreview.Size);
+
+            if (picSample != null && imgScrap != null)
+            {
+                picSample.Size = imgScrap.Size;
+            }
+
+            ResizeSample();
+            picPreview.Invalidate();
         }
 
         // Token: 0x0600000E RID: 14 RVA: 0x00002CCC File Offset: 0x00000ECC

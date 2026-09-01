@@ -19,6 +19,24 @@ namespace SETUNA.Main.StyleItems
             SetStyleToForm(style);
         }
 
+        /// <summary>
+        /// 样式设置对话框全部随所处显示器的 DPI 重排。
+        /// <para>
+        /// 一处重写覆盖全部十七个面板：它们都派生自本类，都是普通的设置对话框——
+        /// <c>AutoScaleMode.Font</c> 加固定边框，排版完全由「设计值 + DPI」决定，正是
+        /// <c>BaseForm</c> 的重排能精确还原的那一类。只有 JPEG 预览面板把边框改成了
+        /// <c>SizableToolWindow</c>，它因此走 <see cref="BaseForm.ReproducesLayoutFromBaseline"/>
+        /// 的另一条分支，按新旧 DPI 之比缩放当前状态，不受基线快照约束。
+        /// </para>
+        /// <para>
+        /// 以像素为语义的那部分已经被 <c>AutoSize</c> 挡住了：JPEG/PNG 预览面板里的
+        /// <c>picPreview</c> 是 <c>SizeMode = AutoSize</c>，尺寸由编码出来的位图决定，重排写回
+        /// 矩形对它无效，于是预览始终是 1:1 像素——要拿它判断压缩质量，这一点不能变。跟着缩放的
+        /// 只有外面那圈裁剪用的面板。
+        /// </para>
+        /// </summary>
+        protected override bool ScalesWithMonitorDpi => true;
+
         // Token: 0x06000005 RID: 5 RVA: 0x000022A8 File Offset: 0x000004A8
         private void cmdOK_Click(object sender, EventArgs e)
         {

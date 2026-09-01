@@ -196,6 +196,9 @@ public class BaseForm : Form
             // 之后，实现方可以直接参照控件当前的 Font 与 Bounds。
             NotifyDpiRelayoutListeners(this, newDpi, oldDpi);
 
+            // 窗体自己持有的那些量紧随其后，理由与上面同一条。
+            OnDpiRelayout(newDpi, oldDpi);
+
             ApplySizeBounds(newDpi, oldDpi, previousMinimum, previousMaximum);
 
             // 客户区取「重排前的客户区 × 框架自己报告的自动缩放尺度之比」，外框再由系统按新 DPI
@@ -349,6 +352,24 @@ public class BaseForm : Form
             baseline.ClientSize.Width + frame.Width,
             baseline.ClientSize.Height + frame.Height,
             BoundsSpecified.Size);
+    }
+
+    /// <summary>
+    /// 窗体自己持有、参与排版而又不在控件树里的量，由子类在这里换算。
+    /// <para>
+    /// 与 <see cref="IDpiRelayoutListener"/> 是同一件事的两个入口：那个接口给控件用，本方法给
+    /// 窗体用。<see cref="NotifyDpiRelayoutListeners"/> 只遍历子控件，窗体自己拿不到那个回调，
+    /// 而窗体持有的这类量并不少见——样式设置对话框预览框里那张按预览框尺寸抓下来的背景位图就是
+    /// 一例，预览框随 DPI 变大之后它不跟上，右下就会露出一条没画到的空白。
+    /// </para>
+    /// <para>
+    /// 调用时机与控件那一路相同：字体与坐标都已换算完，因此可以直接参照控件当前的
+    /// <c>Font</c> 与 <c>Bounds</c>。本方法在 <c>WM_DPICHANGED</c> 的处理过程中被调用，抛出
+    /// 异常会让这一次重排半途而废，实现方需要自己把可能失败的操作兜住。
+    /// </para>
+    /// </summary>
+    protected virtual void OnDpiRelayout(int newDpi, int oldDpi)
+    {
     }
 
     /// <summary>

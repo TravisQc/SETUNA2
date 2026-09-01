@@ -166,6 +166,7 @@
     <Compile Include="Main\Common\Utils.cs" />
     <Compile Include="Main\Common\AtomicFile.cs" />
     <Compile Include="Main\Common\SmoothImage.cs" />
+    <Compile Include="Main\Common\PreviewBackdrop.cs" />
     <Compile Include="Main\HotKeyID.cs" />
     <Compile Include="Main\Magnifier.cs">
       <SubType>Form</SubType>

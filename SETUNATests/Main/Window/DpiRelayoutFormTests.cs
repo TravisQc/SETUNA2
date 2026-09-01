@@ -486,6 +486,20 @@ namespace SETUNA.Main.Window.Tests
             yield return new Participating();
             yield return new OptionForm(SetunaOption.GetDefaultOption());
             yield return new SETUNA.Main.HotkeyMsg();
+
+            // The style item dialogs are fixed-size by inheritance, so all but the JPEG
+            // preview — which overrides the border style to SizableToolWindow — belong here.
+            foreach (var panel in StyleItemPanels.All())
+            {
+                if (panel.FormBorderStyle == FormBorderStyle.Sizable
+                    || panel.FormBorderStyle == FormBorderStyle.SizableToolWindow)
+                {
+                    panel.Dispose();
+                    continue;
+                }
+
+                yield return panel;
+            }
         }
 
         static Dictionary<string, Rectangle> BoundsOfEveryControl(Control root)
@@ -671,6 +685,133 @@ namespace SETUNA.Main.Window.Tests
             yield return new StyleEditForm(null, new SETUNA.Main.KeyItems.KeyItemBook());
             yield return new SETUNA.Main.HotkeyMsg();
             yield return new SETUNA.Main.StyleItems.LoginInput();
+
+            foreach (var panel in StyleItemPanels.All())
+            {
+                yield return panel;
+            }
+        }
+
+        /// <summary>
+        /// Every style-item settings dialog opts in, and does so through one override on
+        /// their shared base rather than seventeen copies — so a panel added later is in by
+        /// construction. This is the assertion that would fail if that override were moved
+        /// down into the subclasses and one of them were missed.
+        /// </summary>
+        [TestMethod]
+        public void EveryStyleItemDialogParticipates()
+        {
+            var checked_ = 0;
+
+            foreach (var panel in StyleItemPanels.All())
+            {
+                using (panel)
+                {
+                    Assert.IsTrue(
+                        ParticipatesInRelayout(panel),
+                        panel.GetType().Name + " does not follow the monitor's DPI.");
+                    checked_++;
+                }
+            }
+
+            Assert.IsTrue(
+                checked_ >= 10,
+                "Expected the style item hierarchy to yield the settings dialogs, got " + checked_ + ".");
+        }
+
+        /// <summary>
+        /// The preview backdrop is a screen grab held in a field of the panel, sized to the
+        /// preview box when the dialog was built. It is not a control, so nothing in the
+        /// control-tree relayout reaches it — the panels follow it themselves through
+        /// <c>OnDpiRelayout</c>.
+        /// <para>
+        /// Why it matters that it matches exactly: the paint code draws the backdrop
+        /// unscaled at the origin and then centres the sample image on the
+        /// <em>backdrop's</em> width and height. A backdrop smaller than the box leaves an
+        /// unpainted strip down the right and along the bottom and puts the sample off
+        /// centre; a larger one is silently cropped.
+        /// </para>
+        /// </summary>
+        [TestMethod]
+        public void ThePreviewBackdropFollowsThePreviewBox()
+        {
+            var failures = new List<string>();
+            var measured = 0;
+
+            foreach (var panel in StyleItemPanels.All())
+            {
+                using (panel)
+                {
+                    var box = FindByName<PictureBox>(panel, "picPreview");
+                    var backdrop = BackdropOf(panel);
+                    if (box == null || backdrop == null)
+                    {
+                        continue;
+                    }
+
+                    measured++;
+                    LayoutSnapshot.ShowOffScreen(panel);
+                    Normalise(panel);
+
+                    // Asserted, not assumed: if the preview box did not resize with the DPI
+                    // there would be nothing for the backdrop to follow and the checks below
+                    // would hold for the wrong reason.
+                    var atHighDpi = box.Size;
+
+                    foreach (var dpi in new[] { LowDpi, HighDpi, LowDpi })
+                    {
+                        SendDpiChanged(panel, dpi);
+
+                        if (dpi != HighDpi && box.Size == atHighDpi)
+                        {
+                            failures.Add(panel.GetType().Name + ": the preview box stayed "
+                                + box.Size + " across the move to " + dpi + " DPI.");
+                        }
+
+                        var now = BackdropOf(panel);
+                        if (now == null)
+                        {
+                            failures.Add(panel.GetType().Name + " at " + dpi + " DPI: the backdrop went away.");
+                            continue;
+                        }
+
+                        if (now.Size != box.Size)
+                        {
+                            failures.Add(panel.GetType().Name + " at " + dpi + " DPI: backdrop is "
+                                + now.Size + " for a " + box.Size + " preview box.");
+                        }
+                    }
+                }
+            }
+
+            Assert.AreEqual(0, failures.Count, string.Join(Environment.NewLine, failures));
+            Assert.IsTrue(measured >= 4, "Expected the four preview panels, measured " + measured + ".");
+        }
+
+        /// <summary>
+        /// Reads the panel's private backdrop field. Named <c>imgBackground</c> in all four
+        /// panels that have one; the others return null and are skipped.
+        /// </summary>
+        static Image BackdropOf(Form panel)
+        {
+            var field = panel.GetType().GetField(
+                "imgBackground",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+
+            return field == null ? null : (Image)field.GetValue(panel);
+        }
+
+        static T FindByName<T>(Control root, string name) where T : Control
+        {
+            foreach (var candidate in FindAll<T>(root))
+            {
+                if (candidate.Name == name)
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
         }
 
         [TestMethod]

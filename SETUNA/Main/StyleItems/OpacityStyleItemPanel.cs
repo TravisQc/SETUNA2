@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using SETUNA.Main.Common;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -61,12 +62,20 @@ namespace SETUNA.Main.StyleItems
             };
             ia = new ImageAttributes();
             ia.SetColorMatrix(cm);
-            imgBackground = new Bitmap(picPreview.Width, picPreview.Height, PixelFormat.Format24bppRgb);
-            using (var graphics = Graphics.FromImage(imgBackground))
-            {
-                graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), imgBackground.Size);
-            }
+            imgBackground = PreviewBackdrop.Capture(picPreview.Size);
             imgScrap = SETUNA.Resources.Image.SampleImage;
+        }
+
+        /// <summary>
+        /// 预览背景跟上预览框的新尺寸。<c>picPreview_Paint</c> 按 <c>imgBackground</c> 的宽高
+        /// 把示例图居中，背景不跟上就既会露出没画到的空白、又会把示例图画偏。
+        /// </summary>
+        protected override void OnDpiRelayout(int newDpi, int oldDpi)
+        {
+            base.OnDpiRelayout(newDpi, oldDpi);
+
+            imgBackground = PreviewBackdrop.Resize(imgBackground, picPreview.Size);
+            picPreview.Invalidate();
         }
 
         // Token: 0x060004B3 RID: 1203 RVA: 0x0001FFBC File Offset: 0x0001E1BC

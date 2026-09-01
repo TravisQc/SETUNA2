@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
+using SETUNA.Main.Common;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -49,13 +49,24 @@ namespace SETUNA.Main.StyleItems
             }
             chkVertical.Checked = crotateStyleItem.VerticalReflection;
             chkHorizon.Checked = crotateStyleItem.HorizonReflection;
-            imgBackground = new Bitmap(picPreview.Width, picPreview.Height, PixelFormat.Format24bppRgb);
-            using (var graphics = Graphics.FromImage(imgBackground))
-            {
-                graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), imgBackground.Size);
-            }
+            imgBackground = PreviewBackdrop.Capture(picPreview.Size);
             imgScrap = (System.Drawing.Image)SETUNA.Resources.Image.SampleImage.Clone();
             RotateSample();
+        }
+
+        /// <summary>
+        /// 预览背景跟上预览框的新尺寸。<c>picPreview_Paint</c> 按 <c>imgBackground</c> 的宽高
+        /// 把示例图居中，背景不跟上就既会露出没画到的空白、又会把示例图画偏。
+        /// <para>
+        /// <c>imgScrap</c> 不动：它是被旋转、翻转之后的示例贴图，以像素为语义。
+        /// </para>
+        /// </summary>
+        protected override void OnDpiRelayout(int newDpi, int oldDpi)
+        {
+            base.OnDpiRelayout(newDpi, oldDpi);
+
+            imgBackground = PreviewBackdrop.Resize(imgBackground, picPreview.Size);
+            picPreview.Invalidate();
         }
 
         // Token: 0x060004C1 RID: 1217 RVA: 0x00020D98 File Offset: 0x0001EF98

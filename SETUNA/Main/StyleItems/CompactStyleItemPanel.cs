@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using SETUNA.Main.Common;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -44,17 +45,29 @@ namespace SETUNA.Main.StyleItems
             };
             ia = new ImageAttributes();
             ia.SetColorMatrix(cm);
-            imgBackground = new Bitmap(picPreview.Width, picPreview.Height, PixelFormat.Format24bppRgb);
-            using (var graphics = Graphics.FromImage(imgBackground))
-            {
-                graphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), imgBackground.Size);
-            }
+            imgBackground = PreviewBackdrop.Capture(picPreview.Size);
             imgScrap = new Bitmap(50, 50, PixelFormat.Format24bppRgb);
             using (var graphics2 = Graphics.FromImage(imgScrap))
             {
                 graphics2.DrawImageUnscaled(SETUNA.Resources.Image.SampleImage, imgScrap.Width / 2 - SETUNA.Resources.Image.SampleImage.Width / 2, imgScrap.Height / 2 - SETUNA.Resources.Image.SampleImage.Height / 2);
             }
             UpdateLine();
+        }
+
+        /// <summary>
+        /// 预览背景跟上预览框的新尺寸。<c>picPreview_Paint</c> 按 <c>imgBackground</c> 的宽高
+        /// 把示例图居中，背景不跟上就既会露出没画到的空白、又会把示例图画偏。
+        /// <para>
+        /// <c>imgScrap</c> 刻意保持 50x50：它连同 <see cref="UpdateLine"/> 画上去的那圈边框
+        /// 一起代表贴图被紧凑化之后的样子，是以像素为语义的示例，不该随 DPI 变。
+        /// </para>
+        /// </summary>
+        protected override void OnDpiRelayout(int newDpi, int oldDpi)
+        {
+            base.OnDpiRelayout(newDpi, oldDpi);
+
+            imgBackground = PreviewBackdrop.Resize(imgBackground, picPreview.Size);
+            picPreview.Invalidate();
         }
 
         // Token: 0x060003FC RID: 1020 RVA: 0x00019A94 File Offset: 0x00017C94

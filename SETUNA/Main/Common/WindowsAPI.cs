@@ -178,6 +178,51 @@ namespace SETUNA.Main
             return (int)GetDpiForSystem();
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        struct NativePoint
+        {
+            public int X;
+            public int Y;
+        }
+
+        /// <summary>取包含指定点的显示器句柄。</summary>
+        [DllImport("user32.dll")]
+        static extern IntPtr MonitorFromPoint(NativePoint point, uint flags);
+
+        /// <summary>显示器的 DPI。Windows 8.1 起可用。</summary>
+        [DllImport("shcore.dll")]
+        static extern int GetDpiForMonitor(IntPtr monitor, int dpiType, out uint dpiX, out uint dpiY);
+
+        /// <summary>
+        /// 取包含 <paramref name="point"/> 那块显示器的 DPI，取不到时返回 0
+        /// （表示「不要据此换算」，与 <see cref="GetWindowDpi"/> 一致）。
+        /// <para>
+        /// 弹出式界面需要它：右键菜单、托盘菜单的窗口在将要弹出的那一刻还没建好，拿不到句柄，
+        /// <see cref="GetWindowDpi"/> 因此用不上，只能按它将要出现的位置去问显示器。
+        /// </para>
+        /// </summary>
+        public static int GetMonitorDpiAt(Point point)
+        {
+            const uint MONITOR_DEFAULTTONEAREST = 2;
+            const int MDT_EFFECTIVE_DPI = 0;
+
+            var monitor = MonitorFromPoint(new NativePoint { X = point.X, Y = point.Y }, MONITOR_DEFAULTTONEAREST);
+            if (monitor == IntPtr.Zero)
+            {
+                return 0;
+            }
+
+            uint dpiX;
+            uint dpiY;
+            if (GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, out dpiX, out dpiY) != 0)
+            {
+                return 0;
+            }
+
+            // X 与 Y 方向系统保证相同，取一个即可。
+            return (int)dpiX;
+        }
+
         const int GWL_STYLE = -16;
         const int GWL_EXSTYLE = -20;
 

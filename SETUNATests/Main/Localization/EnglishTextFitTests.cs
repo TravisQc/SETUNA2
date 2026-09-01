@@ -223,35 +223,9 @@ namespace SETUNA.Main.Localization.Tests
             yield return new LoginInput();
             yield return new SETUNA.Main.HotkeyMsg();
 
-            foreach (var type in typeof(Lang).Assembly.GetTypes()
-                .Where(t => !t.IsAbstract && typeof(CStyleItem).IsAssignableFrom(t))
-                .OrderBy(t => t.Name, StringComparer.Ordinal))
+            foreach (var panel in SETUNA.Main.Tests.StyleItemPanels.All())
             {
-                if (type.GetConstructor(Type.EmptyTypes) == null)
-                {
-                    continue;
-                }
-
-                CStyleItem item;
-                ToolBoxForm panel = null;
-                try
-                {
-                    item = (CStyleItem)Activator.CreateInstance(type);
-                    var method = typeof(CStyleItem).GetMethod(
-                        "GetToolBoxForm",
-                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                    panel = (ToolBoxForm)method.Invoke(item, null);
-                }
-                catch (Exception)
-                {
-                    // Needs more context than this test can supply; the sweep test
-                    // reports the same set, so nothing is silently skipped here.
-                }
-
-                if (panel != null)
-                {
-                    yield return panel;
-                }
+                yield return panel;
             }
         }
     }

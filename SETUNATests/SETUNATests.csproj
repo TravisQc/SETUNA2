@@ -86,6 +86,7 @@
     <Compile Include="Main\Common\BaseFormDisposalTests.cs" />
     <Compile Include="Main\Common\ImageFormatDetectionTests.cs" />
     <Compile Include="Main\Common\LayoutSnapshot.cs" />
+    <Compile Include="Main\Common\StyleItemPanels.cs" />
     <Compile Include="Main\Common\SvgRasterizationTests.cs" />
     <Compile Include="Main\Common\SmoothImageTests.cs" />
     <Compile Include="Main\Common\WindowEnumerationTests.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Main\Window\MainWindowLayoutTests.cs" />
     <Compile Include="Main\Window\DpiRelayoutTests.cs" />
     <Compile Include="Main\Window\DpiRelayoutFormTests.cs" />
+    <Compile Include="Main\Window\MenuDpiTests.cs" />
     <Compile Include="Plugins\ResourceExtractorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
