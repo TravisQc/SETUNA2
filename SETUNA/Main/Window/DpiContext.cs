@@ -203,25 +203,15 @@ namespace SETUNA.Main.Window
             return new Size(Scale(size.Width, factor), Scale(size.Height, factor));
         }
 
-        /// <summary>
-        /// 按两档 DPI 之比造一个新字体。返回的字体归调用方释放；任一 DPI 不可用、比例为 1 或
-        /// <paramref name="font"/> 为空时返回原对象，此时调用方不得释放它。
-        /// </summary>
-        public static Font ScaleFont(Font font, int toDpi, int fromDpi)
-        {
-            if (font == null || !IsUsableDpi(toDpi) || !IsUsableDpi(fromDpi) || toDpi == fromDpi)
-            {
-                return font;
-            }
-
-            var size = font.Size * (float)toDpi / fromDpi;
-            if (size <= 0f || float.IsNaN(size) || float.IsInfinity(size))
-            {
-                return font;
-            }
-
-            return new Font(font.FontFamily, size, font.Style, font.Unit, font.GdiCharSet, font.GdiVerticalFont);
-        }
+        // There is deliberately no ScaleFont here: fonts are not the application's to rescale by
+        // a DPI ratio. There was one, and its only caller was BaseForm.RescaleOwnedFonts — but on
+        // a real monitor change the framework has already rescaled every child's Control.Font,
+        // including the ones the designer assigned explicitly. It does that from the
+        // WM_DPICHANGED_BEFOREPARENT the OS sends to each child window, which a synthetic message
+        // cannot reach, so under synthesis it looks like the framework skipped them. What the
+        // second multiplication did, with measurements, is on BaseForm.OnDpiContextChanged. A
+        // quantity that must follow a font belongs on Control.OnFontChanged, scaled by the ratio
+        // of the two font sizes — see StyleItemListBox.HelpFont.
 
         static int LogicalToPhysicalCoordinate(int value, double scale)
         {

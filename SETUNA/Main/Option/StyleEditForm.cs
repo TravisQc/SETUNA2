@@ -40,33 +40,11 @@ namespace SETUNA.Main.Option
         /// <para>
         /// 三个列表是自绘的（<see cref="SetunaListBox"/> 派生），绘制用的是控件当前字体，因此
         /// 跟着重排走。<see cref="StyleItemListBox"/> 另有一个独立的说明字体属性，它由该控件自己在
-        /// <c>ScaleControl</c> 里换档，见该属性自己的说明。行高仍是固定像素，归任务 6.2。
+        /// <c>OnFontChanged</c> 里跟着主字体换档，见该属性自己的说明。
         /// </para>
         /// </summary>
         protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
 
-        /// <summary>
-        /// 七个控件在设计器里各自指定了字体，不在窗体的字体继承链上，框架的缩放到不了它们。
-        /// <para>
-        /// 两个样式列表的 <c>HelpFont</c> **不在这里**：它原先也走 <c>RescaleOwnedFont</c>，而这条
-        /// 路只在换档时走，窗体直接建在另一档显示器上时首次建立上下文不发通知，说明字体就留在设计器
-        /// 那一档没缩过。已改到 <c>StyleItemListBox.ScaleControl</c>，与行高同一趟。
-        /// </para>
-        /// </summary>
-        protected override void OnDpiContextChanged(int previousDpi)
-        {
-            base.OnDpiContextChanged(previousDpi);
-
-            RescaleOwnedFonts(
-                previousDpi,
-                label1,
-                txtStyleName,
-                btnItemUp,
-                btnItemDown,
-                btnItemDelete,
-                listStyleItem,
-                listAllStyleItem);
-        }
         // Token: 0x06000441 RID: 1089 RVA: 0x0001C180 File Offset: 0x0001A380
         private void RefreshStyleItemList()
         {

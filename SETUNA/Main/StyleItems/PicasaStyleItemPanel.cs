@@ -18,17 +18,6 @@ namespace SETUNA.Main.StyleItems
         {
         }
 
-        /// <summary>
-        /// <c>label3</c> 在设计器里显式指定了字体（宋体 9pt 粗体），不在窗体的字体继承链上，
-        /// 框架的缩放到不了它。
-        /// </summary>
-        protected override void OnDpiContextChanged(int previousDpi)
-        {
-            base.OnDpiContextChanged(previousDpi);
-
-            RescaleOwnedFonts(previousDpi, label3);
-        }
-
         // Token: 0x060004DF RID: 1247 RVA: 0x00023144 File Offset: 0x00021344
         protected override void SetStyleToForm(object style)
         {

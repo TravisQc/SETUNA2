@@ -510,16 +510,14 @@ namespace SETUNA
         /// <para>
         /// 框架在缩放窗体时也会按 DPI 之比缩放 <c>MinimumSize</c>/<c>MaximumSize</c>，但那是
         /// 拿换档前的值再乘一次比例，反复跨屏会累积四舍五入误差。这两个边界有确定的基线，
-        /// 直接按新 DPI 重算一遍就没有累积项，因此这里覆盖框架的结果而不是叠加。
+        /// 直接按新 DPI 重算一遍就没有累积项，因此这里覆盖框架的结果而不是叠加。这也是
+        /// <see cref="BaseForm.OnDpiContextChanged"/> 要求的形式：绝对算法，与通知次数无关。
         /// </para>
         /// </summary>
         protected override void OnDpiContextChanged(int previousDpi)
         {
             base.OnDpiContextChanged(previousDpi);
             ApplyWindowSizeBounds(CurrentDpiContext.DpiX);
-
-            // 两个按钮在设计器里显式指定了字体（微软雅黑 9pt），不在窗体的字体继承链上。
-            RescaleOwnedFonts(previousDpi, button1, button4);
         }
 
         /// <summary>

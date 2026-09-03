@@ -6,6 +6,66 @@ using System.Windows.Forms;
 namespace DialogRelayoutProbe
 {
     /// <summary>
+    /// What a synthetic <c>WM_DPICHANGED</c> provably cannot measure, and why.
+    /// <para>
+    /// A real monitor change makes the OS send <c>WM_DPICHANGED_BEFOREPARENT</c> to every child
+    /// window. That is where the framework rescales a child's designer-assigned
+    /// <see cref="Control.Font"/>, its font-derived constants, and the outer rectangle of a
+    /// nested container that scales itself rather than letting its parent do it. A message this
+    /// probe posts to the top-level window produces none of those, and it cannot fake them
+    /// either: the handler reads <c>GetDpiForWindow</c> on the child, which still reports the
+    /// real, unchanged DPI, so a hand-posted child message is a no-op by construction.
+    /// </para>
+    /// <para>
+    /// Under synthesis those quantities therefore stay frozen, which is *inconclusive*, not
+    /// wrong. Reading it as a defect is what produced one:
+    /// <c>BaseForm.RescaleOwnedFonts</c> and <c>CompensateSkippedContainersWhenLayoutSettles</c>
+    /// existed to make exactly these numbers move, and on real hardware they applied the DPI
+    /// ratio a second time on top of the framework's own work — measured 2026-09-03 on a real
+    /// 96↔168 desktop, see the doc comment on <c>BaseForm.OnDpiContextChanged</c>.
+    /// <c>MonitorBirthProbe</c> is where these controls are checked, on real monitors, against
+    /// absolute expectations instead of a ratio.
+    /// </para>
+    /// </summary>
+    static class Synthesis
+    {
+        /// <summary>How many readings were left out, so the exclusion is never silent.</summary>
+        public static int Excluded;
+
+        /// <summary>
+        /// The control carries its own font, so its realised font size — and any extent measured
+        /// from text drawn in it — is frozen for the duration of a synthetic transition.
+        /// </summary>
+        public static bool OwnsItsFont(Control control)
+        {
+            return Count(control.Parent != null && !ReferenceEquals(control.Font, control.Parent.Font));
+        }
+
+        /// <summary>
+        /// A nested <see cref="ContainerControl"/> whose <c>AutoScaleMode</c> is not
+        /// <c>None</c> scales its own contents, and <c>ContainerControl.ScaleControl</c>
+        /// deliberately keeps the parent from scaling its outer rectangle. On real hardware the
+        /// child message supplies that rectangle; under synthesis nothing does. Measured here:
+        /// every <c>NumericUpDown</c> and every <c>HotkeyControl</c> in the suite.
+        /// </summary>
+        public static bool ScalesItself(Control control)
+        {
+            var container = control as ContainerControl;
+            return Count(container != null && container.AutoScaleMode != AutoScaleMode.None);
+        }
+
+        static bool Count(bool excluded)
+        {
+            if (excluded)
+            {
+                Excluded++;
+            }
+
+            return excluded;
+        }
+    }
+
+    /// <summary>
     /// One control's measurable state: where it sits, and how large its realised font is.
     /// </summary>
     sealed class Reading
@@ -15,6 +75,14 @@ namespace DialogRelayoutProbe
         public bool AutoSize;
         public bool HeightFollowsFont;
         public string Describe;
+
+        /// <summary>
+        /// True when this control's realised font size, or its own outer rectangle, is not
+        /// comparable across a synthetic transition. See <see cref="Synthesis"/>.
+        /// </summary>
+        public bool OwnsItsFont;
+
+        public bool ScalesItself;
 
         /// <summary>
         /// True when a layout engine, not the designer, decides this control's rectangle.
@@ -70,7 +138,14 @@ namespace DialogRelayoutProbe
             {
                 var child = children[i];
                 var childPath = path + "/" + child.Name;
-                Overflow[childPath] = child.Right - container.ClientSize.Width;
+
+                // A control whose extent this transition cannot move carries no information
+                // about it, and neither does a neighbour's overlap with it; see Synthesis.
+                var frozen = (child.AutoSize && Synthesis.OwnsItsFont(child)) || Synthesis.ScalesItself(child);
+                if (!frozen)
+                {
+                    Overflow[childPath] = child.Right - container.ClientSize.Width;
+                }
 
                 for (var j = i + 1; j < children.Count; j++)
                 {
@@ -78,6 +153,13 @@ namespace DialogRelayoutProbe
                     // overlap is the page size and grows with every scale-up. Their geometry
                     // is the TabControl's business, not the designer's.
                     if (child is TabPage || children[j] is TabPage)
+                    {
+                        continue;
+                    }
+
+                    if (frozen
+                        || (children[j].AutoSize && Synthesis.OwnsItsFont(children[j]))
+                        || Synthesis.ScalesItself(children[j]))
                     {
                         continue;
                     }
@@ -148,7 +230,10 @@ namespace DialogRelayoutProbe
     /// The complement of <see cref="Layout"/>: that one measures where controls sit, this one
     /// measures whether the text inside them is clipped, which no amount of correct geometry
     /// guarantees. <c>AutoSize</c> controls are skipped — they grow to fit, and a grown
-    /// control shows up in <see cref="Layout"/> as an overlap instead.
+    /// control shows up in <see cref="Layout"/> as an overlap instead. So are controls that
+    /// carry their own font: the caption is measured with that font, and a synthetic transition
+    /// cannot move it (see <see cref="Synthesis"/>), so the control would shrink around text that
+    /// did not.
     /// </para>
     /// </summary>
     sealed class TextFit
@@ -164,7 +249,7 @@ namespace DialogRelayoutProbe
             {
                 var childPath = path + "/" + child.Name;
 
-                if (ShouldMeasure(child))
+                if (ShouldMeasure(child) && !Synthesis.OwnsItsFont(child))
                 {
                     var available = child.Width - Chrome(child, dpi);
                     var needed = TextRenderer.MeasureText(child.Text, child.Font).Width;

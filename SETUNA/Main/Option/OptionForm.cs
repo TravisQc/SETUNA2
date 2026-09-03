@@ -33,11 +33,13 @@ namespace SETUNA.Main.Option
         }
 
         /// <summary>
-        /// 选项窗体随所处显示器的 DPI 重排。
+        /// 选项窗体随所处显示器的 DPI 重排，全部交给框架。
         /// <para>
-        /// 导航标签的字体由 <see cref="tabControl1_TabIndexChanged"/> 在选中项变化时重设，
-        /// 那里是从标签当前的字体派生加粗版本，因此重设出来的字号就是当前 DPI 下的字号，
-        /// 不会把重排的结果退回设计时的大小。
+        /// 六个导航标签、四个自绘列表和 <c>numDustBox</c> 在设计器里各自指定了字体，曾经由
+        /// <c>OnDpiContextChanged</c> 按 DPI 之比换算一遍——那是重复劳动，真机上框架已经换算过
+        /// （理由与实测数字见 <see cref="BaseForm.OnDpiContextChanged"/>）。
+        /// <see cref="tabControl1_TabIndexChanged"/> 从标签**当前**的字体派生加粗版本，所以选中项
+        /// 变化时重设出来的字号也是当前 DPI 下的字号。
         /// </para>
         /// <para>
         /// 窗体里唯一带位图的控件是左下角的 <c>pictureBox1</c>，它跟着控件尺寸等比缩放，绘制
@@ -47,33 +49,6 @@ namespace SETUNA.Main.Option
         /// </para>
         /// </summary>
         protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
-
-        /// <summary>
-        /// 这些控件在设计器里各自指定了字体（宋体 9pt，导航标签还带粗体），不在窗体的字体
-        /// 继承链上，框架的缩放到不了它们，跨屏之后会留在旧档的像素大小。
-        /// <para>
-        /// 六个导航标签一并列出：<see cref="tabControl1_TabIndexChanged"/> 会从标签当前的
-        /// 字体派生粗体版本，所以只要当前字体是对的，它重设出来的就是对的。
-        /// </para>
-        /// </summary>
-        protected override void OnDpiContextChanged(int previousDpi)
-        {
-            base.OnDpiContextChanged(previousDpi);
-
-            RescaleOwnedFonts(
-                previousDpi,
-                lblMenuAll,
-                lblMenuCapture,
-                lblMenuScrap,
-                lblMenuStyle,
-                lblMenuMenu,
-                lblMenuMisc,
-                listStyles,
-                listScrapMenuStyles,
-                listScrapMenuList,
-                listScrapMenuItems,
-                numDustBox);
-        }
 
         /// <summary>
         /// 设置「信息」区两个链接的文字与热区。

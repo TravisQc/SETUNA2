@@ -20,17 +20,6 @@ namespace SETUNA.Main.StyleItems
             _texttool.ChangedFont += SetFont;
         }
 
-        /// <summary>
-        /// 两个说明标签在设计器里显式指定了字体（宋体 7pt），不在窗体的字体继承链上，
-        /// 框架的缩放到不了它们。
-        /// </summary>
-        protected override void OnDpiContextChanged(int previousDpi)
-        {
-            base.OnDpiContextChanged(previousDpi);
-
-            RescaleOwnedFonts(previousDpi, label3, label5);
-        }
-
         // Token: 0x0600050A RID: 1290 RVA: 0x000239C5 File Offset: 0x00021BC5
         private void _texttool_Editing(bool value, TextBox edit)
         {

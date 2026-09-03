@@ -166,6 +166,8 @@ namespace DialogRelayoutProbe
             Console.WriteLine(dialogs + " dialogs, " + transitions + " transitions.");
             Console.WriteLine(Screenshot.Rendered + " renders, ink coverage "
                 + Screenshot.DescribeCoverageRange() + ".");
+            Console.WriteLine(Synthesis.Excluded + " readings left out as unmeasurable under a synthetic"
+                + " transition (see Synthesis); MonitorBirthProbe checks those on real monitors.");
 
             failures.AddRange(buildFailures);
 
@@ -297,7 +299,7 @@ namespace DialogRelayoutProbe
                 }
 
                 var expectedFont = DpiContext.Scale(pair.Value.FontHeight, ratio);
-                if (Math.Abs(after.FontHeight - expectedFont) > 1)
+                if (!pair.Value.OwnsItsFont && Math.Abs(after.FontHeight - expectedFont) > 1)
                 {
                     failures.Add(pair.Key + " " + at + ": font is " + after.FontHeight
                         + "px, expected about " + expectedFont + "px");
@@ -330,6 +332,7 @@ namespace DialogRelayoutProbe
                 // An AutoSize control's box follows its text, not the ratio, so only the
                 // controls the designer sized are checked against the ratio itself.
                 if (!pair.Value.AutoSize
+                    && !pair.Value.ScalesItself
                     && !ScaledWithin(pair.Value.Bounds, after.Bounds, ratio, pair.Value.HeightFollowsFont))
                 {
                     failures.Add(pair.Key + " " + at + ": " + pair.Value.Bounds + " became "
@@ -678,6 +681,8 @@ namespace DialogRelayoutProbe
                 {
                     Bounds = child.Bounds,
                     FontHeight = child.Font.Height,
+                    OwnsItsFont = Synthesis.OwnsItsFont(child),
+                    ScalesItself = Synthesis.ScalesItself(child),
                     AutoSize = child.AutoSize || LayoutOwnedByParent(child),
                     LayoutOwned = LayoutOwnedByParent(child),
                     HeightFollowsFont = FollowsFontHeight(child),

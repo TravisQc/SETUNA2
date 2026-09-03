@@ -48,17 +48,6 @@ namespace SETUNA.Main.StyleItems
             }
         }
 
-        /// <summary>
-        /// 两个说明标签在设计器里显式指定了字体（宋体 7pt），不在窗体的字体继承链上，
-        /// 框架的缩放到不了它们。
-        /// </summary>
-        protected override void OnDpiContextChanged(int previousDpi)
-        {
-            base.OnDpiContextChanged(previousDpi);
-
-            RescaleOwnedFonts(previousDpi, label1, label3);
-        }
-
         // Token: 0x0600055F RID: 1375 RVA: 0x00025910 File Offset: 0x00023B10
         private void numOpacity_ValueChanged(object sender, EventArgs e)        {
             var opacity = 255 * (int)numOpacity.Value / 100;

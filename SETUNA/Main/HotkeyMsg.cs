@@ -38,20 +38,12 @@ namespace SETUNA.Main
             InitializeComponent();
         }
 
-        /// <summary>本窗体随所处显示器的 DPI 重排：只有说明文字与按键标签，没有位图与自绘控件。</summary>
-        protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
-
         /// <summary>
-        /// 这两个标签在设计器里显式指定了字体（宋体 10pt 粗体 / 9pt 粗体），不在窗体的字体
-        /// 继承链上，框架的缩放到不了它们——实测跨屏之后 <c>lblKey</c> 恒为 24px，而同一个
-        /// 窗体里继承字体的控件从 16px 变到 27px。
+        /// 本窗体随所处显示器的 DPI 重排：只有说明文字与按键标签，没有位图与自绘控件，因此
+        /// 全部交给框架——两个标签在设计器里显式指定的字体也一样，理由见
+        /// <see cref="BaseForm.OnDpiContextChanged"/>。
         /// </summary>
-        protected override void OnDpiContextChanged(int previousDpi)
-        {
-            base.OnDpiContextChanged(previousDpi);
-
-            RescaleOwnedFonts(previousDpi, label1, lblKey);
-        }
+        protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
 
         // Token: 0x0600030B RID: 779 RVA: 0x000150E6 File Offset: 0x000132E6
         private void btnClose_Click(object sender, EventArgs e)
