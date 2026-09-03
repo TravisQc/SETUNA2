@@ -768,7 +768,8 @@ namespace SETUNA.Main.Option
                 Setuna = Setuna,
                 Scrap = Scrap,
                 MainWindowWidth = MainWindowWidth,
-                MainWindowHeight = MainWindowHeight
+                MainWindowHeight = MainWindowHeight,
+                MainWindowDpi = MainWindowDpi
             };
             for (var i = 0; i < Styles.Count; i++)
             {
@@ -816,6 +817,13 @@ namespace SETUNA.Main.Option
         public int MainWindowWidth;
 
         public int MainWindowHeight;
+
+        /// <summary>
+        /// <see cref="MainWindowWidth"/>／<see cref="MainWindowHeight"/> 是哪一档 DPI 上的
+        /// 物理像素。0 表示「未记录」——本变更之前写下的配置就没有这个元素，读回时按当前
+        /// 显示器解释一次（见 <see cref="Window.MainWindowGeometry.RestoreWindowSize"/>）。
+        /// </summary>
+        public int MainWindowDpi;
 
         // Token: 0x0200003D RID: 61
         public class ScrapOptionData

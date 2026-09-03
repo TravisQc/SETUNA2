@@ -1,8 +1,10 @@
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main
 {
@@ -148,11 +150,10 @@ namespace SETUNA.Main
         /// 取窗口所在显示器的 DPI，取不到时返回 0（表示「不要据此换算」）。
         /// 这是本程序里 DPI 值的唯一来源。
         /// <para>
-        /// 不能用 <c>Control.DeviceDpi</c>：DPI 感知由 manifest 声明而没有应用配置文件，
-        /// WinForms 的 DPI 机制整个是关的（<c>DpiHelper.enableHighDpi</c> 为 false），
-        /// 此时 <c>Control.DeviceDpi</c> 返回的是框架的逻辑常量 96，与窗口实际所在的显示器
-        /// 无关——实测系统 DPI 为 168 时它仍然是 96，把它传给按 DPI 的换算会得到 100%
-        /// 缩放下的值。
+        /// net8 的 WinForms 高 DPI 管线是开着的，<c>Control.DeviceDpi</c> 确实会报告真实
+        /// 窗口 DPI（实测 168），所以这里不再是「绕开一个坏掉的属性」。仍然用这一条的理由是
+        /// 它对任何 HWND 都成立：托盘菜单弹出前、以及别的进程的窗口都没有 <c>Control</c>，
+        /// 而显示器快照必须由同一个 DPI 来源拼出来，否则同一次换算里会混进两个值。
         /// </para>
         /// <para>
         /// 这是查询单个窗口的 DPI，不设置进程或线程的感知级别，因此与「感知级别只由
@@ -162,20 +163,6 @@ namespace SETUNA.Main
         public static int GetWindowDpi(IntPtr hwnd)
         {
             return hwnd == IntPtr.Zero ? 0 : (int)GetDpiForWindow(hwnd);
-        }
-
-        /// <summary>系统 DPI（主显示器的缩放比例）。Windows 10 1607 起可用。</summary>
-        [DllImport("user32.dll")]
-        public static extern uint GetDpiForSystem();
-
-        /// <summary>
-        /// 系统 DPI。WinForms 给窗体排版用的就是这个值：环境字体的像素高度由它决定，
-        /// <c>AutoScaleMode.Font</c> 的倍率又由环境字体决定，所以窗体建好时的排版对应的是
-        /// 系统 DPI，而不是窗口实际所在显示器的 DPI。跨显示器重排需要这个基准值。
-        /// </summary>
-        public static int GetSystemDpi()
-        {
-            return (int)GetDpiForSystem();
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -189,6 +176,34 @@ namespace SETUNA.Main
         [DllImport("user32.dll")]
         static extern IntPtr MonitorFromPoint(NativePoint point, uint flags);
 
+        [DllImport("user32.dll")]
+        static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        struct MonitorInfoEx
+        {
+            public int cbSize;
+            public NativeRect rcMonitor;
+            public NativeRect rcWork;
+            public uint dwFlags;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string szDevice;
+        }
+
+        [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+        delegate bool MonitorEnumProc(IntPtr monitor, IntPtr hdc, IntPtr rect, IntPtr data);
+
+        [DllImport("user32.dll")]
+        static extern bool EnumDisplayMonitors(
+            IntPtr hdc,
+            IntPtr clip,
+            MonitorEnumProc callback,
+            IntPtr data);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        static extern bool GetMonitorInfo(IntPtr monitor, ref MonitorInfoEx info);
+
         /// <summary>显示器的 DPI。Windows 8.1 起可用。</summary>
         [DllImport("shcore.dll")]
         static extern int GetDpiForMonitor(IntPtr monitor, int dpiType, out uint dpiX, out uint dpiY);
@@ -197,8 +212,11 @@ namespace SETUNA.Main
         /// 取包含 <paramref name="point"/> 那块显示器的 DPI，取不到时返回 0
         /// （表示「不要据此换算」，与 <see cref="GetWindowDpi"/> 一致）。
         /// <para>
-        /// 弹出式界面需要它：右键菜单、托盘菜单的窗口在将要弹出的那一刻还没建好，拿不到句柄，
-        /// <see cref="GetWindowDpi"/> 因此用不上，只能按它将要出现的位置去问显示器。
+        /// 还没有窗口句柄的东西只能这样问：<see cref="GetWindowDpi"/> 要 HWND，而弹出式界面、
+        /// 截图框这类几何在确定位置的那一刻还没有窗口。菜单曾经是这里的主要调用方，net8 的
+        /// <c>ToolStrip</c> DPI 管线接手之后不再需要（见 <c>ContextStyleMenuStrip</c> 与
+        /// <c>probes/MenuDpiProbe</c>），但按点取 DPI 这件事本身还在，<c>MenuDpiTests</c>
+        /// 钉住每块显示器都答得出一个可用值。
         /// </para>
         /// </summary>
         public static int GetMonitorDpiAt(Point point)
@@ -221,6 +239,147 @@ namespace SETUNA.Main
 
             // X 与 Y 方向系统保证相同，取一个即可。
             return (int)dpiX;
+        }
+
+        /// <summary>
+        /// Returns the complete physical monitor snapshot containing <paramref name="point"/>.
+        /// This is the query to use before a popup window has a handle.
+        /// </summary>
+        public static MonitorSnapshot GetMonitorSnapshotAt(Point point)
+        {
+            const uint MONITOR_DEFAULTTONEAREST = 2;
+            return GetMonitorSnapshot(MonitorFromPoint(new NativePoint { X = point.X, Y = point.Y }, MONITOR_DEFAULTTONEAREST));
+        }
+
+        public static bool TryGetMonitorSnapshotAt(Point point, out MonitorSnapshot snapshot)
+        {
+            snapshot = GetMonitorSnapshotAt(point);
+            return snapshot.IsAvailable;
+        }
+
+        /// <summary>
+        /// 一个矩形归哪块显示器：**重叠面积最大**的那块，而不是最近的那块。判据与理由见
+        /// <see cref="MonitorSnapshot.SelectFor"/>；这里只负责枚举当前的显示器。
+        /// <para>
+        /// 矩形与任何显示器都不相交（例如完全落在显示器之间的空隙里）时退回按矩形中心取，
+        /// 中心也查不到就报不可用。
+        /// </para>
+        /// </summary>
+        public static MonitorSnapshot GetMonitorSnapshotFor(Rectangle rectangle)
+        {
+            var best = MonitorSnapshot.SelectFor(rectangle, EnumerateMonitorSnapshots());
+            if (best.IsAvailable)
+            {
+                return best;
+            }
+
+            return GetMonitorSnapshotAt(new Point(
+                rectangle.Left + rectangle.Width / 2,
+                rectangle.Top + rectangle.Height / 2));
+        }
+
+        public static bool TryGetMonitorSnapshotFor(Rectangle rectangle, out MonitorSnapshot snapshot)
+        {
+            snapshot = GetMonitorSnapshotFor(rectangle);
+            return snapshot.IsAvailable;
+        }
+
+        /// <summary>
+        /// Returns the complete physical monitor snapshot for an existing window. Its DPI comes
+        /// from GetDpiForWindow rather than Control.DeviceDpi.
+        /// <para>
+        /// 这里不需要 <see cref="MonitorSnapshot.SelectFor"/> 那条「重叠最多」的规则：
+        /// <c>MonitorFromWindow</c> 配 <c>MONITOR_DEFAULTTONEAREST</c> 的定义就是「与窗口外框
+        /// 相交面积最大的那块显示器」，系统已经按面积算过了。那条规则是给没有窗口的矩形用的。
+        /// </para>
+        /// </summary>
+        public static MonitorSnapshot GetMonitorSnapshotForWindow(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return MonitorSnapshot.Unavailable;
+            }
+
+            var monitor = MonitorFromWindow(hwnd, 2);
+            var snapshot = GetMonitorSnapshot(monitor);
+            var dpi = GetWindowDpi(hwnd);
+            if (dpi <= 0 || !snapshot.IsAvailable)
+            {
+                return snapshot;
+            }
+
+            return new MonitorSnapshot(
+                snapshot.Handle,
+                snapshot.DeviceName,
+                snapshot.NativeBounds,
+                snapshot.WorkingArea,
+                dpi,
+                dpi,
+                snapshot.IsPrimary);
+        }
+
+        public static bool TryGetMonitorSnapshotForWindow(IntPtr hwnd, out MonitorSnapshot snapshot)
+        {
+            snapshot = GetMonitorSnapshotForWindow(hwnd);
+            return snapshot.IsAvailable;
+        }
+
+        /// <summary>Enumerates all active monitors without converting their negative origins.</summary>
+        public static IReadOnlyList<MonitorSnapshot> EnumerateMonitorSnapshots()
+        {
+            var snapshots = new List<MonitorSnapshot>();
+            MonitorEnumProc callback = (monitor, hdc, rect, data) =>
+            {
+                var snapshot = GetMonitorSnapshot(monitor);
+                // Keep unavailable entries visible to callers. An empty list would
+                // make a DPI query failure indistinguishable from "no monitors".
+                snapshots.Add(snapshot);
+
+                return true;
+            };
+
+            if (!EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, callback, IntPtr.Zero))
+            {
+                return snapshots;
+            }
+
+            return snapshots;
+        }
+
+        static MonitorSnapshot GetMonitorSnapshot(IntPtr monitor)
+        {
+            if (monitor == IntPtr.Zero)
+            {
+                return MonitorSnapshot.Unavailable;
+            }
+
+            var info = new MonitorInfoEx { cbSize = Marshal.SizeOf(typeof(MonitorInfoEx)) };
+            if (!GetMonitorInfo(monitor, ref info))
+            {
+                return MonitorSnapshot.Unavailable;
+            }
+
+            uint dpiX;
+            uint dpiY;
+            const int MDT_EFFECTIVE_DPI = 0;
+            if (GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, out dpiX, out dpiY) != 0 || dpiX == 0 || dpiY == 0)
+            {
+                return MonitorSnapshot.Unavailable;
+            }
+
+            return new MonitorSnapshot(
+                monitor,
+                info.szDevice,
+                ToRectangle(info.rcMonitor),
+                ToRectangle(info.rcWork),
+                (int)dpiX,
+                (int)dpiY,
+                (info.dwFlags & 1u) != 0);
+        }
+
+        static Rectangle ToRectangle(NativeRect rect)
+        {
+            return Rectangle.FromLTRB(rect.Left, rect.Top, rect.Right, rect.Bottom);
         }
 
         const int GWL_STYLE = -16;

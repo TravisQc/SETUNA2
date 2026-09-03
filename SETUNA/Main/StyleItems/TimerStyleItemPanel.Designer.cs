@@ -20,7 +20,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(142, 109);
             // 
             // groupBox1
@@ -63,7 +62,7 @@
             // 
             // TimerStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.ClientSize = new System.Drawing.Size(220, 141);
             this.Controls.Add(this.groupBox1);
             this.Name = "TimerStyleItemPanel";

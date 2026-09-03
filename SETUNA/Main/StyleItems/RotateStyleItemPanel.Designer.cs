@@ -30,7 +30,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(376, 174);
             // 
             // groupBox1
@@ -50,7 +49,7 @@
             // chkHorizon
             // 
             this.chkHorizon.AutoSize = true;
-            this.chkHorizon.Location = new System.Drawing.Point(132, 60);
+            this.chkHorizon.Location = new System.Drawing.Point(132, 66);
             this.chkHorizon.Name = "chkHorizon";
             this.chkHorizon.Size = new System.Drawing.Size(72, 16);
             this.chkHorizon.TabIndex = 11;
@@ -84,9 +83,9 @@
             this.panel1.Controls.Add(this.rdoLeft90);
             this.panel1.Controls.Add(this.rdoRight90);
             this.panel1.Controls.Add(this.rdoNone);
-            this.panel1.Location = new System.Drawing.Point(22, 40);
+            this.panel1.Location = new System.Drawing.Point(12, 46);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(86, 97);
+            this.panel1.Size = new System.Drawing.Size(100, 97);
             this.panel1.TabIndex = 1;
             // 
             // rdo180
@@ -166,7 +165,7 @@
             // 
             // RotateStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.ClientSize = new System.Drawing.Size(453, 206);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);

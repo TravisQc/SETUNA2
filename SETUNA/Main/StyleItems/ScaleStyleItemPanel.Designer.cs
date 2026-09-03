@@ -31,7 +31,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(273, 189);
             // 
             // groupBox1
@@ -99,11 +98,11 @@
             // barRelative
             // 
             this.barRelative.AutoSize = false;
-            this.barRelative.Location = new System.Drawing.Point(121, 80);
+            this.barRelative.Location = new System.Drawing.Point(133, 80);
             this.barRelative.Maximum = 190;
             this.barRelative.Minimum = -190;
             this.barRelative.Name = "barRelative";
-            this.barRelative.Size = new System.Drawing.Size(109, 20);
+            this.barRelative.Size = new System.Drawing.Size(97, 20);
             this.barRelative.TabIndex = 6;
             this.barRelative.TickFrequency = 20;
             this.barRelative.Scroll += new System.EventHandler(this.barFixed_Scroll);
@@ -120,11 +119,11 @@
             // barFixed
             // 
             this.barFixed.AutoSize = false;
-            this.barFixed.Location = new System.Drawing.Point(121, 50);
+            this.barFixed.Location = new System.Drawing.Point(133, 50);
             this.barFixed.Maximum = 200;
             this.barFixed.Minimum = 10;
             this.barFixed.Name = "barFixed";
-            this.barFixed.Size = new System.Drawing.Size(109, 20);
+            this.barFixed.Size = new System.Drawing.Size(97, 20);
             this.barFixed.TabIndex = 2;
             this.barFixed.TickFrequency = 10;
             this.barFixed.Value = 100;
@@ -179,7 +178,7 @@
             // 
             // ScaleStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.ClientSize = new System.Drawing.Size(351, 221);
             this.Controls.Add(this.groupBox1);
             this.Name = "ScaleStyleItemPanel";

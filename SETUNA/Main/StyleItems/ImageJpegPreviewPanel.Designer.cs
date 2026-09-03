@@ -30,7 +30,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(325, 336);
             // 
             // groupBox1
@@ -149,7 +148,7 @@
             // 
             // ImageJpegPreviewPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.ClientSize = new System.Drawing.Size(403, 368);
             this.Controls.Add(this.lblSize);
             this.Controls.Add(this.groupBox1);

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SETUNA.Main.Cache;
@@ -14,7 +15,7 @@ using SETUNA.Main.Cache;
 namespace SETUNA.Main.Runtime.Tests
 {
     /// <summary>
-    /// Guards the .NET Framework 4.8 runtime configuration of the single-file build.
+    /// Guards the runtime configuration of the .NET 8 single-file build.
     /// <para>
     /// There is no <c>app.config</c> any more: DPI awareness is declared by the
     /// manifest that gets linked into <c>SETUNA.exe</c>, and the TLS switches are
@@ -78,17 +79,79 @@ namespace SETUNA.Main.Runtime.Tests
             // Read as XML rather than text: these two properties are the only
             // mechanism that generates a SETUNA.exe.config out of thin air when no
             // app.config exists, so their absence is the invariant worth pinning.
-            var project = new XmlDocument();
-            project.Load(Path.Combine(repositoryRoot, "SETUNA", "SETUNA.csproj"));
-            var msbuild = new XmlNamespaceManager(project.NameTable);
-            msbuild.AddNamespace("msb", "http://schemas.microsoft.com/developer/msbuild/2003");
+            var project = LoadApplicationProject();
 
             foreach (var property in new[] { "AutoGenerateBindingRedirects", "GenerateBindingRedirectsOutputType" })
             {
                 Assert.IsNull(
-                    project.SelectSingleNode("/msb:Project/msb:PropertyGroup/msb:" + property, msbuild),
+                    SelectProperty(project, property),
                     property + " must stay disabled: it emits SETUNA.exe.config as soon as a dependency needs a redirect.");
             }
+        }
+
+        [TestMethod]
+        public void ProjectSelectsPerMonitorV2ForTheGeneratedApplicationConfiguration()
+        {
+            // ApplicationConfiguration.Initialize() is source-generated, and this
+            // property is the only input that makes it emit
+            // SetHighDpiMode(HighDpiMode.PerMonitorV2). Without it the generator
+            // still emits a working Initialize(), so nothing fails to build and
+            // nothing fails at runtime — the app just stops following the monitor.
+            Assert.AreEqual(
+                "PerMonitorV2",
+                SelectProperty(LoadApplicationProject(), "ApplicationHighDpiMode")?.InnerText.Trim());
+        }
+
+        [TestMethod]
+        public void HighDpiModeVerificationAcceptsOnlyPerMonitorV2()
+        {
+            Assert.IsNull(RuntimeConfiguration.DescribeHighDpiModeMismatch(HighDpiMode.PerMonitorV2));
+
+            foreach (HighDpiMode mode in Enum.GetValues(typeof(HighDpiMode)))
+            {
+                if (mode == HighDpiMode.PerMonitorV2)
+                {
+                    continue;
+                }
+
+                var diagnostic = RuntimeConfiguration.DescribeHighDpiModeMismatch(mode);
+                Assert.IsNotNull(diagnostic, mode + " is not per-monitor aware and must be reported.");
+                StringAssert.Contains(diagnostic, mode.ToString());
+            }
+        }
+
+        [TestMethod]
+        public void HighDpiModeVerificationReadsTheLiveProcessMode()
+        {
+            // Deliberately not an assertion that the mode *is* PerMonitorV2: the test
+            // host carries no application manifest, so the process is not per-monitor
+            // aware here no matter how SETUNA.exe is configured. What is verifiable is
+            // that the parameterless overload reports on the live process rather than a
+            // constant. The manifested process is checked by
+            // scripts/verify-dpi-awareness.ps1.
+            Assert.AreEqual(
+                RuntimeConfiguration.DescribeHighDpiModeMismatch(Application.HighDpiMode),
+                RuntimeConfiguration.DescribeHighDpiModeMismatch());
+        }
+
+        static XmlDocument LoadApplicationProject()
+        {
+            var project = new XmlDocument();
+            project.Load(Path.Combine(RepositoryPath.FindRoot(), "SETUNA", "SETUNA.csproj"));
+
+            return project;
+        }
+
+        /// <summary>
+        /// SDK-style projects declare no default xmlns, so an XPath written against the
+        /// legacy MSBuild namespace matches nothing and turns every IsNull assertion
+        /// vacuous. Match on local names instead.
+        /// </summary>
+        static XmlElement SelectProperty(XmlDocument project, string name)
+        {
+            return project.SelectSingleNode(
+                "/*[local-name()='Project']/*[local-name()='PropertyGroup']/*[local-name()='" + name + "']")
+                as XmlElement;
         }
 
         [TestMethod]

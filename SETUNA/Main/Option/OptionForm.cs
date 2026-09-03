@@ -7,6 +7,7 @@ using SETUNA.Main.Common;
 using SETUNA.Main.KeyItems;
 using SETUNA.Main.Localization;
 using SETUNA.Main.Style;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main.Option
 {
@@ -45,7 +46,34 @@ namespace SETUNA.Main.Option
         /// 没有图像。
         /// </para>
         /// </summary>
-        protected override bool ScalesWithMonitorDpi => true;
+        protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
+
+        /// <summary>
+        /// 这些控件在设计器里各自指定了字体（宋体 9pt，导航标签还带粗体），不在窗体的字体
+        /// 继承链上，框架的缩放到不了它们，跨屏之后会留在旧档的像素大小。
+        /// <para>
+        /// 六个导航标签一并列出：<see cref="tabControl1_TabIndexChanged"/> 会从标签当前的
+        /// 字体派生粗体版本，所以只要当前字体是对的，它重设出来的就是对的。
+        /// </para>
+        /// </summary>
+        protected override void OnDpiContextChanged(int previousDpi)
+        {
+            base.OnDpiContextChanged(previousDpi);
+
+            RescaleOwnedFonts(
+                previousDpi,
+                lblMenuAll,
+                lblMenuCapture,
+                lblMenuScrap,
+                lblMenuStyle,
+                lblMenuMenu,
+                lblMenuMisc,
+                listStyles,
+                listScrapMenuStyles,
+                listScrapMenuList,
+                listScrapMenuItems,
+                numDustBox);
+        }
 
         /// <summary>
         /// 设置「信息」区两个链接的文字与热区。

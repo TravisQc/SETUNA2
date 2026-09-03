@@ -212,21 +212,11 @@ namespace SETUNA.Main.Localization.Tests
 
         /// <summary>
         /// Every form the suite can build without application state, shared with
-        /// <see cref="EnglishLayoutFitTests"/>. The options dialog comes first because it
-        /// holds most of the app's text.
+        /// <see cref="EnglishLayoutFitTests"/> and the DPI baseline check.
         /// </summary>
         internal static IEnumerable<Form> ConstructibleForms()
         {
-            yield return new SETUNA.Main.Option.OptionForm(SETUNA.Main.Option.SetunaOption.GetDefaultOption());
-            yield return new ToolBoxForm();
-            yield return new LayerRenameWindow();
-            yield return new LoginInput();
-            yield return new SETUNA.Main.HotkeyMsg();
-
-            foreach (var panel in SETUNA.Main.Tests.StyleItemPanels.All())
-            {
-                yield return panel;
-            }
+            return SETUNA.Main.Tests.ApplicationForms.All();
         }
     }
 }

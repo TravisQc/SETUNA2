@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main.StyleItems
 {
     // Token: 0x020000B3 RID: 179
     public partial class PaintForm : BaseForm
     {
+        protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
         // Token: 0x170000C7 RID: 199
         // (get) Token: 0x060005A0 RID: 1440 RVA: 0x00027056 File Offset: 0x00025256
         public Image Image => _src;

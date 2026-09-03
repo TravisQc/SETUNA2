@@ -129,9 +129,9 @@
             // 
             // btnKeyDelete
             // 
-            this.btnKeyDelete.Location = new System.Drawing.Point(133, 179);
+            this.btnKeyDelete.Location = new System.Drawing.Point(125, 179);
             this.btnKeyDelete.Name = "btnKeyDelete";
-            this.btnKeyDelete.Size = new System.Drawing.Size(48, 24);
+            this.btnKeyDelete.Size = new System.Drawing.Size(56, 24);
             this.btnKeyDelete.TabIndex = 5;
             this.btnKeyDelete.Text = "删除";
             this.btnKeyDelete.UseVisualStyleBackColor = true;
@@ -352,8 +352,8 @@
             // 
             // StyleEditForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(783, 381);
             this.Controls.Add(this.panel3);

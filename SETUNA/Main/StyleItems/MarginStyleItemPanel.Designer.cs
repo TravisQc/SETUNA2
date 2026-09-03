@@ -31,7 +31,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(376, 214);
             // 
             // groupBox1
@@ -64,7 +63,7 @@
             // rdoSolid
             // 
             this.rdoSolid.AutoSize = true;
-            this.rdoSolid.Location = new System.Drawing.Point(17, 79);
+            this.rdoSolid.Location = new System.Drawing.Point(17, 72);
             this.rdoSolid.Name = "rdoSolid";
             this.rdoSolid.Size = new System.Drawing.Size(71, 16);
             this.rdoSolid.TabIndex = 1;
@@ -158,7 +157,7 @@
             // 
             // MarginStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.ClientSize = new System.Drawing.Size(454, 246);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);

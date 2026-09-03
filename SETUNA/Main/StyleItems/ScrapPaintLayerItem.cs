@@ -72,8 +72,12 @@ namespace SETUNA.Main.StyleItems
             // 
             // ScrapPaintLayerItem
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            // 与其余界面同一套基线：96 DPI 逻辑单位 + Dpi 模式。本控件是图层列表里的一行
+            // （复选框、缩略图框、图层名），属于界面而不是画布像素；缩略图仍按 picThumb
+            // 的尺寸缩放显示，位图本身不动。原来的 (6F, 12F) + Font 会让它按环境字体自缩放，
+            // 实测在 96 DPI 上就已经放大约 1.17 倍。
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             Controls.Add(label1);
             Controls.Add(picThumb);

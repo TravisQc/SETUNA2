@@ -69,10 +69,13 @@ namespace SETUNA.Main.StyleItems
         /// <summary>
         /// 预览背景跟上预览框的新尺寸。<c>picPreview_Paint</c> 按 <c>imgBackground</c> 的宽高
         /// 把示例图居中，背景不跟上就既会露出没画到的空白、又会把示例图画偏。
+        /// <para>
+        /// <c>imgScrap</c> 不动：它就是那张示例贴图本身，以像素为语义。
+        /// </para>
         /// </summary>
-        protected override void OnDpiRelayout(int newDpi, int oldDpi)
+        protected override void OnDpiContextChanged(int previousDpi)
         {
-            base.OnDpiRelayout(newDpi, oldDpi);
+            base.OnDpiContextChanged(previousDpi);
 
             imgBackground = PreviewBackdrop.Resize(imgBackground, picPreview.Size);
             picPreview.Invalidate();

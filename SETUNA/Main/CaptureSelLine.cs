@@ -1,12 +1,14 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main
 {
     // Token: 0x02000071 RID: 113
     public sealed partial class CaptureSelLine : BaseForm
     {
+        protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
         // Token: 0x060003B3 RID: 947 RVA: 0x00016470 File Offset: 0x00014670
         public static void AddDashOffset()
         {

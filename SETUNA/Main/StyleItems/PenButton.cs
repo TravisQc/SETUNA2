@@ -35,6 +35,12 @@ namespace SETUNA.Main.StyleItems
             set => _penColor = value;
         }
 
+        /// <summary>
+        /// 画一个 <see cref="PenSize"/> 像素的圆点。**这个尺寸刻意不随 DPI 变**：它是笔刷落在
+        /// 贴图上的宽度，单位是图像像素（工具提示写的就是「20px」），按界面缩放放大之后显示的
+        /// 就不再是用户会得到的那个笔宽了。按钮本身的矩形照常由框架缩放，所以高 DPI 下这个点
+        /// 在按钮里占的比例会变小——那是正确的，因为图像像素和界面像素的比值本来就变了。
+        /// </summary>
         // Token: 0x0600058C RID: 1420 RVA: 0x000262C4 File Offset: 0x000244C4
         protected override void OnPaint(PaintEventArgs pevent)
         {

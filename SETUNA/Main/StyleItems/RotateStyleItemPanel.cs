@@ -61,9 +61,9 @@ namespace SETUNA.Main.StyleItems
         /// <c>imgScrap</c> 不动：它是被旋转、翻转之后的示例贴图，以像素为语义。
         /// </para>
         /// </summary>
-        protected override void OnDpiRelayout(int newDpi, int oldDpi)
+        protected override void OnDpiContextChanged(int previousDpi)
         {
-            base.OnDpiRelayout(newDpi, oldDpi);
+            base.OnDpiContextChanged(previousDpi);
 
             imgBackground = PreviewBackdrop.Resize(imgBackground, picPreview.Size);
             picPreview.Invalidate();

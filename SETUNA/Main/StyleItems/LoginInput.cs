@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -38,7 +39,7 @@ namespace SETUNA.Main.StyleItems
         }
 
         /// <summary>本窗体随所处显示器的 DPI 重排：两个输入框加两个按钮，没有位图与自绘控件。</summary>
-        protected override bool ScalesWithMonitorDpi => true;
+        protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
 
         // Token: 0x060003F4 RID: 1012 RVA: 0x00018B20 File Offset: 0x00016D20
         private void btnOK_Click(object sender, EventArgs e)

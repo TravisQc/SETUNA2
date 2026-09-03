@@ -9,12 +9,14 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SETUNA.Main.Style;
 using SETUNA.Main.StyleItems;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main
 {
     // Token: 0x02000008 RID: 8
     public sealed partial class ScrapBase : BaseForm
     {
+        protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
         // Token: 0x14000001 RID: 1
         // (add) Token: 0x06000037 RID: 55 RVA: 0x00003461 File Offset: 0x00001661
         // (remove) Token: 0x06000038 RID: 56 RVA: 0x0000347A File Offset: 0x0000167A
@@ -475,7 +477,10 @@ namespace SETUNA.Main
             // 图像被放大到 Width+2*all 的效果，右下角被裁掉。
             var destination = ScrapGeometry.ImageDestination(Width, Height, all);
 
-            if (Mainform.Instance.optSetuna.Setuna.BackgroundTransparentEnabled)
+            // 主窗口还没建起来时（探针、单元测试）仍要能画：贴图窗口不透明地画出来
+            // 就是选项默认关闭时的样子，为了读一个选项而在绘制路径上抛异常，只会让
+            // 窗口白屏或让宿主弹出未处理异常。同 CaptureForm.CopyFromScreen 的取舍。
+            if (Mainform.Instance?.optSetuna?.Setuna?.BackgroundTransparentEnabled == true)
             {
                 e.Graphics.Clear(Color.Green);
                 TransparencyKey = Color.Green;

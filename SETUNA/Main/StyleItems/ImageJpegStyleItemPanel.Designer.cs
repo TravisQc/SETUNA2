@@ -36,7 +36,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(323, 329);
             // 
             // groupBox1
@@ -253,7 +252,7 @@
             // 
             // ImageJpegStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.ClientSize = new System.Drawing.Size(401, 361);
             this.Controls.Add(this.groupBox1);
             this.Name = "ImageJpegStyleItemPanel";

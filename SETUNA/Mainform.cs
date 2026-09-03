@@ -478,17 +478,18 @@ namespace SETUNA
         /// <summary>
         /// 主窗口随所处显示器的 DPI 重排。
         /// </summary>
-        protected override bool ScalesWithMonitorDpi => true;
+        protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
 
         /// <summary>
-        /// 按 <paramref name="dpi"/> 施加尺寸边界。两个边界都有 175%（168 DPI）下的实测基线，
-        /// 按当前显示器的 DPI 换算，因此在每台显示器上是同一个物理尺寸。
+        /// 按 <paramref name="dpi"/> 施加尺寸边界。两个边界都是 96 DPI 的逻辑基线，
+        /// 按当前显示器的 DPI 换算，因此在每台显示器上是同一个视觉尺寸。
         /// <para>
         /// 在代码里设置使 <see cref="MainWindowGeometry"/> 成为运行时约束的唯一来源，
         /// 设计器里的字面量只服务于设计时预览。
         /// </para>
         /// </summary>
         private void ApplyWindowSizeBounds(int dpi)
+
         {
             var minimum = MainWindowGeometry.ScaleMinimum(dpi);
             var maximum = MainWindowGeometry.ScaleMaximum(dpi);
@@ -505,26 +506,80 @@ namespace SETUNA
         }
 
         /// <summary>
-        /// 重排时按基线重算边界，而不是按 DPI 之比缩放重排前的值——后者反复跨屏会累积
-        /// 四舍五入误差，而这两个边界有确定的基线可以直接算。
+        /// 换到另一块显示器之后重算尺寸边界。
+        /// <para>
+        /// 框架在缩放窗体时也会按 DPI 之比缩放 <c>MinimumSize</c>/<c>MaximumSize</c>，但那是
+        /// 拿换档前的值再乘一次比例，反复跨屏会累积四舍五入误差。这两个边界有确定的基线，
+        /// 直接按新 DPI 重算一遍就没有累积项，因此这里覆盖框架的结果而不是叠加。
+        /// </para>
         /// </summary>
-        protected override void ApplySizeBounds(int newDpi, int oldDpi, Size previousMinimum, Size previousMaximum)
+        protected override void OnDpiContextChanged(int previousDpi)
         {
-            ApplyWindowSizeBounds(newDpi);
+            base.OnDpiContextChanged(previousDpi);
+            ApplyWindowSizeBounds(CurrentDpiContext.DpiX);
+
+            // 两个按钮在设计器里显式指定了字体（微软雅黑 9pt），不在窗体的字体继承链上。
+            RescaleOwnedFonts(previousDpi, button1, button4);
         }
 
-        private void RestoreMainWindowSize()
+        /// <summary>
+        /// 施加保存下来的尺寸，没有保存值时施加按当前 DPI 换算的默认客户区。
+        /// <para>
+        /// 默认客户区必须换算：<see cref="MainWindowGeometry"/> 的基线是 96 DPI 逻辑值，
+        /// 而这里赋给 <see cref="Form.ClientSize"/> 的是物理像素，直接赋值会让 175% 下的
+        /// 窗口停在设计尺寸的 57%（而里面的控件已经被框架放大过了）。
+        /// </para>
+        /// </summary>
+        private void RestoreMainWindowSize(int dpi)
         {
-            if (optSetuna == null
-                || !MainWindowGeometry.HasPersistedSize(optSetuna.MainWindowWidth, optSetuna.MainWindowHeight))
+            if (optSetuna == null)
             {
-                ClientSize = MainWindowGeometry.DefaultClientSize;
+                ApplyDefaultClientSize(dpi);
                 return;
             }
 
-            Size = MainWindowGeometry.Clamp(optSetuna.MainWindowWidth, optSetuna.MainWindowHeight, MinimumSize, MaximumSize);
+            var restored = MainWindowGeometry.RestoreWindowSize(
+                optSetuna.MainWindowWidth,
+                optSetuna.MainWindowHeight,
+                optSetuna.MainWindowDpi,
+                dpi,
+                MinimumSize,
+                MaximumSize,
+                out var diagnostic);
+
+            if (diagnostic != null)
+            {
+                Console.WriteLine(diagnostic);
+            }
+
+            if (restored.IsEmpty)
+            {
+                ApplyDefaultClientSize(dpi);
+                return;
+            }
+
+            Size = restored;
         }
 
+        private void ApplyDefaultClientSize(int dpi)
+        {
+            var client = MainWindowGeometry.ScaleDefaultClient(dpi);
+
+            // DPI 取不到时保留框架在构造期按设计器基线排好的客户区，而不是把逻辑基线
+            // 当像素写下去。
+            if (!client.IsEmpty)
+            {
+                ClientSize = client;
+            }
+        }
+
+        /// <summary>
+        /// 保存当前窗口外框尺寸，连同它所属的那一档 DPI。
+        /// <para>
+        /// 只在关闭时调用，所以跨显示器本身不会重写保存值；而记下 DPI 之后，即使跨屏后
+        /// 才关闭，写下的物理尺寸与 DPI 一起描述的仍是用户拖出来的那个视觉尺寸。
+        /// </para>
+        /// </summary>
         private void SaveMainWindowSize()
         {
             if (optSetuna == null)
@@ -535,6 +590,7 @@ namespace SETUNA
             var clamped = MainWindowGeometry.Clamp(Size.Width, Size.Height, MinimumSize, MaximumSize);
             optSetuna.MainWindowWidth = clamped.Width;
             optSetuna.MainWindowHeight = clamped.Height;
+            optSetuna.MainWindowDpi = MainWindowGeometry.PersistableDpi(WindowsAPI.GetWindowDpi(Handle));
         }
 
         // Token: 0x060001FF RID: 511 RVA: 0x0000AF58 File Offset: 0x00009158
@@ -758,10 +814,13 @@ namespace SETUNA
         {
             base.Visible = false;
             LoadOption();
-            // 用窗口真实的 DPI，不用 Control.DeviceDpi——后者在本配置下恒为 96，
-            // 会把边界算成 100% 缩放下的值（见 WindowsAPI.GetWindowDpi）。
-            ApplyWindowSizeBounds(WindowsAPI.GetWindowDpi(Handle));
-            RestoreMainWindowSize();
+            // 边界的 DPI 来源统一走 WindowsAPI.GetWindowDpi，而不是 Control.DeviceDpi：
+            // 两者在 net8 上相等，但显示器快照也由前者拼出，混用会让同一次换算里出现
+            // 两个来源（见 WindowsAPI.GetWindowDpi）。读一次交给两步，边界与尺寸因此
+            // 一定属于同一档。
+            var dpi = WindowsAPI.GetWindowDpi(Handle);
+            ApplyWindowSizeBounds(dpi);
+            RestoreMainWindowSize(dpi);
             OptionApply();
             SaveOption();
             if (optSetuna.Setuna.ShowSplashWindow)
@@ -880,11 +939,25 @@ namespace SETUNA
         // Token: 0x06000219 RID: 537 RVA: 0x0000B520 File Offset: 0x00009720
         void ISingletonForm.DetectExternalStartup(string version, string[] args)
         {
-            base.Invoke(new Mainform.ExternalStartupDelegate(ExternalStartup), new object[]
+            if (IsDisposed || Disposing)
             {
-                version,
-                args
-            });
+                return;
+            }
+
+            // The pipe server already posts through the captured UI context. Keep
+            // this guard for direct/test callers and for a context-less startup
+            // before the main handle exists.
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Mainform.ExternalStartupDelegate(ExternalStartup), new object[]
+                {
+                    version,
+                    args ?? Array.Empty<string>()
+                });
+                return;
+            }
+
+            ExternalStartup(version, args ?? Array.Empty<string>());
         }
 
         // Token: 0x0600021A RID: 538 RVA: 0x0000B550 File Offset: 0x00009750

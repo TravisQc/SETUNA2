@@ -2,12 +2,14 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main.StyleItems
 {
     // Token: 0x0200007B RID: 123
     public partial class CompactScrap : BaseForm
     {
+        protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
         // Token: 0x06000407 RID: 1031 RVA: 0x00019DF8 File Offset: 0x00017FF8
         public CompactScrap(ScrapBase scrap, CCompactStyleItem item, Point clickpoint)
         {

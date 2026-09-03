@@ -196,7 +196,6 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(1194, 14);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
@@ -209,7 +208,6 @@
             // 
             // btnOK
             // 
-            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.Location = new System.Drawing.Point(939, 14);
             this.btnOK.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
             this.btnOK.Name = "btnOK";
@@ -861,7 +859,6 @@
             // 
             // checkBox1
             // 
-            this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(843, 22);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
@@ -1415,7 +1412,6 @@
             // 
             // checkBox_fullscreenCursor
             // 
-            this.checkBox_fullscreenCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox_fullscreenCursor.AutoSize = true;
             this.checkBox_fullscreenCursor.Location = new System.Drawing.Point(891, 24);
             this.checkBox_fullscreenCursor.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
@@ -1634,8 +1630,8 @@
             // 
             // OptionForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(15F, 30F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(1449, 1000);
             this.Controls.Add(this.panel3);

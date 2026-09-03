@@ -20,11 +20,11 @@ A best screenshot small tool (support high dpi screenshots)
 ## 版本说明
 - **SETUNA 3.x 版本的运行要求**（持续更新）([最新版 3.x 下载链接](https://github.com/tylearymf/SETUNA2/releases))
   
-  - Windows 10 14393 及以上
+  - Windows 10 17763（1809）及以上
   
     - ###### 查看Win10系统版本：设置 -> 系统 -> 关于 -> Windows 规格详情页里的 操作系统版本
   
-  - 安装 .NET Framework 4.8 组件
+  - 无需预装运行时：发布产物是 self-contained 的单文件 exe，.NET 8 运行时已打包在内
 - **SETUNA 2.x 版本的运行要求**（停止维护）([最后一版 2.x 下载链接](https://github.com/tylearymf/SETUNA2/releases/tag/2.6.0))
   
   - 安装 .Net Framework 2.0 组件
@@ -76,22 +76,36 @@ A best screenshot small tool (support high dpi screenshots)
 
 ## 构建
 
-构建环境：Visual Studio 2022（包含“.NET 桌面生成工具”工作负载）和 .NET Framework 4.8 targeting pack。在 Developer PowerShell for VS 2022 中执行：
+构建环境：.NET 8 SDK。不再需要 Visual Studio、MSBuild 或 .NET Framework 4.8 targeting pack——项目已是 SDK-style 的 `net8.0-windows`。
 
 ```powershell
-msbuild SETUNA.sln /restore
-msbuild SETUNA.sln /t:Rebuild /p:Configuration=Debug /p:Platform=x64
+dotnet restore SETUNA.sln
+dotnet build SETUNA.sln -c Debug -p:Platform=x64
 ```
 
-解决方案支持 `Debug`/`Release` 与 `x86`/`x64` 组合。普通构建不需要 7-Zip；发布产物通过显式目标生成：
+`./scripts/verify-build.ps1 -Configuration Debug -Platform x64` 会依次跑还原、构建和测试，并打印产物路径。
+
+解决方案支持 `Debug`/`Release` 与 `x86`/`x64` 组合，一次 `dotnet restore` 同时覆盖 `win-x86` 与 `win-x64`。普通构建不需要 7-Zip。
+
+发布前的完整门槛是 `./scripts/verify-matrix.ps1`：四个配置各做一次非增量构建与测试，把逐配置的警告清单、测试 TRX 和一份汇总表写到 `TestResults/build-matrix/`。跨显示器行为由几个自带清单的探针验证（清单是 DPI 感知生效的前提，测试宿主没有清单，所以这类检查只能放在探针里）：`verify-dpi-awareness.ps1`、`verify-dialog-relayout.ps1`（27 个对话框 × 2 语言 × 5 档 DPI，含逐档截图）、`verify-surface-geometry.ps1`（贴图/放大镜/截图覆盖层的像素不随 DPI 变）、`verify-menu-dpi.ps1`、`verify-webp-probe.ps1`。
+
+## 发布
+
+发布产物是**自包含单文件** exe：目标机器不需要预装任何 .NET 运行时，只要 Windows 10 1809（17763）或更新。
 
 ```powershell
-msbuild SETUNA\SETUNA.csproj /restore /t:CreateReleasePackage /p:Configuration=Release /p:Platform=x64
+./scripts/verify-publish.ps1
 ```
 
-产物是 `publish\SETUNA_<配置>_<平台>.exe`（如 `SETUNA_Release_x64.exe`），不打压缩包，下载即可运行：托管依赖由 Costura 嵌入，DPI 感知由内嵌清单声明，TLS 设置由启动代码应用，因此不再需要 `SETUNA.exe.config`。从旧版升级时可以直接删掉目录里残留的 `SETUNA.exe.config`。
+它对 `x86` 与 `x64` 各做一次发布，然后把产物单独拷进一个空目录、以 `--self-test` 启动它，逐项检查六种图片格式解码、libwebp 原生库的解包与加载、配置 XML 往返，以及「exe 旁边没有别的文件」。只想发布不想验证时直接调 MSBuild 目标：
 
-发布目标在发现输出目录存在 `SETUNA.exe.config` 时会报错终止——这通常意味着旧产物没清理干净，执行 `Rebuild` 或删除 `bin` 目录即可。
+```powershell
+dotnet msbuild SETUNA/SETUNA.csproj -t:PublishReleaseSingleFile -p:Configuration=Release -p:Platform=x64
+```
+
+产物落在 `publish/SETUNA_<配置>_<平台>.exe`（例如 `publish/SETUNA_Release_x64.exe`，约 76 MB；x86 约 71 MB）。两个架构可以并存在同一目录。
+
+约束由 `ValidateReleasePublishOutput` 目标强制，**发现问题时报错而不是删文件**：发布目录里只允许命名 exe 和可选的同名 pdb，不打压缩包，不带 `.config`／`.deps.json`／`.runtimeconfig.json`／附属资源程序集（`*.resources.dll`）／散落的原生 DLL。托管依赖由 SDK 打包进单文件，DPI 感知由内嵌清单声明，TLS 设置由启动代码应用；`libwebp_x86.dll`／`libwebp_x64.dll` 仍是嵌入资源，首次用到时按架构解包到 `%LOCALAPPDATA%\SETUNA\native\` 再加载，不放在发布目录里。从旧版（Costura 打包的 .NET Framework 4.8 版本）升级时可以直接删掉目录里残留的 `SETUNA.exe.config` 和 `SETUNA_*.zip`。
 
 ---
 

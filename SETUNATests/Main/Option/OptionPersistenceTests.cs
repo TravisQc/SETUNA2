@@ -138,9 +138,9 @@ namespace SETUNA.Main.Option.Tests
         [TestMethod]
         public void AConfigWithoutTheWindowSizeElementsStillLoads()
         {
-            // Backward compatibility: MainWindowWidth/Height were added by a later
-            // change, so a config written before it has no such elements. It must
-            // still deserialize, with the "no saved size" signal of 0.
+            // Backward compatibility: MainWindowWidth/Height and MainWindowDpi were added
+            // by later changes, so a config written before them has no such elements. It
+            // must still deserialize, with the "no saved size" signal of 0.
             var serializer = new XmlSerializer(typeof(SetunaOption), SetunaOption.GetAllType());
 
             File.WriteAllText(configFile, BuildLegacyConfig());
@@ -152,6 +152,7 @@ namespace SETUNA.Main.Option.Tests
                 Assert.IsNotNull(restored);
                 Assert.AreEqual(0, restored.MainWindowWidth);
                 Assert.AreEqual(0, restored.MainWindowHeight);
+                Assert.AreEqual(0, restored.MainWindowDpi);
             }
         }
 
@@ -169,15 +170,18 @@ namespace SETUNA.Main.Option.Tests
                 xml = System.Text.Encoding.UTF8.GetString(buffer.ToArray());
             }
 
-            foreach (var element in new[] { "MainWindowWidth", "MainWindowHeight" })
+            foreach (var element in new[] { "MainWindowWidth", "MainWindowHeight", "MainWindowDpi" })
             {
                 xml = System.Text.RegularExpressions.Regex.Replace(
                     xml, "\\s*<" + element + ">[^<]*</" + element + ">", string.Empty);
                 xml = System.Text.RegularExpressions.Regex.Replace(
                     xml, "\\s*<" + element + " />", string.Empty);
+
+                Assert.IsFalse(
+                    xml.Contains("<" + element),
+                    "The legacy fixture must not carry " + element + ".");
             }
 
-            Assert.IsFalse(xml.Contains("MainWindowWidth"), "The legacy fixture must not carry the new elements.");
             return xml;
         }
 

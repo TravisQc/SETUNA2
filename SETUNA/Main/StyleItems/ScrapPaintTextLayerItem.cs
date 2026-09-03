@@ -69,7 +69,10 @@ namespace SETUNA.Main.StyleItems
             // 
             // ScrapPaintTextLayerItem
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            // 见基类 ScrapPaintLayerItem：同一套 96 DPI 逻辑基线。缩放模式由基类的
+            // InitializeComponent 设成 Dpi，这里只需要基线本身与它一致，否则 (6F, 12F)
+            // 会被当成 DPI 基线，倍率变成 96/6。
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             Name = "ScrapPaintTextLayerItem";
             ((System.ComponentModel.ISupportInitialize)(picThumb)).EndInit();
             ResumeLayout(false);

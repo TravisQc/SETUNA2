@@ -29,7 +29,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(323, 228);
             // 
             // groupBox1
@@ -179,7 +178,7 @@
             // 
             // ImageBmpStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.ClientSize = new System.Drawing.Size(401, 260);
             this.Controls.Add(this.groupBox1);
             this.Name = "ImageBmpStyleItemPanel";

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 using SETUNA.Main.Localization;
 
 namespace SETUNA.Main
@@ -10,6 +11,7 @@ namespace SETUNA.Main
     // Token: 0x020000A7 RID: 167
     public sealed partial class CaptureInfo : BaseForm
     {
+        protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
         // Token: 0x06000564 RID: 1380 RVA: 0x00025A54 File Offset: 0x00023C54
         protected override void OnClosing(CancelEventArgs e)
         {

@@ -37,7 +37,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(451, 222);
             // 
             // groupBox1
@@ -117,9 +116,9 @@
             // barOpacity2
             // 
             this.barOpacity2.AutoSize = false;
-            this.barOpacity2.Location = new System.Drawing.Point(121, 79);
+            this.barOpacity2.Location = new System.Drawing.Point(133, 79);
             this.barOpacity2.Name = "barOpacity2";
-            this.barOpacity2.Size = new System.Drawing.Size(109, 20);
+            this.barOpacity2.Size = new System.Drawing.Size(97, 20);
             this.barOpacity2.TabIndex = 6;
             this.barOpacity2.TickFrequency = 10;
             this.barOpacity2.Scroll += new System.EventHandler(this.barOpacity_Scroll);
@@ -127,11 +126,11 @@
             // barOpacity
             // 
             this.barOpacity.AutoSize = false;
-            this.barOpacity.Location = new System.Drawing.Point(121, 50);
+            this.barOpacity.Location = new System.Drawing.Point(133, 50);
             this.barOpacity.Maximum = 100;
             this.barOpacity.Minimum = 1;
             this.barOpacity.Name = "barOpacity";
-            this.barOpacity.Size = new System.Drawing.Size(109, 20);
+            this.barOpacity.Size = new System.Drawing.Size(97, 20);
             this.barOpacity.TabIndex = 2;
             this.barOpacity.TickFrequency = 10;
             this.barOpacity.Value = 1;
@@ -209,7 +208,7 @@
             // 
             // OpacityStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.ClientSize = new System.Drawing.Size(529, 254);
             this.Controls.Add(this.groupBox1);
             this.DoubleBuffered = true;

@@ -62,9 +62,9 @@ namespace SETUNA.Main.StyleItems
         /// 一起代表贴图被紧凑化之后的样子，是以像素为语义的示例，不该随 DPI 变。
         /// </para>
         /// </summary>
-        protected override void OnDpiRelayout(int newDpi, int oldDpi)
+        protected override void OnDpiContextChanged(int previousDpi)
         {
-            base.OnDpiRelayout(newDpi, oldDpi);
+            base.OnDpiContextChanged(previousDpi);
 
             imgBackground = PreviewBackdrop.Resize(imgBackground, picPreview.Size);
             picPreview.Invalidate();

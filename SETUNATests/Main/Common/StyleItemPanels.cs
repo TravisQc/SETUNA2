@@ -24,10 +24,12 @@ namespace SETUNA.Main.Tests
         /// Every panel the suite can build without application state, ordered by type name
         /// so a failure names the same dialog on every run.
         /// <para>
-        /// Items needing more context than this host can supply are skipped rather than
-        /// reported: <c>LocalizationSweepTests</c> enumerates the same hierarchy from the
-        /// type system alone, so a panel that stops being constructible cannot go
-        /// unnoticed by dropping out here.
+        /// A style item with no parameterless constructor is skipped — it is not reachable
+        /// from here. A panel that throws while building is *not*: it is reported, because a
+        /// swallowed build silently shrinks every sweep that runs over this list. That is
+        /// how <c>CompactStyleItemPanel</c> dropped out of one run in three while its
+        /// preview backdrop still let a failed screen capture escape
+        /// (<c>PreviewBackdrop.Capture</c>), and nothing in the output said so.
         /// </para>
         /// </summary>
         public static IEnumerable<ToolBoxForm> All()
@@ -43,28 +45,28 @@ namespace SETUNA.Main.Tests
                     continue;
                 }
 
-                var panel = TryBuild(type);
-                if (panel != null)
-                {
-                    yield return panel;
-                }
+                yield return Build(type);
             }
         }
 
-        static ToolBoxForm TryBuild(Type styleItemType)
+        static ToolBoxForm Build(Type styleItemType)
         {
+            var item = (CStyleItem)Activator.CreateInstance(styleItemType);
+            var method = typeof(CStyleItem).GetMethod(
+                "GetToolBoxForm",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+
             try
             {
-                var item = (CStyleItem)Activator.CreateInstance(styleItemType);
-                var method = typeof(CStyleItem).GetMethod(
-                    "GetToolBoxForm",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-
                 return (ToolBoxForm)method.Invoke(item, null);
             }
-            catch (Exception)
+            catch (TargetInvocationException failed)
             {
-                return null;
+                throw new InvalidOperationException(
+                    styleItemType.Name + " could not build its settings dialog, so every sweep over "
+                        + "these panels would have measured one dialog fewer: "
+                        + failed.InnerException,
+                    failed.InnerException);
             }
         }
     }

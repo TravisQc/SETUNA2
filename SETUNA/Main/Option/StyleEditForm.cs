@@ -39,12 +39,35 @@ namespace SETUNA.Main.Option
         /// 本窗体随所处显示器的 DPI 重排。
         /// <para>
         /// 三个列表是自绘的（<see cref="SetunaListBox"/> 派生），绘制用的是控件当前字体，因此
-        /// 跟着重排走。<see cref="StyleItemListBox"/> 另有一个独立的说明字体属性，它自己实现
-        /// <see cref="IDpiRelayoutListener"/> 来换算——那个属性不在字体继承链上，光换窗体字体
-        /// 到不了它。
+        /// 跟着重排走。<see cref="StyleItemListBox"/> 另有一个独立的说明字体属性，官方管线接进来
+        /// 之后它也不需要换算——那是以「点」为单位的字体，见该属性自己的说明。行高仍是固定
+        /// 像素，归任务 6.2。
         /// </para>
         /// </summary>
-        protected override bool ScalesWithMonitorDpi => true;
+        protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
+
+        /// <summary>
+        /// 七个控件在设计器里各自指定了字体，不在窗体的字体继承链上，框架的缩放到不了它们。
+        /// 两个样式列表另有一个 <c>HelpFont</c> 属性，同样是设计器里的显式字体（黑体 8pt），
+        /// 它连 <see cref="Control.Font"/> 都不是，只能单独换。
+        /// </summary>
+        protected override void OnDpiContextChanged(int previousDpi)
+        {
+            base.OnDpiContextChanged(previousDpi);
+
+            RescaleOwnedFonts(
+                previousDpi,
+                label1,
+                txtStyleName,
+                btnItemUp,
+                btnItemDown,
+                btnItemDelete,
+                listStyleItem,
+                listAllStyleItem);
+
+            listStyleItem.HelpFont = RescaleOwnedFont(previousDpi, listStyleItem.HelpFont);
+            listAllStyleItem.HelpFont = RescaleOwnedFont(previousDpi, listAllStyleItem.HelpFont);
+        }
         // Token: 0x06000441 RID: 1089 RVA: 0x0001C180 File Offset: 0x0001A380
         private void RefreshStyleItemList()
         {

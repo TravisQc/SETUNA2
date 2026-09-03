@@ -28,9 +28,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.txtID);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
@@ -44,10 +41,10 @@
             // 
             // txtID
             // 
-            this.txtID.Location = new System.Drawing.Point(87, 28);
+            this.txtID.Location = new System.Drawing.Point(95, 28);
             this.txtID.MaxLength = 100;
             this.txtID.Name = "txtID";
-            this.txtID.Size = new System.Drawing.Size(157, 21);
+            this.txtID.Size = new System.Drawing.Size(149, 21);
             this.txtID.TabIndex = 1;
             // 
             // label2
@@ -70,16 +67,15 @@
             // 
             // txtPass
             // 
-            this.txtPass.Location = new System.Drawing.Point(87, 62);
+            this.txtPass.Location = new System.Drawing.Point(95, 62);
             this.txtPass.MaxLength = 100;
             this.txtPass.Name = "txtPass";
             this.txtPass.PasswordChar = '*';
-            this.txtPass.Size = new System.Drawing.Size(157, 21);
+            this.txtPass.Size = new System.Drawing.Size(149, 21);
             this.txtPass.TabIndex = 3;
             // 
             // btnCancel
             // 
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(205, 126);
             this.btnCancel.Name = "btnCancel";
@@ -90,7 +86,6 @@
             // 
             // btnOK
             // 
-            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.Location = new System.Drawing.Point(124, 126);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
@@ -102,8 +97,8 @@
             // LoginInput
             // 
             this.AcceptButton = this.btnOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(292, 156);
             this.Controls.Add(this.btnOK);

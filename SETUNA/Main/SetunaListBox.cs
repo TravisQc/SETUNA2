@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main
 {
@@ -28,6 +29,11 @@ namespace SETUNA.Main
         [Description("アイテムの左のスペースを指定します。")]
         public int LeftSpace { get; set; }
 
+        /// <summary>
+        /// 行内留白。逻辑基线是 2 像素，随 <see cref="ScaleControl"/> 一起换档。
+        /// </summary>
+        protected int ItemPadding { get; private set; }
+
         // Token: 0x06000432 RID: 1074 RVA: 0x0001A964 File Offset: 0x00018B64
         public SetunaListBox()
         {
@@ -41,8 +47,33 @@ namespace SETUNA.Main
             _dragmove = false;
             _delkeyitem = false;
             LeftSpace = 2;
+            ItemPadding = 2;
             ItemLine = false;
             ItemLineColor = Color.Gray;
+        }
+
+        /// <summary>
+        /// 自绘列表的行高与留白由应用决定，框架不替它们换档，所以在框架自己的缩放钩子里补上。
+        /// <para>
+        /// 实测：<c>DrawMode.OwnerDrawFixed</c> 的列表在 96/120/144/168 DPI 上行高恒为 20，
+        /// 而字体从 14px 长到 24px——文字被行高裁掉。同一个窗体里 <c>DrawMode.Normal</c> 的
+        /// <c>listKeyItems</c> 行高是 17/20/24/28，由框架按字体算出来，不需要插手；差别就在
+        /// 于 <c>OwnerDrawFixed</c> 把行高的所有权交给了应用。
+        /// </para>
+        /// <para>
+        /// 用 <see cref="ScaleControl"/> 而不是查 DPI 再换算，有两个理由：它与框架缩放控件矩形
+        /// 是同一趟，行高不可能和框内尺寸对不上；构造期的 <c>PerformAutoScale</c> 和跨屏的
+        /// <c>WM_DPICHANGED</c> 都会走到它，不必自己订阅两条路。因此设计器里的数值就是
+        /// 96 DPI 逻辑基线。
+        /// </para>
+        /// </summary>
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(factor, specified);
+
+            ItemHeight = DpiContext.Scale(ItemHeight, factor.Height);
+            LeftSpace = DpiContext.Scale(LeftSpace, factor.Width);
+            ItemPadding = DpiContext.Scale(ItemPadding, factor.Height);
         }
 
         // Token: 0x170000A6 RID: 166
@@ -80,9 +111,9 @@ namespace SETUNA.Main
             }
             e.DrawBackground();
             var bounds = new Rectangle(e.Bounds.Location, e.Bounds.Size);
-            bounds.Y += 2;
+            bounds.Y += ItemPadding;
             bounds.X += LeftSpace;
-            bounds.Width -= bounds.X + 2;
+            bounds.Width -= bounds.X + ItemPadding;
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
             {
                 if ((e.State & DrawItemState.Focus) != DrawItemState.Focus)

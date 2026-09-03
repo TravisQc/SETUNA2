@@ -36,6 +36,7 @@ namespace SETUNA.Main.StyleItems
         {
             _parent = parent;
             InitializeComponent();
+            HideControlBoxAfterInitialize();
             activeTool = null;
             tools = new List<CheckBox>
             {

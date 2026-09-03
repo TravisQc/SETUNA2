@@ -45,7 +45,7 @@
             this.mainActionLayout.Name = "mainActionLayout";
             this.mainActionLayout.RowCount = 1;
             this.mainActionLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.mainActionLayout.Size = new System.Drawing.Size(415, 180);
+            this.mainActionLayout.Size = new System.Drawing.Size(237, 103);
             this.mainActionLayout.TabIndex = 0;
             // 
             // button1
@@ -127,14 +127,15 @@
             // 
             // Mainform
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(415, 180);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(237, 103);
             this.ContextMenuStrip = this.setunaIconMenu;
             this.Controls.Add(this.mainActionLayout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(640, 360);
-            this.MinimumSize = new System.Drawing.Size(260, 160);
+            this.MaximumSize = new System.Drawing.Size(366, 206);
+            this.MinimumSize = new System.Drawing.Size(149, 91);
             this.Name = "Mainform";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SETUNA";

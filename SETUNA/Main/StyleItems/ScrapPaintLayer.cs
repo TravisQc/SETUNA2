@@ -62,6 +62,7 @@ namespace SETUNA.Main.StyleItems
         public ScrapPaintLayer(ScrapPaintWindow parent)
         {
             InitializeComponent();
+            HideControlBoxAfterInitialize();
             _select = null;
             _parent = parent;
             LayerCommands = new List<LayerCommand>();

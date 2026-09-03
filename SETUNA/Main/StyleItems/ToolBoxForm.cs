@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main.StyleItems
 {
@@ -35,7 +36,7 @@ namespace SETUNA.Main.StyleItems
         /// 只有外面那圈裁剪用的面板。
         /// </para>
         /// </summary>
-        protected override bool ScalesWithMonitorDpi => true;
+        protected override DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
 
         // Token: 0x06000005 RID: 5 RVA: 0x000022A8 File Offset: 0x000004A8
         private void cmdOK_Click(object sender, EventArgs e)

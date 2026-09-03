@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 using SETUNA.Main.Option;
 
 namespace SETUNA.Main
@@ -14,6 +15,7 @@ namespace SETUNA.Main
     // Token: 0x02000046 RID: 70
     public sealed partial class CaptureForm : BaseForm
     {
+        protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
         // Token: 0x0600028B RID: 651
         [DllImport("User32.Dll")]
         private static extern IntPtr GetDesktopWindow();
@@ -285,18 +287,21 @@ namespace SETUNA.Main
             Cursor.Clip = targetScreen.Bounds;
         }
 
+        /// <summary>
+        /// 截图覆盖层要盖住的那块显示器：光标所在的那块。
+        /// <para>
+        /// <see cref="Screen.FromPoint"/> 走的是 <c>MONITOR_DEFAULTTONEAREST</c>，对一个**点**
+        /// 而言这正是要的语义——点最多落在一块显示器里，落在显示器之间的空隙里时取最近的一块。
+        /// 「重叠面积最大」那条规则是给**矩形**用的（见 <see cref="MonitorSnapshot.SelectFor"/>）。
+        /// 原实现手工遍历「第一块与光标处 1x1 矩形相交的屏幕」，空隙里则退回主屏，会把覆盖层
+        /// 整个搬到另一块显示器上。<c>Screen.Bounds</c> 与显示器快照的物理边界逐项相等，由
+        /// <c>probes/SurfaceGeometryProbe</c> 实测钉住，所以这里继续用 <see cref="Screen"/>。
+        /// </para>
+        /// </summary>
         // Token: 0x0600029E RID: 670 RVA: 0x0000E628 File Offset: 0x0000C828
         private Screen GetCurrentScreen()
         {
-            var rectangle = new Rectangle(Cursor.Position, new Size(1, 1));
-            foreach (var screen in Screen.AllScreens)
-            {
-                if (rectangle.IntersectsWith(screen.Bounds))
-                {
-                    return screen;
-                }
-            }
-            return Screen.PrimaryScreen;
+            return Screen.FromPoint(Cursor.Position);
         }
 
         // Token: 0x0600029F RID: 671 RVA: 0x0000E680 File Offset: 0x0000C880
@@ -331,10 +336,17 @@ namespace SETUNA.Main
                         // CAPTUREBLT 是为了把分层/半透明窗口一起截到，不能省。
                         CaptureForm.BitBlt(targetDC, 0, 0, img.Width, img.Height, screenDC, location.X, location.Y, CaptureForm.SRCCOPY | CaptureForm.CAPTUREBLT);
 
-                        if (Mainform.Instance.optSetuna.Setuna.CursorEnabled)
+                        // 主窗口还没建起来时（探针、单元测试）本方法仍应完成截图：这是个静态
+                        // 工具，位图已经填好了，为了一个装饰性的光标覆盖而抛出去只会让调用方
+                        // 把成功的一次截图当成失败。
+                        if (Mainform.Instance?.optSetuna?.Setuna?.CursorEnabled == true)
                         {
-                            var cursorPos = Cursor.Position;
-                            cursorPos.X -= targetScreen.Bounds.X;
+                            // 换到位图坐标系，原点用这次 BitBlt 的原点本身，而不是静态的
+                            // targetScreen——而且两条轴都要减。原实现只减了 X，于是在任何顶边
+                            // 不为 0 的显示器上光标都被画低了整个 Y 偏移（本机副屏是 548）。
+                            var cursorPos = new Point(
+                                Cursor.Position.X - location.X,
+                                Cursor.Position.Y - location.Y);
                             WindowsAPI.DrawCursorImageToScreenImage(cursorPos, targetDC);
                         }
                     }

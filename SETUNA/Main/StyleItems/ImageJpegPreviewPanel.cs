@@ -42,6 +42,14 @@ namespace SETUNA.Main.StyleItems
         {
             var cimageJpegStyleItem = (CImageJpegStyleItem)style;
             InitializeComponent();
+
+            // 唯一可缩放的样式面板，按钮要跟着右下角走。锚点在代码里设、而且必须在
+            // InitializeComponent 之后：锚点偏移是在赋值那一刻按当时的客户区算出来的，
+            // 写在设计器里就会按基类的 319x246 记一份偏移，等本面板把客户区改小之后
+            // 按钮会被推到客户区外面（其余面板固定大小，一律用默认的左上锚点）。
+            cmdOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            cmdCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
             Text = cimageJpegStyleItem.GetDisplayName();
             barQuality.Value = cimageJpegStyleItem.Quality;
             lastqvalue = barQuality.Value;

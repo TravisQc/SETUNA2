@@ -17,7 +17,6 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmdCancel.Location = new System.Drawing.Point(110, 77);
             // 
             // groupBox1
@@ -25,7 +24,7 @@
             this.groupBox1.Controls.Add(this.chkWindow);
             this.groupBox1.Location = new System.Drawing.Point(8, 8);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(172, 62);
+            this.groupBox1.Size = new System.Drawing.Size(190, 62);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设置";
@@ -33,7 +32,7 @@
             // chkWindow
             // 
             this.chkWindow.AutoSize = true;
-            this.chkWindow.Location = new System.Drawing.Point(23, 28);
+            this.chkWindow.Location = new System.Drawing.Point(12, 28);
             this.chkWindow.Name = "chkWindow";
             this.chkWindow.Size = new System.Drawing.Size(102, 16);
             this.chkWindow.TabIndex = 0;
@@ -42,8 +41,8 @@
             // 
             // CopyStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.ClientSize = new System.Drawing.Size(188, 109);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.ClientSize = new System.Drawing.Size(206, 109);
             this.Controls.Add(this.groupBox1);
             this.Name = "CopyStyleItemPanel";
             this.Controls.SetChildIndex(this.cmdCancel, 0);

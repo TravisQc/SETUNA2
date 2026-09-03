@@ -21,18 +21,14 @@
             // 
             // cmdOK
             // 
-            this.cmdOK.Location = new System.Drawing.Point(136, 234);
+            this.cmdOK.Location = new System.Drawing.Point(136, 262);
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdCancel.Location = new System.Drawing.Point(210, 234);
+            this.cmdCancel.Location = new System.Drawing.Point(210, 262);
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.linkLabel1);
             this.groupBox1.Controls.Add(this.label4);
@@ -44,16 +40,16 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(8, 8);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(274, 217);
+            this.groupBox1.Size = new System.Drawing.Size(274, 245);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设置";
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(206, 179);
+            this.button1.Location = new System.Drawing.Point(188, 208);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(64, 23);
+            this.button1.Size = new System.Drawing.Size(80, 23);
             this.button1.TabIndex = 8;
             this.button1.Text = "复制网址";
             this.button1.UseVisualStyleBackColor = true;
@@ -103,17 +99,17 @@
             // 
             // txtPass
             // 
-            this.txtPass.Location = new System.Drawing.Point(126, 62);
+            this.txtPass.Location = new System.Drawing.Point(138, 62);
             this.txtPass.Name = "txtPass";
             this.txtPass.PasswordChar = '*';
-            this.txtPass.Size = new System.Drawing.Size(120, 21);
+            this.txtPass.Size = new System.Drawing.Size(108, 21);
             this.txtPass.TabIndex = 3;
             // 
             // txtID
             // 
-            this.txtID.Location = new System.Drawing.Point(126, 28);
+            this.txtID.Location = new System.Drawing.Point(138, 28);
             this.txtID.Name = "txtID";
-            this.txtID.Size = new System.Drawing.Size(120, 21);
+            this.txtID.Size = new System.Drawing.Size(108, 21);
             this.txtID.TabIndex = 2;
             // 
             // label2
@@ -136,8 +132,8 @@
             // 
             // PicasaStyleItemPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.ClientSize = new System.Drawing.Size(288, 266);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.ClientSize = new System.Drawing.Size(288, 294);
             this.Controls.Add(this.groupBox1);
             this.DoubleBuffered = true;
             this.Name = "PicasaStyleItemPanel";

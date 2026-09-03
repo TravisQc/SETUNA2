@@ -60,7 +60,7 @@ namespace SETUNA.Main.StyleItems
         /// 预览里的两样东西跟上重排结果：按预览框尺寸抓的背景，以及浮在背景上那个示例窗口。
         /// <para>
         /// 示例窗口是个 <c>TopLevel = false</c> 的子窗体，连同里面的 <c>picSample</c> 一起挂在
-        /// <c>picPreview</c> 下，所以 <c>AutoScaleMode.Font</c> 会把它们的矩形一并放大。可它们
+        /// <c>picPreview</c> 下，所以自动缩放会把它们的矩形一并放大。可它们
         /// 表示的是「贴图加上 N 像素边距之后的样子」，边距的单位就是像素——放大之后示例图周围
         /// 会多出一圈与设定值无关的空白，<see cref="ResizeSample"/> 又按 <c>picSample.Width</c>
         /// 反算边框，误差会一路传下去。因此把 <c>picSample</c> 按原图尺寸钉回去，再让
@@ -68,9 +68,9 @@ namespace SETUNA.Main.StyleItems
         /// 当前尺寸，所以放大后的预览框里仍然居中。
         /// </para>
         /// </summary>
-        protected override void OnDpiRelayout(int newDpi, int oldDpi)
+        protected override void OnDpiContextChanged(int previousDpi)
         {
-            base.OnDpiRelayout(newDpi, oldDpi);
+            base.OnDpiContextChanged(previousDpi);
 
             imgBackground = PreviewBackdrop.Resize(imgBackground, picPreview.Size);
 

@@ -3,12 +3,14 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main.StyleItems
 {
     // Token: 0x02000022 RID: 34
     public partial class ScrapDrawForm : BaseForm
     {
+        protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
         // Token: 0x06000162 RID: 354
         [DllImport("user32.dll")]
         private static extern IntPtr GetDC(IntPtr hwnd);
@@ -27,6 +29,12 @@ namespace SETUNA.Main.StyleItems
         }
 
         // Token: 0x06000166 RID: 358 RVA: 0x00008440 File Offset: 0x00006640
+        /// <summary>
+        /// 画布比贴图每边宽出 50 像素，让用户可以画到贴图之外一点。**这 50 是图像像素，
+        /// 刻意不随 DPI 变**：这一圈是被压暗的桌面内容，与贴图位图拼在同一个
+        /// <c>_baseimg</c> 里，按界面缩放放大它就等于把桌面截图拉伸了。窗口本身是
+        /// <c>PhysicalSurface</c>，尺寸直接取 <c>_baseimg</c> 的像素尺寸。
+        /// </summary>
         public ScrapDrawForm(ScrapBase scrap)
         {
             InitializeComponent();

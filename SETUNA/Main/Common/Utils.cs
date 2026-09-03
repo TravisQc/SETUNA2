@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Net;
-using System.Windows.Media.Imaging;
 using Svg;
 
 namespace SETUNA.Main
@@ -73,9 +72,7 @@ namespace SETUNA.Main
                             bitmap = SvgDocument.Open<SvgDocument>(stream).Draw();
                             break;
                         case ImageType.PSD:
-                            var psdFile = new System.Drawing.PSD.PsdFile();
-                            psdFile.Load(path);
-                            bitmap = System.Drawing.PSD.ImageDecoder.DecodeImage(psdFile);
+                            bitmap = PsdBitmapDecoder.Decode(stream);
                             break;
                         case ImageType.ICO:
                             using (var icon = new Icon(path))
@@ -84,11 +81,7 @@ namespace SETUNA.Main
                             }
                             break;
                         case ImageType.TGA:
-                            using (var reader = new BinaryReader(stream))
-                            {
-                                var image = new TgaLib.TgaImage(reader);
-                                bitmap = image.GetBitmap().ToBitmap();
-                            }
+                            bitmap = TgaBitmapDecoder.Decode(stream);
                             break;
                         default:
                             using (var source = new Bitmap(stream))
@@ -183,22 +176,6 @@ namespace SETUNA.Main
             }
         }
 
-        public static Bitmap ToBitmap(this BitmapSource source)
-        {
-            Bitmap bitmap;
-            using (var outStream = new MemoryStream())
-            {
-                BitmapEncoder enc = new BmpBitmapEncoder();
-                enc.Frames.Add(BitmapFrame.Create(source));
-                enc.Save(outStream);
-                outStream.Position = 0;
-                using (var image = new Bitmap(outStream))
-                {
-                    bitmap = new Bitmap(image);
-                }
-            }
-            return bitmap;
-        }
     }
 
     public static class ImageUtils

@@ -13,41 +13,13 @@ public class BaseForm : Form
 
     bool ownedResourcesDisposed;
 
-    /// <summary>
-    /// 框架给窗体排版时用的 DPI，也就是进程启动时的系统 DPI。
-    /// <para>
-    /// 不能用窗口当前所在显示器的 DPI 作为重排基准：窗体建好时的排版对应的是系统 DPI
-    /// （环境字体的像素高度由系统 DPI 决定，<c>AutoScaleMode.Font</c> 的倍率又由环境字体
-    /// 决定）。如果启动时窗口就落在另一块缩放不同的显示器上，把当前显示器的 DPI 当成基准
-    /// 会得出「无需重排」，窗口就一直停在错误的排版上。
-    /// </para>
-    /// <para>
-    /// 只取一次：系统 DPI 在会话中途可以被改（用户改主显示器的缩放比例），但已经建好的
-    /// 窗体排版仍停在启动时那个值上，跟着变会把基准算错。
-    /// </para>
-    /// </summary>
-    static readonly int LayoutBaselineDpi = WindowsAPI.GetSystemDpi();
+    bool dpiSyncInProgress;
+    int notifiedDpi;
+    MonitorSnapshot monitorSnapshot = MonitorSnapshot.Unavailable;
+    DpiContext dpiContext = new DpiContext(MonitorSnapshot.Unavailable);
 
-    /// <summary>当前排版对应的 DPI。</summary>
-    int layoutDpi = LayoutBaselineDpi;
-
-    /// <summary>重排期间为真，用于阻止嵌套重排。</summary>
-    bool relayoutInProgress;
-
-    /// <summary>上一次重排创建的字体，下一次重排替换掉它们之后释放。</summary>
-    readonly List<Font> relayoutFonts = new List<Font>();
-
-    /// <summary>
-    /// 基线排版：<see cref="LayoutBaselineDpi"/> 那一档的窗体字体、客户区、自动缩放尺度，
-    /// 以及每个控件的矩形。第一次重排之前拍下。
-    /// <para>
-    /// 为 <c>null</c> 表示这次重排走按新旧 DPI 之比缩放当前状态的老做法：可以被用户改大小的
-    /// 窗口一直如此（见 <see cref="ReproducesLayoutFromBaseline"/>），其余窗口只在拍下之前
-    /// 如此。
-    /// </para>
-    /// </summary>
-    LayoutBaseline baseline;
-
+    /// <summary>Fonts this form created while rescaling; the designer's originals are not here.</summary>
+    readonly List<Font> rescaledFonts = new List<Font>();
 
     public BaseForm()
     {
@@ -56,448 +28,407 @@ public class BaseForm : Form
         // 语言变更后要重新应用文字。订阅的是静态事件，它会一直持有 this，
         // 所以退订必须成对出现在下面的确定性释放路径上。
         Lang.LanguageChanged += Lang_LanguageChanged;
+
+        // The exact type is already available here, before InitializeComponent, so
+        // physical surfaces never enter the framework's automatic layout path.
+        AutoScaleMode = Policy == DpiPolicy.PhysicalSurface
+            ? AutoScaleMode.None
+            : AutoScaleMode.Dpi;
     }
 
-    /// <summary>
-    /// 本窗体是否随所处显示器的 DPI 重排。默认不参与，窗体各自重写以加入。
-    /// <para>
-    /// 默认值是刻意选的：漏掉一个对话框，后果是它保持原有行为；漏掉一个以像素为语义的窗口
-    /// （贴图窗口、截图覆盖层、放大镜、以图像本身为画布的窗口），后果是图像被重新拉伸、
-    /// 取样几何错位。风险朝安全的一侧倒。
-    /// </para>
-    /// </summary>
-    protected virtual bool ScalesWithMonitorDpi => false;
+    /// <summary>Semantic policy for this top-level window.</summary>
+    protected virtual DpiPolicy DpiPolicy => DpiPolicy.LogicalUi;
+
+    /// <summary>Exposes the selected policy to diagnostics and policy tests.</summary>
+    public DpiPolicy Policy => DpiPolicyRegistry.TryGetPolicy(GetType(), out var policy) ? policy : DpiPolicy;
+
+    public MonitorSnapshot CurrentMonitor => monitorSnapshot;
+
+    public DpiContext CurrentDpiContext => dpiContext;
 
     /// <summary>
-    /// 本窗体的排版能否从启动那一档的快照重算。
-    /// <para>
-    /// 判据是窗口能不能被用户改大小。不能改的窗口，排版完全由「设计值 + DPI」决定，于是每次都
-    /// 从同一份快照算到目标 DPI，同一个 DPI 就永远得到同一套排版，回到启动那一档更是逐像素还原
-    /// 设计值。能改大小的窗口不行：快照描述的是「启动那一档 DPI 加当时那个尺寸」，照它重算会把
-    /// 用户的尺寸抹掉——主窗口可以拖大拖小，尺寸还会存进选项里——那种窗口只能按新旧 DPI 之比
-    /// 缩放当前状态，也就是本来的做法。
-    /// </para>
-    /// </summary>
-    protected virtual bool ReproducesLayoutFromBaseline =>
-        FormBorderStyle != FormBorderStyle.Sizable
-        && FormBorderStyle != FormBorderStyle.SizableToolWindow;
-
-    /// <summary>
-    /// 拦下 <see cref="DpiRelayout.WM_DPICHANGED"/> 自己重排。
-    /// <para>
-    /// 不能靠 <c>Form.DpiChanged</c>：那套事件要由应用配置文件里的
-    /// <c>System.Windows.Forms.ApplicationConfigurationSection</c> 打开，而单文件分发不允许
-    /// 存在配置文件，实测 <c>DpiHelper.enableHighDpi</c> 为 false，事件永不触发。消息本身
-    /// 是系统发的，与框架开关无关，所以只能在这里接。
-    /// </para>
-    /// <para>
-    /// 先让基类走完默认处理再重排：默认处理不会改客户区尺寸（实测合成一条
-    /// <c>WM_DPICHANGED</c> 后窗口尺寸纹丝不动），但它负责非客户区的记账，而重排施加的
-    /// 目标矩形必须是最后生效的那个。
-    /// </para>
-    /// </summary>
-    protected override void WndProc(ref Message m)
-    {
-        if (m.Msg != DpiRelayout.WM_DPICHANGED || !ScalesWithMonitorDpi || relayoutInProgress)
-        {
-            base.WndProc(ref m);
-            return;
-        }
-
-        // 在默认处理之前把消息参数读出来，不依赖 lParam 在之后仍然有效。
-        var newDpi = DpiRelayout.DpiFromMessage(m.WParam);
-        var suggested = ReadSuggestedBounds(m.LParam);
-
-        base.WndProc(ref m);
-
-        RelayoutForDpi(newDpi, suggested);
-    }
-
-    /// <summary>
-    /// 重新可见时校正一次排版。系统只向可见窗口发 DPI 变化消息，所以常驻托盘期间被隐藏的
+    /// 重新可见时校正一次。系统只向可见窗口发 DPI 变化消息，所以常驻托盘期间被隐藏的
     /// 窗口会错过显示设置的变化，不能只依赖消息到达。
     /// </summary>
     protected override void OnVisibleChanged(EventArgs e)
     {
         base.OnVisibleChanged(e);
 
-        if (Visible && ScalesWithMonitorDpi && IsHandleCreated)
+        if (Visible && IsHandleCreated)
         {
-            // 没有建议矩形，位置保持不动。
-            RelayoutForDpi(WindowsAPI.GetWindowDpi(Handle), Rectangle.Empty);
+            SyncDpiContext(0, null);
+        }
+    }
+
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+        SyncDpiContext(WindowsAPI.GetWindowDpi(Handle), null);
+    }
+
+    /// <summary>
+    /// 物理表面在换档时保持自己的像素外框。
+    /// <para>
+    /// <c>AutoScaleMode.None</c> 只挡住控件树的缩放，挡不住窗口本身：<c>WM_DPICHANGED</c> 带着
+    /// 一个建议矩形，而 <c>DefWindowProc</c> 会直接照它调用 <c>SetWindowPos</c>。实测 168→96 时
+    /// 137x89 的贴图窗口变成 78x51，位图却仍是 137x89——窗口比自己的图还小；放大镜
+    /// 250x265→143x151，4 倍放大看到的像素数跟着变了；辅助线窗口 24x24→14x14；
+    /// <c>CaptureInfo</c> 236x131→135x75。
+    /// </para>
+    /// <para>
+    /// <see cref="DpiChangedEventArgs"/> 的 <c>Cancel</c> **挡不住这件事**（实测设了照样变）：
+    /// 框架先 <c>DefWndProc</c> 再触发 <see cref="OnDpiChanged"/>，等事件能被取消时窗口已经
+    /// 被改过了，那个标志管的是之后的托管缩放。所以在这里前后夹一次：进来时记下外框，
+    /// <c>base.WndProc</c> 之后如果被改动就写回去。两次 <c>SetWindowPos</c> 之间没有消息泵，
+    /// 中间尺寸不会被画出来。
+    /// </para>
+    /// <para>
+    /// 位置连同尺寸一起写回：窗口跨屏是用户拖过去的，建议矩形里的位置是按倍率折算的结果，
+    /// 而物理表面的语义就是「像素不动」。
+    /// </para>
+    /// </summary>
+    protected override void WndProc(ref Message m)
+    {
+        const int WM_DPICHANGED = 0x02E0;
+
+        if (m.Msg != WM_DPICHANGED || Policy != DpiPolicy.PhysicalSurface)
+        {
+            base.WndProc(ref m);
+            return;
+        }
+
+        var keep = Bounds;
+
+        base.WndProc(ref m);
+
+        if (!IsDisposed && !Disposing && Bounds != keep)
+        {
+            Bounds = keep;
         }
     }
 
     /// <summary>
-    /// 把窗体重排到 <paramref name="newDpi"/>。DPI 没有实际变化或取不到时什么都不做。
+    /// 换档时的分工：逻辑窗体的重排交给框架，物理表面只更新显示器派生的量。
+    /// <para>
+    /// 物理表面的外框由 <see cref="WndProc"/> 挡住；这里两条路都要刷新显示器快照并通知子类，
+    /// 因为要更新的是显示器归属和自绘装饰，不是像素尺寸。
+    /// </para>
     /// </summary>
-    void RelayoutForDpi(int newDpi, Rectangle suggested)
+    protected override void OnDpiChanged(DpiChangedEventArgs e)
     {
-        if (!DpiRelayout.RequiresRelayout(newDpi, layoutDpi))
+        if (Policy == DpiPolicy.PhysicalSurface)
+        {
+            base.OnDpiChanged(e);
+            SyncDpiContext(e.DeviceDpiNew, null);
+            return;
+        }
+
+        // 必须在框架缩放之前拍下来，之后就分不清哪个容器被跳过了。比较发生在
+        // CompensateSkippedContainersWhenLayoutSettles 的 BeginInvoke 里，那时框架
+        // 已经缩放完毕。
+        var beforeFrameworkScale = SnapshotContainerBounds();
+
+        base.OnDpiChanged(e);
+        SyncDpiContext(e.DeviceDpiNew, beforeFrameworkScale);
+    }
+
+    /// <summary>
+    /// 把本窗体的显示器快照对齐到当前状态，并且只在 DPI 真的换了档时通知子类一次。
+    /// <para>
+    /// 三条入口共用这一段：句柄创建（含重建，建立初值）、框架的 <c>DpiChanged</c>、以及
+    /// 重新可见（补上隐藏期间错过的换档）。建立初值不算换档——框架已经按当前 DPI 排过版，
+    /// 这时叫子类「校正」只会让还没准备好的缓存（例如尚未抓取的预览背景）提前跑一遍。
+    /// 每次换档因此最多通知一次，重复的可见/句柄事件读到同一个 DPI 就什么都不做。
+    /// </para>
+    /// <para>
+    /// 重入保护是必需的：<see cref="OnDpiContextChanged"/> 里改控件尺寸会触发布局，布局
+    /// 又可能把窗口推到另一块显示器上再送一次消息。
+    /// </para>
+    /// </summary>
+    void SyncDpiContext(int eventDpi, Dictionary<Control, Rectangle> beforeFrameworkScale)
+    {
+        if (dpiSyncInProgress || IsDisposed || Disposing)
         {
             return;
         }
 
-        // 基线只有在当前排版就是基线排版时才拍得准，而第一次重排之前必然如此：layoutDpi 的
-        // 初值就是 LayoutBaselineDpi。放在这里而不是构造函数或 OnLoad：那两处 ApplyLanguage
-        // 还没跑完，AutoSize 控件的宽度尚未定型。
-        if (baseline == null && layoutDpi == LayoutBaselineDpi && ReproducesLayoutFromBaseline)
-        {
-            baseline = CaptureBaseline();
-        }
-
-        var oldDpi = layoutDpi;
-        var previousMinimum = MinimumSize;
-        var previousMaximum = MaximumSize;
-        var previousFonts = relayoutFonts.ToArray();
-
-        relayoutInProgress = true;
+        dpiSyncInProgress = true;
         try
         {
-            // 重排后的客户区由这两个量算出，见下面施加处的说明。有基线时取基线那一档的值，
-            // 于是客户区也变成「基线 → 目标」的一步换算。
-            var clientBefore = baseline == null ? ClientSize : baseline.ClientSize;
-            var scaleBefore = baseline == null ? CurrentAutoScaleDimensions : baseline.AutoScaleDimensions;
+            RefreshDpiContext(eventDpi);
 
-            // 旧 DPI 下的边界值会直接卡住缩放：最小尺寸挡住缩小、最大尺寸挡住放大。
-            // 先解除，重排完再按新 DPI 施加。
-            MinimumSize = Size.Empty;
-            MaximumSize = Size.Empty;
-
-            // 自己持有字体的控件不继承窗体字体，换窗体字体带不动它们，必须单独换算。
-            // 先取快照，与下面换字体的顺序无关。
-            var ownFonts = CollectControlsOwningTheirFont(this);
-
-            relayoutFonts.Clear();
-
-            // 重排的触发点：换窗体字体，AutoScaleMode.Font 会据此把子控件的坐标、尺寸
-            // 和窗体客户区一并重排（含 Anchor / Dock 与嵌套容器）。
-            var fontFrom = Font;
-            var fontFromDpi = oldDpi;
-
-            if (baseline != null)
+            var currentDpi = dpiContext.DpiX;
+            if (!DpiContext.IsUsableDpi(currentDpi))
             {
-                RewindToBaseline();
-                fontFrom = baseline.Font;
-                fontFromDpi = LayoutBaselineDpi;
+                // 查不到 DPI 时保留上一次通知过的值，否则下一次成功查询会被当成换档。
+                return;
             }
 
-            Font = TrackFont(DpiRelayout.ScaleFont(fontFrom, newDpi, fontFromDpi));
+            var changedDpi = notifiedDpi != 0 && notifiedDpi != currentDpi;
+            var previousDpi = notifiedDpi;
+            notifiedDpi = currentDpi;
 
-            foreach (var control in ownFonts)
+            if (changedDpi)
             {
-                // 这些字体保持相对换算：字号的换算是精确可逆的（实测 9pt → 5.142857pt → 9pt
-                // 往返五次分毫不差），而拿基线字体覆盖回去会把运行期改过的样式一起退回去——
-                // 选项窗体的导航标签就会按选中项派生加粗版本。
-                control.Font = TrackFont(DpiRelayout.ScaleFont(control.Font, newDpi, oldDpi));
+                OnDpiContextChanged(previousDpi);
+                Invalidate(true);
+                CompensateSkippedContainersWhenLayoutSettles(beforeFrameworkScale, (double)currentDpi / previousDpi);
             }
-
-            // 自己持有排版状态的控件（字体属性、固定像素）在这里跟上。放在字体与坐标都换算完
-            // 之后，实现方可以直接参照控件当前的 Font 与 Bounds。
-            NotifyDpiRelayoutListeners(this, newDpi, oldDpi);
-
-            // 窗体自己持有的那些量紧随其后，理由与上面同一条。
-            OnDpiRelayout(newDpi, oldDpi);
-
-            ApplySizeBounds(newDpi, oldDpi, previousMinimum, previousMaximum);
-
-            // 客户区取「重排前的客户区 × 框架自己报告的自动缩放尺度之比」，外框再由系统按新 DPI
-            // 反算。两步都不能省：
-            // 框架算出的外框是客户区加上换算前的非客户区厚度，而标题栏与边框此时已经按新 DPI
-            // 重绘，差额会全部落到客户区上；而 ClientSize 的 setter 也不行，它内部用的是系统 DPI
-            // 的非客户区厚度（详见 WindowsAPI.GetOuterSizeForClientSize）。实测从 168 DPI 跨到
-            // 96 DPI，两条弯路都给出客户区 417，而该 DPI 下的原生排版是 400，对话框底部空出一条。
-            var client = DpiRelayout.ScaleClientSize(clientBefore, scaleBefore, CurrentAutoScaleDimensions);
-
-            // 反算外框用消息带来的 newDpi，不用 GetDpiForWindow：后者在重排过程中会变。重排把
-            // 窗口缩小，小窗口的重心可能因此退回原来那块显示器，于是查到的又是旧 DPI——实测
-            // 重命名图层那个小对话框在 enter 时窗口 DPI 是 96、算外框时已经变回 168，按 168 的
-            // 标题栏算出的外框比该有的高 17 像素，客户区随之多出一截，往返之后误差还会累积。
-            var outer = client.IsEmpty
-                ? Size.Empty
-                : WindowsAPI.GetOuterSizeForClientSize(Handle, client, newDpi);
-
-            var target = DpiRelayout.Compose(suggested, Bounds, outer.IsEmpty ? Size : outer);
-            SetBounds(target.X, target.Y, target.Width, target.Height, BoundsSpecified.All);
-
-            layoutDpi = newDpi;
         }
         finally
         {
-            relayoutInProgress = false;
-        }
-
-        // 只释放上一次重排自己创建的字体，而且必须在全部替换完成之后：设计器与框架默认
-        // 字体不在这个列表里，绝不会被误放。
-        DisposeUnreferencedFonts(previousFonts);
-    }
-
-    /// <summary>
-    /// 基线排版的快照。
-    /// <para>
-    /// 为什么要留一份：<c>AutoScaleMode.Font</c> 把子控件矩形按倍率缩放之后要取整，而取整不可逆。
-    /// 168 DPI 下宽 179 的「确定」按钮缩到 96 DPI 是 98，再放回 168 就成了 180。实测跨一次边界
-    /// 回来有几个控件偏 1 像素（btnOK 宽 179→180、pictureBox1 X −120→−119 宽 487→488、
-    /// label1 X 430→431），之后稳定、不再累积。只要每次都从同一份基线算到目标 DPI，同一个 DPI
-    /// 就永远得到同一套排版；回到基线那一档更是逐像素还原设计值。
-    /// </para>
-    /// <para>
-    /// 这与 <c>Mainform</c> 重写 <see cref="ApplySizeBounds"/> 的理由是同一个——那里也是按基线
-    /// 重算而不是缩放上一次的值，只不过主窗口的尺寸边界有现成的实测基线可用。
-    /// </para>
-    /// </summary>
-    sealed class LayoutBaseline
-    {
-        /// <summary>基线那一档的窗体字体。属于设计器，绝不由重排释放。</summary>
-        public Font Font;
-
-        public Size ClientSize;
-
-        /// <summary>
-        /// 基线那一档框架报告的自动缩放尺度。客户区的换算要用它作分母，见
-        /// <see cref="DpiRelayout.ScaleClientSize"/>。
-        /// </summary>
-        public SizeF AutoScaleDimensions;
-
-        public readonly List<Entry> Entries = new List<Entry>();
-
-        /// <summary>一个控件在基线那一档的矩形。</summary>
-        public struct Entry
-        {
-            public Control Control;
-            public Rectangle Bounds;
+            dpiSyncInProgress = false;
         }
     }
 
-    /// <summary>
-    /// 拍下当前排版作为基线。只在当前排版确实是基线排版时调用。
-    /// <para>
-    /// 条目按先父后子的顺序排，还原时照这个顺序写回去，父容器的尺寸先落定。
-    /// </para>
-    /// </summary>
-    LayoutBaseline CaptureBaseline()
+    void RefreshDpiContext(int eventDpi)
     {
-        var captured = new LayoutBaseline
+        var snapshot = IsHandleCreated
+            ? WindowsAPI.GetMonitorSnapshotForWindow(Handle)
+            : MonitorSnapshot.Unavailable;
+
+        if (snapshot.IsAvailable)
         {
-            Font = Font,
-            ClientSize = ClientSize,
-            AutoScaleDimensions = CurrentAutoScaleDimensions
-        };
-
-        CaptureBounds(this, captured);
-
-        return captured;
-    }
-
-    static void CaptureBounds(Control parent, LayoutBaseline into)
-    {
-        foreach (Control child in parent.Controls)
-        {
-            into.Entries.Add(new LayoutBaseline.Entry { Control = child, Bounds = child.Bounds });
-            CaptureBounds(child, into);
-        }
-    }
-
-    /// <summary>
-    /// 把窗体退回基线排版，为紧接着的「基线 → 目标 DPI」那一步做准备。
-    /// <para>
-    /// 三步的顺序都不能动。先换字体：这一下会顺手按倍率重排一遍（带取整损失），随后写回的
-    /// 矩形让那一遍作废，而框架的 <c>AutoScaleDimensions</c> 因此正好停在基线那一档，于是
-    /// 下面换成目标字号时倍率就是「基线 → 目标」，整个重排只取整一次。
-    /// </para>
-    /// <para>
-    /// 再把客户区退回基线值，最后才写子控件的矩形。<c>Anchor</c> 的偏移量是控件矩形被写入
-    /// 时按父容器当时的尺寸算出来、然后缓存下来的，父容器还停在上一档尺寸上就会把偏移量写坏，
-    /// 之后无论怎么调整都回不来：实测样式编辑窗体的 groupBox2 因此宽出 15 像素、高出 44 像素，
-    /// 确定按钮下移 44 像素，而且第二次往返仍是同样的偏差。<c>Dock</c> 的控件不受影响——它们
-    /// 的矩形完全由父容器推出来，不缓存任何偏移量。
-    /// </para>
-    /// <para>
-    /// 跳过已释放的控件：快照持有的是控件引用，窗体理论上可以在运行期换掉自己的控件。参与
-    /// 重排的几个窗体眼下都不这么做（控件树在 <c>InitializeComponent</c> 之后就固定了），
-    /// 真出现了也只是那个控件退回相对换算，不会抛异常。
-    /// </para>
-    /// </summary>
-    void RewindToBaseline()
-    {
-        Font = baseline.Font;
-
-        RewindClientSize();
-
-        foreach (var entry in baseline.Entries)
-        {
-            if (!entry.Control.IsDisposed)
+            // 有快照时几何一定用快照，但 DPI 以 WinForms 送来的事件值为准：那是本次换档
+            // 里框架用来排版的数值，而 GetDpiForWindow 是另一次独立查询，快速连续换屏时
+            // 两者可能短暂不一致。生产环境下它们相等，所以这只是把「谁说了算」写死。
+            if (DpiContext.IsUsableDpi(eventDpi) && eventDpi != snapshot.DpiX)
             {
-                entry.Control.Bounds = entry.Bounds;
+                snapshot = new MonitorSnapshot(
+                    snapshot.Handle,
+                    snapshot.DeviceName,
+                    snapshot.NativeBounds,
+                    snapshot.WorkingArea,
+                    eventDpi,
+                    eventDpi,
+                    snapshot.IsPrimary);
+            }
+
+            monitorSnapshot = snapshot;
+            dpiContext = new DpiContext(snapshot);
+            return;
+        }
+
+        // Do not infer a monitor from DeviceDpi. The event DPI is an explicit
+        // WinForms value, so retain it only as a context without fake bounds.
+        if (eventDpi > 0)
+        {
+            dpiContext = DpiContext.FromDpi(eventDpi, eventDpi);
+        }
+        else
+        {
+            dpiContext = new DpiContext(MonitorSnapshot.Unavailable);
+        }
+
+        monitorSnapshot = MonitorSnapshot.Unavailable;
+    }
+
+    /// <summary>
+    /// 补上框架漏掉的那几个容器。<c>WM_DPICHANGED</c> 的缩放遍历有时会把嵌套的
+    /// <see cref="ContainerControl"/> 交给它自己缩放，而一个控件自己缩放不会改动自己的
+    /// 外框，于是它的位置与尺寸留在旧 DPI 上：实测 <c>OptionForm</c> 未选中标签页里的两个
+    /// <c>HotkeyControl</c> 跨 168→96 恒为 656x80，同一页里的 <c>NumericUpDown</c> 宽度也
+    /// 留在旧档，而普通面板上的 <c>NumericUpDown</c> 却缩得好好的。
+    /// <para>
+    /// 判据是实测而不是类型规则：只有外框一点没动的容器才补。按类型一律补会把已经缩好的
+    /// 容器缩第二遍——实测 <c>OpacityStyleItemPanel</c> 的 <c>numOpacity</c> 会从 84 宽变成
+    /// 27 宽（0.571 的平方）。
+    /// </para>
+    /// <para>
+    /// 而且必须等布局跑完再看：框架对选中标签页里控件的缩放是排进布局队列的，在
+    /// <c>OnDpiChanged</c> 里当场量还看不到，量到的「没动」是假的。因此这一步用
+    /// <see cref="Control.BeginInvoke(Delegate)"/> 推到当前消息之后。
+    /// </para>
+    /// <para>
+    /// 这不是恢复被删掉的通用重排：只改写这一类后代的 <see cref="Control.Bounds"/>，它们
+    /// 内部的排版仍由各自的自动缩放负责，其余控件一个都不碰。
+    /// </para>
+    /// </summary>
+    void CompensateSkippedContainersWhenLayoutSettles(Dictionary<Control, Rectangle> before, double ratio)
+    {
+        if (before == null || ratio == 1d || !IsHandleCreated)
+        {
+            return;
+        }
+
+        BeginInvoke(new Action(() =>
+        {
+            if (IsDisposed || Disposing)
+            {
+                return;
+            }
+
+            foreach (var pair in before)
+            {
+                var container = pair.Key;
+                var was = pair.Value;
+
+                // 位置和宽度是判据，高度不是：跟着字体走的容器（单行编辑框、
+                // NumericUpDown、组合框）会自己改高度，拿高度当判据会把它们误判成
+                // 「已经缩过」——实测 numSelectAreaTrans 的高度从 34 变成 23，而
+                // 位置和宽度一动没动。
+                if (container.IsDisposed || container.Location != was.Location || container.Width != was.Width)
+                {
+                    continue;
+                }
+
+                container.SetBounds(
+                    DpiContext.Scale(was.Left, ratio),
+                    DpiContext.Scale(was.Top, ratio),
+                    DpiContext.Scale(was.Width, ratio),
+                    container.Height == was.Height ? DpiContext.Scale(was.Height, ratio) : container.Height);
+            }
+        }));
+    }
+
+    /// <summary>
+    /// 换档前每个嵌套容器的外框，用来在换档后判断谁被跳过了。尺寸不由自己决定的控件不
+    /// 记录：停靠的控件、<c>TabPage</c>（外框由 <c>TabControl</c> 算）和 <c>AutoSize</c>
+    /// 的控件，改写它们会和布局引擎打架。
+    /// </summary>
+    Dictionary<Control, Rectangle> SnapshotContainerBounds()
+    {
+        var snapshot = new Dictionary<Control, Rectangle>();
+        Collect(this, snapshot);
+
+        return snapshot;
+
+        static void Collect(Control parent, Dictionary<Control, Rectangle> into)
+        {
+            foreach (Control child in parent.Controls)
+            {
+                if (child is ContainerControl
+                    && child.Dock == DockStyle.None
+                    && !child.AutoSize
+                    && !(child is TabPage))
+                {
+                    into[child] = child.Bounds;
+                }
+
+                Collect(child, into);
             }
         }
     }
 
     /// <summary>
-    /// 把客户区退回基线尺寸。
+    /// 关掉标题栏上的按钮。**必须在 <c>InitializeComponent</c> 之后调用，不能写在设计器里。**
     /// <para>
-    /// 非客户区厚度就地量：<c>Size</c> 减 <c>ClientSize</c>，两个值同一刻从框架读出，必然自洽。
-    /// 不按 DPI 反算（<see cref="WindowsAPI.GetOuterSizeForClientSize"/>），也不设完再读回来补差额：
-    /// 重排是在一条消息里做完的，边框换到新 DPI 的确切时机不由这里决定，两种做法都在猜，实测
-    /// 登录输入框会差 25 像素、而且往返之间时好时坏。边框厚度与客户区大小无关，量一次就够。
+    /// 窗口只有在 <c>Text</c> 非空或 <see cref="Form.ControlBox"/> 为真时才带
+    /// <c>WS_CAPTION</c>。设计器按字母序生成属性赋值，<c>Text</c> 排在
+    /// <c>ControlBox</c> 和 <c>FormBorderStyle</c> 之后，所以设计器里的
+    /// <c>ControlBox = false</c> 会让「无标题栏、1 像素边框」这个样式短暂成立，而
+    /// <c>FormBorderStyle</c> 的赋值正好在这时按它把 <see cref="Form.Size"/> 记成
+    /// 客户区 + (2,2)。后面的 <c>Text</c> 赋值只改窗口文字、不重算 <c>Size</c>，
+    /// 于是标题栏和边框的厚度是从客户区里扣出来的。
+    /// </para>
+    /// <para>
+    /// 自动缩放会把这个误差乘上倍率：框架缩放的是「<c>Size</c> 减去当前边框」那一部分，
+    /// 而这里它等于「客户区减去边框再加 2」。实测 168 DPI 下 <c>ScrapPaintPenTool</c>
+    /// 的 57px 客户区高度变成 0（57-62 截断到 0），<c>LayerRenameWindow</c> 得到 382×42
+    /// 而不是 420×151——按钮底边 129 落在客户区之外，任何缩放比例下都被裁掉一截。
+    /// 96 DPI 下同样成立（客户区 236×59），所以这不是跨显示器缺陷，只是被它放大了。
+    /// </para>
+    /// <para>
+    /// 推到构造之后就没有这个窗口期：整个 <c>InitializeComponent</c> 里 <c>ControlBox</c>
+    /// 都是真，样式一直带标题栏，<c>Size</c> 因此按真实边框记账；此时再关按钮只去掉
+    /// <c>WS_SYSMENU</c>，边框厚度不变。
     /// </para>
     /// </summary>
-    void RewindClientSize()
+    protected void HideControlBoxAfterInitialize()
     {
-        var frame = new Size(Width - ClientSize.Width, Height - ClientSize.Height);
-
-        SetBounds(
-            0,
-            0,
-            baseline.ClientSize.Width + frame.Width,
-            baseline.ClientSize.Height + frame.Height,
-            BoundsSpecified.Size);
+        ControlBox = false;
     }
 
     /// <summary>
-    /// 窗体自己持有、参与排版而又不在控件树里的量，由子类在这里换算。
+    /// 把点名列出的控件自己持有的字体按 DPI 之比换掉。
     /// <para>
-    /// 与 <see cref="IDpiRelayoutListener"/> 是同一件事的两个入口：那个接口给控件用，本方法给
-    /// 窗体用。<see cref="NotifyDpiRelayoutListeners"/> 只遍历子控件，窗体自己拿不到那个回调，
-    /// 而窗体持有的这类量并不少见——样式设置对话框预览框里那张按预览框尺寸抓下来的背景位图就是
-    /// 一例，预览框随 DPI 变大之后它不跟上，右下就会露出一条没画到的空白。
+    /// 框架只缩放窗体的环境字体。控件在设计器里显式指定的字体不在继承链上，跨屏之后会
+    /// 留在旧档的像素大小——实测 <c>HotkeyMsg.lblKey</c> 恒为 24px，而同一个窗体里继承
+    /// 字体的控件从 16px 变到 27px。
     /// </para>
     /// <para>
-    /// 调用时机与控件那一路相同：字体与坐标都已换算完，因此可以直接参照控件当前的
-    /// <c>Font</c> 与 <c>Bounds</c>。本方法在 <c>WM_DPICHANGED</c> 的处理过程中被调用，抛出
-    /// 异常会让这一次重排半途而废，实现方需要自己把可能失败的操作兜住。
+    /// 要求调用方点名列出控件，不做遍历：哪个控件自带字体是窗体自己的知识，而被删掉的
+    /// 手工管线正是因为要靠遍历猜「这个字体归谁」才难以维护。
     /// </para>
     /// </summary>
-    protected virtual void OnDpiRelayout(int newDpi, int oldDpi)
+    protected void RescaleOwnedFonts(int previousDpi, params Control[] controls)
     {
-    }
-
-    /// <summary>
-    /// 重排结束前按新 DPI 重新施加尺寸边界。默认按新旧 DPI 之比换算重排前的值；
-    /// 有实测基线的窗体（主窗口）重写为按基线重算，以免反复跨屏累积误差。
-    /// </summary>
-    protected virtual void ApplySizeBounds(int newDpi, int oldDpi, Size previousMinimum, Size previousMaximum)
-    {
-        // 空尺寸在 WinForms 里表示「无此约束」，ScaleSize 原样返回 0，因此没有设过
-        // 边界的窗体不会被凭空加上一个。
-        MinimumSize = DpiRelayout.ScaleSize(previousMinimum, newDpi, oldDpi);
-        MaximumSize = DpiRelayout.ScaleSize(previousMaximum, newDpi, oldDpi);
-    }
-
-    /// <summary>
-    /// 从 <c>WM_DPICHANGED</c> 的 <c>lParam</c> 读建议矩形，指针为空时返回
-    /// <see cref="Rectangle.Empty"/>（调用方据此保持当前位置）。
-    /// <para>
-    /// 直接读四个 32 位整数，不经过结构体封送：这样不依赖任何结构体的字段顺序或布局特性，
-    /// 也不产生封送用的临时对象。
-    /// </para>
-    /// </summary>
-    static Rectangle ReadSuggestedBounds(IntPtr lParam)
-    {
-        if (lParam == IntPtr.Zero)
+        if (controls == null)
         {
-            return Rectangle.Empty;
+            return;
         }
 
-        return Rectangle.FromLTRB(
-            Marshal.ReadInt32(lParam, 0),
-            Marshal.ReadInt32(lParam, 4),
-            Marshal.ReadInt32(lParam, 8),
-            Marshal.ReadInt32(lParam, 12));
-    }
-
-    /// <summary>
-    /// 收集自身被单独赋过字体、因而不继承父控件字体的控件（不含窗体自己）。
-    /// <para>
-    /// 判据是引用相等：继承字体时 <c>Control.Font</c> 返回的就是父控件那一个实例，自己设过
-    /// 才会是别的实例。.NET Framework 里没有公开的「是否显式设过字体」查询，而
-    /// <c>Control.Properties</c> 不可访问，这个判据不需要反射。
-    /// </para>
-    /// </summary>
-    static List<Control> CollectControlsOwningTheirFont(Control root)
-    {
-        var owners = new List<Control>();
-        Collect(root, owners);
-
-        return owners;
-    }
-
-    static void Collect(Control parent, List<Control> owners)
-    {
-        foreach (Control child in parent.Controls)
+        foreach (var control in controls)
         {
-            if (!ReferenceEquals(child.Font, parent.Font))
+            if (control == null || control.IsDisposed || InheritsItsFont(control))
             {
-                owners.Add(child);
+                continue;
             }
 
-            Collect(child, owners);
+            control.Font = RescaleOwnedFont(previousDpi, control.Font);
         }
     }
 
     /// <summary>
-    /// 通知控件树里实现了 <see cref="IDpiRelayoutListener"/> 的控件换算它们自己持有的排版量。
-    /// </summary>
-    static void NotifyDpiRelayoutListeners(Control parent, int newDpi, int oldDpi)
-    {
-        foreach (Control child in parent.Controls)
-        {
-            var listener = child as IDpiRelayoutListener;
-            if (listener != null)
-            {
-                listener.OnDpiRelayout(newDpi, oldDpi);
-            }
-
-            NotifyDpiRelayoutListeners(child, newDpi, oldDpi);
-        }
-    }
-
-    Font TrackFont(Font font)    {
-        relayoutFonts.Add(font);
-
-        return font;
-    }
-
-    /// <summary>
-    /// 释放上一轮重排创建、这一轮已经不再被使用的字体。
+    /// 没有自己设过字体的控件读到的是父容器那一份，而那一份框架已经缩过了。再缩一次就是
+    /// 平方——实测 <c>OptionForm</c> 五个导航标签会从 27px 变成 9px 而不是 15px。
     /// <para>
-    /// 逐个核对是否仍被控件树引用，而不是无条件释放：控件的字体可能被外部代码换成别的
-    /// （选项窗体的导航标签就会在选中项或语言变化时用当前字体派生出加粗版本），也可能被
-    /// 两个控件共用。释放一个仍在使用的字体会让下一次绘制抛异常，而漏放一个只是多占一个
-    /// GDI 句柄，所以这里刻意偏向漏放：<see cref="Font"/> 的相等性是按值的，与在用字体
-    /// 取值相同的实例会被一并保留。
+    /// 继承时 <see cref="Control.Font"/> 返回的就是父容器那个对象本身，所以引用相等即可
+    /// 判定，不需要反射去问「这个属性被显式赋过值吗」。
     /// </para>
     /// </summary>
-    void DisposeUnreferencedFonts(IEnumerable<Font> candidates)
+    static bool InheritsItsFont(Control control)
     {
-        var referenced = new HashSet<Font>();
-        CollectFonts(this, referenced);
-
-        foreach (var font in candidates)
-        {
-            if (!referenced.Contains(font))
-            {
-                font.Dispose();
-            }
-        }
+        return control.Parent != null && ReferenceEquals(control.Font, control.Parent.Font);
     }
 
-    static void CollectFonts(Control control, HashSet<Font> fonts)
+    /// <summary>
+    /// 同上，但用于不在 <see cref="Control.Font"/> 上的字体属性（例如
+    /// <c>StyleItemListBox.HelpFont</c>）。返回的字体由本窗体释放；DPI 没变或不可用时
+    /// 原样返回，此时调用方不得释放它。
+    /// </summary>
+    protected Font RescaleOwnedFont(int previousDpi, Font font)
     {
-        fonts.Add(control.Font);
-
-        foreach (Control child in control.Controls)
+        var currentDpi = dpiContext.DpiX;
+        if (font == null
+            || !DpiContext.IsUsableDpi(currentDpi)
+            || !DpiContext.IsUsableDpi(previousDpi)
+            || currentDpi == previousDpi)
         {
-            CollectFonts(child, fonts);
+            return font;
         }
-    }
 
-    static void DisposeFonts(IEnumerable<Font> fonts)
-    {
-        foreach (var font in fonts)
+        var scaled = DpiContext.ScaleFont(font, currentDpi, previousDpi);
+        if (ReferenceEquals(scaled, font))
+        {
+            return font;
+        }
+
+        // 只释放本方法自己造过的那一份。设计器造的原件不归这里管：它可能还挂在
+        // 别的控件上，而这里看不到那些控件。
+        if (rescaledFonts.Remove(font))
         {
             font.Dispose();
         }
+
+        rescaledFonts.Add(scaled);
+
+        return scaled;
+    }
+
+    /// <summary>
+    /// DPI 换档后的一次校正机会：只更新自绘缓存、显示器派生的量和重绘，控件树的重排由
+    /// 框架负责。新值从 <see cref="CurrentDpiContext"/> 与 <see cref="CurrentMonitor"/> 读，
+    /// <paramref name="previousDpi"/> 是换档前那一档，供 <see cref="RescaleOwnedFonts"/>
+    /// 与其他按两档之比换算的量使用。
+    /// <para>
+    /// 不带 <see cref="DpiChangedEventArgs"/>，是为了让隐藏期间错过换档的窗口走同一条
+    /// 路——那条路上没有事件对象可以构造，而它的两个字段（新 DPI、建议矩形）一个已经在
+    /// 上下文里，另一个属于框架。
+    /// </para>
+    /// </summary>
+    protected virtual void OnDpiContextChanged(int previousDpi)
+    {
     }
 
     /// <summary>
@@ -517,12 +448,13 @@ public class BaseForm : Form
             // 永久留住，而且已释放的窗体收到回调后操作控件会抛异常。
             Lang.LanguageChanged -= Lang_LanguageChanged;
 
-            // 重排创建的字体是 GDI 句柄，窗体关掉就得还回去。
-            DisposeFonts(relayoutFonts);
-            relayoutFonts.Clear();
+            // RescaleOwnedFonts 造出来的字体归本窗体所有；设计器造的原件不在这里。
+            foreach (var font in rescaledFonts)
+            {
+                font.Dispose();
+            }
 
-            // 基线快照持有整棵控件树的引用（还有设计器的字体，那个不归重排释放）。
-            baseline = null;
+            rescaledFonts.Clear();
 
             SETUNA.Main.FormManager.DeregisterForm(this);
             DisposeOwnedResources();

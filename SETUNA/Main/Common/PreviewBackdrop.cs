@@ -19,6 +19,17 @@ namespace SETUNA.Main.Common
     {
         /// <summary>
         /// 抓一块 <paramref name="size"/> 大小的屏幕内容。任一边不为正时返回 <c>null</c>。
+        /// <para>
+        /// 抓屏失败不抛出，返回的是那张没画上内容的位图（也就是全黑）。理由有两条：显示器
+        /// 休眠、会话锁定或远程会话下 <c>CopyFromScreen</c> 会失败，而它成功时在休眠的显示器
+        /// 上返回的也是纯黑，两者对用户是同一件事；更要紧的是这个方法在
+        /// <c>SetStyleToForm</c> 里被调用，抛出去等于「抓不到屏就打不开样式设置对话框」。
+        /// 背景纯属装饰，不值这个代价。
+        /// </para>
+        /// <para>
+        /// 也因此调用方拿到的位图尺寸必然等于 <paramref name="size"/>，四个面板的绘制代码
+        /// 可以继续按它的宽高给示例图定位。
+        /// </para>
         /// </summary>
         public static Image Capture(Size size)
         {
@@ -29,9 +40,15 @@ namespace SETUNA.Main.Common
 
             var captured = new Bitmap(size.Width, size.Height, PixelFormat.Format24bppRgb);
 
-            using (var graphics = Graphics.FromImage(captured))
+            try
             {
-                graphics.CopyFromScreen(Point.Empty, Point.Empty, captured.Size);
+                using (var graphics = Graphics.FromImage(captured))
+                {
+                    graphics.CopyFromScreen(Point.Empty, Point.Empty, captured.Size);
+                }
+            }
+            catch (Exception)
+            {
             }
 
             return captured;
@@ -52,19 +69,7 @@ namespace SETUNA.Main.Common
                 return backdrop;
             }
 
-            Image replacement;
-            try
-            {
-                replacement = Capture(size);
-            }
-            catch (Exception)
-            {
-                // 抓屏不是总能成功——显示器休眠时 CopyFromScreen 会失败或者只返回纯黑。
-                // 背景纯属装饰，而这里位于 WM_DPICHANGED 的处理过程中，抛出去会让整次重排
-                // 半途而废，所以失败就留着旧的那张。
-                return backdrop;
-            }
-
+            var replacement = Capture(size);
             if (replacement == null)
             {
                 return backdrop;

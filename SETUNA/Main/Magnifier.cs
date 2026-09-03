@@ -3,11 +3,13 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using SETUNA.Main.Window;
 
 namespace SETUNA.Main
 {
-    public partial class Magnifier : Form
+    public partial class Magnifier : BaseForm
     {
+        protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
         /// <summary>
         /// 兜底刷新间隔。主路径是截图窗口的鼠标移动事件，这个定时器只负责补上不产生
         /// MouseMove 的光标移动（键盘移动光标、光标离开截图窗口后又回来）。
@@ -135,19 +137,26 @@ namespace SETUNA.Main
         }
 
         /// <summary>
-        /// 间隙按当前 DPI 折算。窗体是 AutoScaleMode.Font 的，高 DPI 下控件的运行时像素尺寸
-        /// 会变大，写死 24 就显得贴太近了。
+        /// 间隙按窗口所在显示器的 DPI 折算。放大镜是物理表面
+        /// （<see cref="Window.DpiPolicy.PhysicalSurface"/>），框架不替它缩放任何东西，
+        /// 所以这里显式换算：写死 24 在高 DPI 屏上就显得贴太近。
+        /// <para>
+        /// 不用 <c>Control.DeviceDpi</c>，理由见 <see cref="WindowsAPI.GetWindowDpi"/>；
+        /// DPI 取不到时 <see cref="DpiContext"/> 原样返回基线值，不去猜一个倍率。
+        /// </para>
         /// </summary>
         int ScaledGap()
         {
-            var gap = MagnifierGeometry.DefaultGap * DeviceDpi / 96;
+            var context = new DpiContext(WindowsAPI.GetMonitorSnapshotForWindow(Handle));
+            var gap = context.LogicalToPhysicalLengthX(MagnifierGeometry.DefaultGap);
 
             return gap < 1 ? 1 : gap;
         }
 
         /// <summary>
         /// 整个会话共用一张后备位图，只在 PictureBox 尺寸变化时重建。尺寸取运行时
-        /// ClientSize 而不是设计稿常量——窗体是 AutoScaleMode.Font 的，高 DPI 下两者不等。
+        /// ClientSize 而不是设计稿常量：虽然放大镜是物理表面、跨屏时
+        /// <c>BaseForm.WndProc</c> 会把外框写回去，取景范围仍应以实际客户区为准。
         /// </summary>
         bool EnsureBuffer()
         {
@@ -215,8 +224,10 @@ namespace SETUNA.Main
 
         /// <summary>确定性释放：缓冲区、它的绘图对象、兜底定时器。由设计器生成的
         /// <c>Dispose(bool)</c> 调用，只走一次。</summary>
-        internal void DisposeOwnedResources()
+        protected override void DisposeOwnedResources()
         {
+            base.DisposeOwnedResources();
+
             if (timer != null)
             {
                 timer.Stop();

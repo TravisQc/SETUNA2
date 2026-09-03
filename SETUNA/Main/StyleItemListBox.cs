@@ -1,14 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Windows.Forms;
 using SETUNA.Main.StyleItems;
 using SETUNA.Main.Window;
 
 namespace SETUNA.Main
 {
     // Token: 0x02000083 RID: 131
-    internal class StyleItemListBox : SetunaListBox, IDpiRelayoutListener
+    internal class StyleItemListBox : SetunaListBox
     {
         // Token: 0x170000A9 RID: 169
         // (get) Token: 0x0600045D RID: 1117 RVA: 0x0001C809 File Offset: 0x0001AA09
@@ -31,47 +33,53 @@ namespace SETUNA.Main
         [Description("終端アイテムで表示を無効にするか。")]
         public bool TerminateEnd { get; set; }
 
+        /// <summary>
+        /// 图标的绘制尺寸。逻辑基线是资源位图自己的 32x32（<c>Resources.Icon_*</c> 全是这个
+        /// 尺寸），随 <see cref="ScaleControl"/> 换档，因此高 DPI 下图标是放大后的位图而不是
+        /// 一枚缩在大行里的小图。样式图标是界面图形，不是用户内容，所以它跟着界面缩放。
+        /// </summary>
+        protected Size IconSize { get; private set; }
+
         // Token: 0x06000462 RID: 1122 RVA: 0x0001C833 File Offset: 0x0001AA33
         public StyleItemListBox()
         {
             ItemHeight = 39;
             base.LeftSpace = 34;
+            IconSize = new Size(32, 32);
             TerminateEnd = false;
             HelpFont = new Font(Font, FontStyle.Regular);
             HelpForeColor = Color.Gray;
         }
 
         /// <summary>
-        /// DPI 变化时换算 <see cref="HelpFont"/>。
-        /// <para>
-        /// 它是独立的字体属性，不在控件树的字体继承链上，窗体重排换不到它。而它的像素大小本来
-        /// 是随系统 DPI 变的：设计器给的 8pt 在 96 DPI 下是 11 像素、在 168 DPI 下是 19 像素。
-        /// 重排把窗体其余部分换到了新 DPI 的等效字号，这里不跟上，说明文字就会停在旧 DPI 的
-        /// 大小上，把每一项的两行文字挤成一团。
-        /// </para>
-        /// <para>
-        /// <see cref="System.Windows.Forms.ListBox.ItemHeight"/>、
-        /// <see cref="SetunaListBox.LeftSpace"/> 和图标的绘制尺寸刻意不换算：它们在原实现里
-        /// 于任何 DPI 下都是同一个像素值（在 96 与 168 DPI 上实测均为 39 与 34），换算反而会
-        /// 让重排结果偏离该 DPI 下的原生排版，并且把固定尺寸的图标挤出行高。行高不随 DPI 变化
-        /// 是既有问题，与跨显示器重排无关。
-        /// </para>
+        /// 见 <see cref="SetunaListBox.ScaleControl"/>：行高与留白之外，本类还持有图标尺寸。
         /// </summary>
-        public void OnDpiRelayout(int newDpi, int oldDpi)
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
-            if (HelpFont == null)
-            {
-                return;
-            }
+            base.ScaleControl(factor, specified);
 
-            var previous = HelpFont;
-            HelpFont = DpiRelayout.ScaleFont(previous, newDpi, oldDpi);
-
-            // 这个字体只由本属性持有（构造函数或设计器各自 new 出来的），换掉之后没人再引用，
-            // 必须还回 GDI 句柄。
-            previous.Dispose();
+            IconSize = new Size(
+                DpiContext.Scale(IconSize.Width, factor.Width),
+                DpiContext.Scale(IconSize.Height, factor.Height));
         }
 
+        /// <summary>
+        /// <see cref="HelpFont"/> 不需要按 DPI 换算。
+        /// <para>
+        /// 它是以「点」为单位的字体（设计器给的是黑体 8pt），而点本身与 DPI 无关：
+        /// <see cref="DrawItemString"/> 拿到的 <see cref="Graphics"/> 带着目标显示器的 DPI，
+        /// 8pt 在 96 DPI 上就是 11 像素、在 168 DPI 上就是 19 像素，由 GDI+ 自己算。
+        /// </para>
+        /// <para>
+        /// 手工重排年代必须换算，是因为当时 WinForms 的高 DPI 管线整个是关的，全窗体按系统 DPI
+        /// 光栅化，这个属性又不在字体继承链上、换不到。官方管线接进来之后那个前提不成立了，
+        /// 再乘一次 DPI 比例就是重复缩放。
+        /// </para>
+        /// <para>
+        /// 行高、左侧留白、行内留白和图标尺寸则是像素度量，必须换档，见
+        /// <see cref="SetunaListBox.ScaleControl"/>。
+        /// </para>
+        /// </summary>
         // Token: 0x06000463 RID: 1123 RVA: 0x0001C870 File Offset: 0x0001AA70
         protected override void DrawItemString(Graphics g, object item, Font font, Brush brush, Rectangle bounds, StringFormat sf, int index)
         {
@@ -90,7 +98,11 @@ namespace SETUNA.Main
                 var icon = cstyleItem.GetIcon();
                 if (icon != null)
                 {
-                    g.DrawImage(icon, 2, rectangle.Top + 2);
+                    // 放大一张 32px 的位图，双三次比最近邻明显干净。
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.DrawImage(
+                        icon,
+                        new Rectangle(ItemPadding, rectangle.Top + ItemPadding, IconSize.Width, IconSize.Height));
                 }
             }
             else
@@ -109,8 +121,13 @@ namespace SETUNA.Main
             base.DrawItemString(g, item2, Font, brush, bounds, sf, index);
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             sf.FormatFlags -= 4096;
-            bounds.Y += (int)Font.GetHeight() + 2;
-            bounds.Height = ItemHeight - ((int)Font.GetHeight() + 2 + 2);
+
+            // 行距按 g 的 DPI 问，不是无参的 Font.GetHeight()：后者用的是进程那一档 DPI，
+            // 在别的显示器上画同一个窗体时会偏。实测 168 DPI 的进程里，一个换到 96 DPI 的
+            // 窗体上 10pt 字的无参行距仍报 27（实际渲染约 9），第二行的起点就被推低 18 像素。
+            var lineHeight = (int)Font.GetHeight(g);
+            bounds.Y += lineHeight + ItemPadding;
+            bounds.Height = ItemHeight - (lineHeight + ItemPadding * 2);
             base.DrawItemString(g, item3, HelpFont, new SolidBrush(HelpForeColor), bounds, sf, index);
         }
 
