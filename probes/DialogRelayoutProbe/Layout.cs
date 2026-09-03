@@ -17,6 +17,15 @@ namespace DialogRelayoutProbe
         public string Describe;
 
         /// <summary>
+        /// True when a layout engine, not the designer, decides this control's rectangle.
+        /// <see cref="AutoSize"/> is already true for these, but the round trip needs to tell
+        /// the two apart: an AutoSize control still sits where the designer put it, while a
+        /// flow or table panel child's position is a running total of its siblings' rounded
+        /// sizes and margins.
+        /// </summary>
+        public bool LayoutOwned;
+
+        /// <summary>
         /// Pixel metrics the application owns rather than the framework, or <c>null</c> for a
         /// control that owns none. Nothing else scales them, so they need checking separately
         /// from the bounds.

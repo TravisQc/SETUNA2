@@ -64,20 +64,105 @@ namespace SETUNA.Main
         }
 
         /// <summary>
-        /// <see cref="HelpFont"/> 不需要按 DPI 换算。
+        /// <see cref="HelpFont"/> 跟着 <see cref="Control.Font"/> 一起换档，按两者字号之比。
         /// <para>
-        /// 它是以「点」为单位的字体（设计器给的是黑体 8pt），而点本身与 DPI 无关：
-        /// <see cref="DrawItemString"/> 拿到的 <see cref="Graphics"/> 带着目标显示器的 DPI，
-        /// 8pt 在 96 DPI 上就是 11 像素、在 168 DPI 上就是 19 像素，由 GDI+ 自己算。
+        /// 2026-09-03 实测（`probes/DialogRelayoutProbe`，`DIALOG_PROBE_MEASURE_OWNERDRAW=1`，把窗体
+        /// 真的放到各块显示器上而不是发合成消息）：**控件自己的 <see cref="Graphics"/> 无论窗口在哪块
+        /// 显示器上都报进程那一档 DPI**（本机恒为 168），所以 GDI+ 把点值换成像素用的是进程 DPI、
+        /// 点值不会自己跟随显示器；让文字跟随显示器的唯一机制就是把点值乘上 DPI 之比。原先这里的注释
+        /// 断言相反，是错的。
         /// </para>
         /// <para>
-        /// 手工重排年代必须换算，是因为当时 WinForms 的高 DPI 管线整个是关的，全窗体按系统 DPI
-        /// 光栅化，这个属性又不在字体继承链上、换不到。官方管线接进来之后那个前提不成立了，
-        /// 再乘一次 DPI 比例就是重复缩放。
+        /// 而框架碰不到 <see cref="HelpFont"/>——它不是 <see cref="Control.Font"/>。原先由
+        /// <c>StyleEditForm.OnDpiContextChanged</c> 换算，那条路只在**换档**时走：窗体直接建在 96 DPI
+        /// 副屏上时首次建立上下文不发通知，实测 <see cref="Control.Font"/> 是 5.71pt 而
+        /// <see cref="HelpFont"/> 仍是 8pt，说明文字比标题文字还大（渲染 21px vs 15px），两行合计 36px
+        /// 塞进 39px 的行里。
         /// </para>
         /// <para>
-        /// 行高、左侧留白、行内留白和图标尺寸则是像素度量，必须换档，见
-        /// <see cref="SetunaListBox.ScaleControl"/>。
+        /// **不能改用 <see cref="ScaleControl"/> 的倍率**，试过：构造期的 <c>PerformAutoScale</c> 会调
+        /// <see cref="ScaleControl"/>、却不缩放显式指定的 <see cref="Control.Font"/>，于是 168 DPI 上
+        /// <see cref="HelpFont"/> 被乘成 14pt 而 <see cref="Control.Font"/> 还是 10pt——两者虽然跨屏一致
+        /// 了，比例却整体偏了 1.75 倍。挂在 <see cref="OnFontChanged"/> 上才是与 <see cref="Control.Font"/>
+        /// 严格同步的那一处：谁改了主字体，说明字体就按同一个比例走。
+        /// </para>
+        /// <para>
+        /// 只释放本方法造过的那一份：设计器造的原件可能另有引用，不归这里管。
+        /// </para>
+        /// </summary>
+        protected override void OnFontChanged(EventArgs e)
+        {
+            base.OnFontChanged(e);
+
+            var size = Font == null ? 0f : Font.Size;
+            var previous = _lastFontSize;
+            _lastFontSize = size;
+
+            if (previous <= 0f || size <= 0f || previous == size)
+            {
+                return;
+            }
+
+            HelpFont = ScaleHelpFont(size / previous);
+        }
+
+        Font ScaleHelpFont(float factor)
+        {
+            var current = HelpFont;
+            if (current == null || factor <= 0f || factor == 1f)
+            {
+                return current;
+            }
+
+            var size = current.Size * factor;
+            if (size <= 0f || float.IsNaN(size) || float.IsInfinity(size))
+            {
+                return current;
+            }
+
+            var scaled = new Font(
+                current.FontFamily, size, current.Style, current.Unit, current.GdiCharSet, current.GdiVerticalFont);
+
+            if (ReferenceEquals(current, _ownedHelpFont))
+            {
+                current.Dispose();
+            }
+
+            _ownedHelpFont = scaled;
+
+            return scaled;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && _ownedHelpFont != null)
+            {
+                if (ReferenceEquals(HelpFont, _ownedHelpFont))
+                {
+                    HelpFont = null;
+                }
+
+                _ownedHelpFont.Dispose();
+                _ownedHelpFont = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        Font _ownedHelpFont;
+        float _lastFontSize;
+
+        /// <summary>
+        /// 一行画两段文字：<see cref="Control.Font"/> 画名称，<see cref="HelpFont"/> 画说明，
+        /// 两者的换档都在 <see cref="ScaleControl"/> 里，理由见 <see cref="ScaleHelpFont"/>。
+        /// <para>
+        /// 这里原先写着「<see cref="HelpFont"/> 不需要按 DPI 换算，因为 <see cref="Graphics"/> 带着
+        /// 目标显示器的 DPI，8pt 在 96 DPI 上就是 11 像素」——**实测是错的**，控件的
+        /// <see cref="Graphics"/> 恒报进程那一档 DPI。
+        /// </para>
+        /// <para>
+        /// 行高、左侧留白、行内留白和图标尺寸是像素度量，同样在
+        /// <see cref="SetunaListBox.ScaleControl"/> 里换档。
         /// </para>
         /// </summary>
         // Token: 0x06000463 RID: 1123 RVA: 0x0001C870 File Offset: 0x0001AA70

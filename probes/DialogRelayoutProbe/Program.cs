@@ -36,6 +36,19 @@ namespace DialogRelayoutProbe
         const int RoundTripSlop = 1;
 
         /// <summary>
+        /// The same allowance for a control whose position a flow or table panel computes.
+        /// <see cref="RoundTripSlop"/>'s single rounding is the right budget for a control the
+        /// framework scales directly; a flow panel child's position is instead a running total
+        /// of every preceding sibling's rounded size and margin, so it rounds several times per
+        /// hop. Measured on <c>OptionForm</c>'s <c>flowLayoutPanel1</c>: <c>panel4</c> sits at
+        /// Y=150 at 96 DPI and comes back from 120 DPI at Y=152, while a round trip through
+        /// 96/144/192 returns exactly. This only became visible when the designer geometry was
+        /// rebased to the 96-DPI baseline — at twice the coordinates the same accumulation had
+        /// twice the headroom before it crossed a pixel.
+        /// </summary>
+        const int LayoutOwnedRoundTripSlop = 3;
+
+        /// <summary>
         /// How far a scaled bound may sit from the exact ratio. Each control is rounded once
         /// on the way out, and a container's rounding shifts its children.
         /// </summary>
@@ -88,6 +101,15 @@ namespace DialogRelayoutProbe
             var buildFailures = new List<string>();
             var transitions = 0;
             var dialogs = 0;
+
+            OwnerDrawText.ReportOnEveryMonitor(() =>
+                new SETUNA.Main.Option.StyleEditForm(null, new SETUNA.Main.KeyItems.KeyItemBook()));
+
+            OwnerDrawText.CheckHelpFontProportion(
+                () => new SETUNA.Main.Option.StyleEditForm(null, new SETUNA.Main.KeyItems.KeyItemBook()),
+                failures);
+
+            OwnerDrawText.ReportExplicitFonts(() => new SETUNA.Main.HotkeyMsg());
 
             // 语言 × DPI 一起扫：文字长度和缩放倍率各自都能把控件撑破，但真正会漏掉的是
             // 两者叠加的那一格（英文译文 + 100% 缩放），单独扫任何一维都看不到。
@@ -195,9 +217,12 @@ namespace DialogRelayoutProbe
             baselineText.Capture(form, name, born);
             var baselineClient = form.ClientSize;
 
+            OwnerDrawText.Report(form, name + " @" + born + " (born)");
+
             SendDpiChanged(form, target, born);
 
             var scaled = Measure(form);
+            OwnerDrawText.Report(form, name + " @" + target);
             var ratio = (double)target / born;
             CheckClientArea(form, name, baselineClient, ratio, target, ScaleSlop, failures);
             CompareScaled(baseline, scaled, ratio, "@" + target, failures);
@@ -362,7 +387,10 @@ namespace DialogRelayoutProbe
                 bool boundsMatch;
                 if (pair.Value.AutoSize)
                 {
-                    boundsMatch = WithinSlop(pair.Value.Bounds.Location, back.Bounds.Location, slop);
+                    boundsMatch = WithinSlop(
+                        pair.Value.Bounds.Location,
+                        back.Bounds.Location,
+                        pair.Value.LayoutOwned ? LayoutOwnedRoundTripSlop : slop);
                 }
                 else if (pair.Value.HeightFollowsFont)
                 {
@@ -651,6 +679,7 @@ namespace DialogRelayoutProbe
                     Bounds = child.Bounds,
                     FontHeight = child.Font.Height,
                     AutoSize = child.AutoSize || LayoutOwnedByParent(child),
+                    LayoutOwned = LayoutOwnedByParent(child),
                     HeightFollowsFont = FollowsFontHeight(child),
                     Metrics = OwnedMetrics(child),
                     Describe = TraceControl != null && childPath.EndsWith(TraceControl, StringComparison.Ordinal)

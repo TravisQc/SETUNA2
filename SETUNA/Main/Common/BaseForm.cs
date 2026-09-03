@@ -383,9 +383,14 @@ public class BaseForm : Form
     }
 
     /// <summary>
-    /// 同上，但用于不在 <see cref="Control.Font"/> 上的字体属性（例如
-    /// <c>StyleItemListBox.HelpFont</c>）。返回的字体由本窗体释放；DPI 没变或不可用时
-    /// 原样返回，此时调用方不得释放它。
+    /// 同上，但用于不在 <see cref="Control.Font"/> 上的字体属性。返回的字体由本窗体释放；
+    /// DPI 没变或不可用时原样返回，此时调用方不得释放它。
+    /// <para>
+    /// 目前只有 <see cref="RescaleOwnedFonts"/> 在用。<c>StyleItemListBox.HelpFont</c> 曾是唯一
+    /// 的直接调用方，已改由该控件的 <c>ScaleControl</c> 负责——**换档钩子只在换档时走**，窗体直接
+    /// 建在另一档显示器上时它一次也不走，而 <c>ScaleControl</c> 构造期和跨屏都会走到。给一个
+    /// 「框架碰不到、又和控件几何同倍率」的量换档，应当优先考虑那条路。
+    /// </para>
     /// </summary>
     protected Font RescaleOwnedFont(int previousDpi, Font font)
     {

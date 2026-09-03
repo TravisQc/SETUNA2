@@ -33,7 +33,10 @@
          ApplicationHighDpiMode stays set as the fallback, which is what makes the two
          look redundant to the analyzer. Measured with scripts/verify-dpi-awareness.ps1:
          the manifest wins the race and Application.SetHighDpiMode returns false. -->
-    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+    <!-- CA1416: Platform compatibility warnings suppressed because the project explicitly
+         targets Windows (net8.0-windows10.0.17763.0) and all Windows-specific APIs used
+         are guaranteed to be available on the minimum supported version. -->
+    <NoWarn>$(NoWarn);WFAC010;CA1416</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -55,7 +58,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Properties\Settings.settings" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+    </None>
   </ItemGroup>
 
   <!--
@@ -73,16 +78,13 @@
   </PropertyGroup>
 
   <Target Name="PublishReleaseSingleFile">
-    <Error Condition="'$(Platform)' != 'x86' AND '$(Platform)' != 'x64'"
-           Text="PublishReleaseSingleFile needs -p:Platform=x86 or -p:Platform=x64; got '$(Platform)'. The runtime identifier is derived from it." />
+    <Error Condition="'$(Platform)' != 'x86' AND '$(Platform)' != 'x64'" Text="PublishReleaseSingleFile needs -p:Platform=x86 or -p:Platform=x64; got '$(Platform)'. The runtime identifier is derived from it." />
 
     <!-- A clean staging directory, so validation cannot be fooled by a leftover
          companion file from an earlier publish and cannot pass because of one. -->
     <RemoveDir Directories="$(ReleasePublishStagingDirectory)" />
 
-    <MSBuild Projects="$(MSBuildProjectFullPath)"
-             Targets="Publish"
-             Properties="Configuration=$(Configuration);Platform=$(Platform);SelfContained=true;PublishSingleFile=true;IncludeNativeLibrariesForSelfExtract=true;EnableCompressionInSingleFile=true;PublishDir=$(ReleasePublishStagingDirectory)" />
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Properties="Configuration=$(Configuration);Platform=$(Platform);SelfContained=true;PublishSingleFile=true;IncludeNativeLibrariesForSelfExtract=true;EnableCompressionInSingleFile=true;PublishDir=$(ReleasePublishStagingDirectory)" />
 
     <CallTarget Targets="ValidateReleasePublishOutput" />
 
@@ -102,30 +104,21 @@
   <Target Name="ValidateReleasePublishOutput">
     <ItemGroup>
       <_ReleasePublishOutput Include="$(ReleasePublishStagingDirectory)**\*" />
-      <_ReleasePublishExpected Include="@(_ReleasePublishOutput)"
-                               Condition="'%(Filename)%(Extension)' == '$(AssemblyName).exe' OR '%(Filename)%(Extension)' == '$(AssemblyName).pdb'" />
+      <_ReleasePublishExpected Include="@(_ReleasePublishOutput)" Condition="'%(Filename)%(Extension)' == '$(AssemblyName).exe' OR '%(Filename)%(Extension)' == '$(AssemblyName).pdb'" />
       <_ReleasePublishUnexpected Include="@(_ReleasePublishOutput)" Exclude="@(_ReleasePublishExpected)" />
       <_ReleasePublishConfig Include="@(_ReleasePublishUnexpected)" Condition="'%(Extension)' == '.config'" />
       <_ReleasePublishJson Include="@(_ReleasePublishUnexpected)" Condition="'%(Extension)' == '.json'" />
       <_ReleasePublishSatellite Include="@(_ReleasePublishUnexpected)" Condition="$([System.String]::Copy('%(Filename)').EndsWith('.resources'))" />
       <_ReleasePublishNative Include="@(_ReleasePublishUnexpected)" Condition="'%(Extension)' == '.dll'" />
-      <_ReleasePublishArchive Include="@(_ReleasePublishUnexpected)"
-                              Condition="'%(Extension)' == '.zip' OR '%(Extension)' == '.7z' OR '%(Extension)' == '.rar'" />
+      <_ReleasePublishArchive Include="@(_ReleasePublishUnexpected)" Condition="'%(Extension)' == '.zip' OR '%(Extension)' == '.7z' OR '%(Extension)' == '.rar'" />
     </ItemGroup>
 
-    <Error Condition="!Exists('$(ReleasePublishStagingDirectory)$(AssemblyName).exe')"
-           Text="Publish produced no $(AssemblyName).exe in $(ReleasePublishStagingDirectory)." />
-    <Error Condition="'@(_ReleasePublishConfig)' != ''"
-           Text="Application configuration file(s) in the publish output, which single-file distribution forbids: @(_ReleasePublishConfig). Either a stale artifact needs cleaning, or app.config / binding-redirect generation has been reintroduced." />
-    <Error Condition="'@(_ReleasePublishJson)' != ''"
-           Text="Runtime/dependency JSON companion(s) in the publish output: @(_ReleasePublishJson). A self-contained single file embeds both; their presence means PublishSingleFile or SelfContained did not take effect." />
-    <Error Condition="'@(_ReleasePublishSatellite)' != ''"
-           Text="Satellite resource assembly/assemblies in the publish output: @(_ReleasePublishSatellite). Localization goes through the embedded .resx tables, so a satellite means a dependency introduced culture-specific resources." />
-    <Error Condition="'@(_ReleasePublishNative)' != ''"
-           Text="Loose DLL(s) in the publish output: @(_ReleasePublishNative). Managed code is bundled and libwebp is extracted at runtime, so nothing may sit beside the exe." />
-    <Error Condition="'@(_ReleasePublishArchive)' != ''"
-           Text="Archive(s) in the publish output: @(_ReleasePublishArchive). The release artifact is the executable itself." />
-    <Error Condition="'@(_ReleasePublishUnexpected)' != ''"
-           Text="Unexpected file(s) in the publish output: @(_ReleasePublishUnexpected). Only $(AssemblyName).exe and its optional $(AssemblyName).pdb may be published." />
+    <Error Condition="!Exists('$(ReleasePublishStagingDirectory)$(AssemblyName).exe')" Text="Publish produced no $(AssemblyName).exe in $(ReleasePublishStagingDirectory)." />
+    <Error Condition="'@(_ReleasePublishConfig)' != ''" Text="Application configuration file(s) in the publish output, which single-file distribution forbids: @(_ReleasePublishConfig). Either a stale artifact needs cleaning, or app.config / binding-redirect generation has been reintroduced." />
+    <Error Condition="'@(_ReleasePublishJson)' != ''" Text="Runtime/dependency JSON companion(s) in the publish output: @(_ReleasePublishJson). A self-contained single file embeds both; their presence means PublishSingleFile or SelfContained did not take effect." />
+    <Error Condition="'@(_ReleasePublishSatellite)' != ''" Text="Satellite resource assembly/assemblies in the publish output: @(_ReleasePublishSatellite). Localization goes through the embedded .resx tables, so a satellite means a dependency introduced culture-specific resources." />
+    <Error Condition="'@(_ReleasePublishNative)' != ''" Text="Loose DLL(s) in the publish output: @(_ReleasePublishNative). Managed code is bundled and libwebp is extracted at runtime, so nothing may sit beside the exe." />
+    <Error Condition="'@(_ReleasePublishArchive)' != ''" Text="Archive(s) in the publish output: @(_ReleasePublishArchive). The release artifact is the executable itself." />
+    <Error Condition="'@(_ReleasePublishUnexpected)' != ''" Text="Unexpected file(s) in the publish output: @(_ReleasePublishUnexpected). Only $(AssemblyName).exe and its optional $(AssemblyName).pdb may be published." />
   </Target>
 </Project>

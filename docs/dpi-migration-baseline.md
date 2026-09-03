@@ -104,7 +104,7 @@ IPC 转发到 `ISingletonForm.DetectExternalStartup`；现有行为需要在 nam
 |---|---|
 | `None` | `Mainform.Designer.cs`、`CaptureSelLine.Designer.cs`、`ScrapBase.Designer.cs` |
 | `Font` | 其余已生成窗体/控件设计器，包括 `OptionForm`、`StyleEditForm`、`HotkeyMsg`、`LoginInput`、`Magnifier`、`CaptureForm`、`PaintForm`、`ToolBoxForm` |
-| 污染基线 | `OptionForm.Designer.cs` 的 `AutoScaleDimensions = 15x30`、`ClientSize = 1449x1000`，是全仓唯一非 96-DPI 对话框基线 |
+| 污染基线 | `OptionForm.Designer.cs` 的 `AutoScaleDimensions = 15x30`、`ClientSize = 1449x1000`，是全仓唯一非 96-DPI 对话框基线（**2026-09-03 已彻底清除，见下节**） |
 | 无显式模式 | 若干 `UserControl`/owner-drawn panel，仅继承父容器的布局和字体 |
 
 ### DPI 来源和硬编码清单
@@ -183,6 +183,80 @@ IPC 转发到 `ISingletonForm.DetectExternalStartup`；现有行为需要在 nam
 两个菜单里没有一个项带图标，所以看不出来；往菜单里加图标之前必须先回答「20 是哪一档 DPI 的设计值」。
 项高也不是比例关系（96→168 是 24→34，倍率 1.42，因为它是字高加固定内边距），所以探针只把字高按倍率
 考核，其余数值只记录。
+
+## OptionForm 设计器几何的回缩
+
+记录日期：2026-09-03。
+
+上表那条「污染基线」当年只被清掉了一半。任务 5.2 把 `AutoScaleDimensions` 从 `(15F, 30F)` 换成
+`(96F, 96F)`、模式换成 `AutoScaleMode.Dpi`，**但没有动控件坐标**。那些坐标是 Visual Studio 在 175%
+显示器上保存这个窗体时按字体基线整体乘过的（`8x15 → 15x30`，即 X 乘 15/8、Y 乘 2，git 上是
+`ab04855 → 0a251b5`）：在 `AutoScaleMode.Font` 时代运行时按「当前字体 ÷ 基线」又除回去，改成 DPI
+基线之后除数没了，膨胀于是变成绝对值——**每一档 DPI 下这个对话框都是设计意图的 1.875 倍宽、2 倍
+高**，而字号是对的，所以留白按平方级显得空。
+
+逆运算已施加（X 取 `round(x × 8/15)`，Y 取 `y ÷ 2`，作用于 `Location`/`Size`/`Margin`/`Padding`
+共 372 处字面量）：`ClientSize` 1449x1000 → **773x500**，168 DPI 下建出来的客户区 2536x1750 →
+1353x875。逐项与膨胀前的 `ab04855` 核对一致（`groupBox5` 564x87、`btnOK` (501,7) 130x33、
+`flowLayoutPanel1` 565x377 等）。
+
+三类量**不能**跟着除，这也是这条记录存在的理由：
+
+- `ItemHeight` / `LeftSpace` 这类自定义属性 VS 那次根本没碰（`8353ae8` 与 `ab04855` 逐字相同），
+  任务 6.2 已把它们确立为正确的 96-DPI 基线。
+- `AutoSize` 控件的 `Size`、以及高度由字体决定的控件（`ComboBox`、`NumericUpDown`）的高度，记的是
+  设计器当场量出来的字体尺寸而不是被缩放的坐标，运行时会重算。
+- 字号本身。**point 单位的字体在 WinForms 里不会自己跟随显示器**——上一节那张菜单表就是证据
+  （同一个菜单在 96 DPI 副屏是 5.14pt/16px、在 168 DPI 主屏是 9pt/27px），框架的做法是把点值乘上
+  DPI 之比、再按恒定的进程 DPI 去实现 HFONT。所以 `BaseForm.RescaleOwnedFonts` 对显式
+  `Control.Font` 做同一件事是与框架一致的，不是重复缩放。
+
+一处因此新暴露的度量噪声：`flowLayoutPanel1` 的子控件 `panel4` 在 96↔120 往返后 Y 差 2px。流式面板
+的子控件位置是前面所有兄弟的「舍入后尺寸 + 边距」的累加，每跳要舍好几次，而
+`DialogRelayoutProbe.RoundTripSlop = 1` 的理由是「框架直接缩放的控件只舍一次」。坐标砍半之后同一份
+累加误差第一次越过一个像素，因此新增 `LayoutOwnedRoundTripSlop = 3` 只给布局引擎定位的控件放宽，
+与 `LayoutOwnedByParent` 在比例考核上已有的豁免同一个理由。
+
+## 自绘文字与显式字体的 DPI 归属
+
+记录日期：2026-09-03。命令：
+
+```powershell
+$env:DIALOG_PROBE_MEASURE_OWNERDRAW='1'; ./scripts/verify-dialog-relayout.ps1 -Platform x64
+```
+
+上面几节都靠**合成** `WM_DPICHANGED`，而这一节的问题合成消息答不了：窗口从未真的换过显示器，它的
+设备上下文当然还是进程那一档 DPI，读数两种解释都成立。所以 `OwnerDrawText` 改为**把窗体真的摆进每块
+显示器**（`Screen.FromControl` 确认落位，落不上就跳过而不是当失败——副屏休眠时窗口会留在主屏）。
+
+**结论一：控件自己的 `Graphics` 恒报进程那一档 DPI。** 本机进程是 168，把 `StyleEditForm` 摆到 96 DPI
+副屏上（`form.DeviceDpi=96`，落位确认）之后 `CreateGraphics()` 仍然报 `168x168`。所以 GDI+ 把点值换成
+像素用的是进程 DPI，**点值不会自己跟随显示器**；让文字跟随显示器的唯一机制就是把点值乘上 DPI 之比，
+这正是框架对 `Control.Font` 做的事。`StyleItemListBox` 原先那段注释（「`Graphics` 带着目标显示器的
+DPI，8pt 在 96 DPI 上就是 11 像素」）据此是错的，已改写。
+
+**结论二：`HelpFont` 因此是真缺陷，已修。** 它不是 `Control.Font`，框架碰不到；原先由
+`StyleEditForm.OnDpiContextChanged` 换算，而那条路**只在换档时走**——窗体直接建在副屏上时首次建立
+上下文不发通知（这是 `BaseForm` 刻意的）。实测副屏上：
+
+| | 96 DPI 副屏（修复前） | 96 DPI 副屏（修复后） | 168 DPI 主屏 |
+|---|---|---|---|
+| `ItemHeight` | 39 | 39 | 68 |
+| `Font` | 5.71pt / 渲染 15.0px | 5.71pt / 15.0px | 10.00pt / 26.2px |
+| `HelpFont` | **8.00pt / 21.0px** | 4.57pt / 12.0px | 8.00pt / 21.0px |
+| `HelpFont ÷ Font` | **1.40** | 0.80 | 0.80 |
+
+即修复前**说明文字比标题文字还大**，两行合计 36px 塞进 39px 的行里。修法是挂到
+`StyleItemListBox.OnFontChanged` 上，按主字体前后字号之比换算。**不能用 `ScaleControl` 的倍率**——试过：
+构造期的 `PerformAutoScale` 会调 `ScaleControl`、却不动显式指定的 `Control.Font`，于是 168 DPI 上
+`HelpFont` 被乘成 14pt 而 `Font` 还是 10pt，跨屏一致了但比例整体偏 1.75 倍。探针新增
+`CheckHelpFontProportion` 断言这个比值在每块显示器上都是 0.80，去掉修复会报 2 条（两个样式列表在副屏上
+1.40），确认有牙；只有一档 DPI 时打印 inconclusive。
+
+**结论三：显式 `Control.Font` 没有同样的问题**，所以 `RescaleOwnedFonts` 的其余六个调用方不必动。
+把 `HotkeyMsg` 摆到两块显示器上量（`ReportExplicitFonts`）：副屏 `form.Font` 5.14pt、`lblKey` 5.14pt
+（×1.00）、`label1` 5.71pt（×1.11）；主屏 9.00pt / 9.00pt（×1.00）/ 10.00pt（×1.11）——两块屏上的比值
+逐项相同，说明设计器指定的字体确实跟着显示器走。
 
 ## 双屏验收的未完成项
 
