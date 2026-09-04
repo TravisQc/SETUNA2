@@ -1389,6 +1389,18 @@ Overwrite?</value>
     <value>The image cannot be saved because no usable encoder was found.</value>
     <comment>因为利用可以的编码器没找到，不能保存图像。</comment>
   </data>
+  <data name="Message.OpenFolderFailed" xml:space="preserve">
+    <value>Could not open the folder:
+{0}</value>
+    <comment>无法打开文件夹：
+{0}</comment>
+  </data>
+  <data name="Message.OpenUrlFailed" xml:space="preserve">
+    <value>Could not open the web address:
+{0}</value>
+    <comment>无法打开网址：
+{0}</comment>
+  </data>
   <data name="Message.OtherVersionRunning" xml:space="preserve">
     <value>A different version of SETUNA is already running.</value>
     <comment>SETUNA已经运行在不同的版本。</comment>

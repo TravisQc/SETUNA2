@@ -131,12 +131,12 @@ namespace SETUNA.Main.Option
 
         private void LinkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(linkLabel2.Links[0].LinkData.ToString());
+            ShellUtils.OpenUrl(linkLabel2.Links[0].LinkData as string);
         }
 
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start(linkLabel1.Links[0].LinkData.ToString());
+            ShellUtils.OpenUrl(linkLabel1.Links[0].LinkData as string);
         }
 
         // Token: 0x060002D4 RID: 724 RVA: 0x000136F0 File Offset: 0x000118F0
@@ -899,7 +899,7 @@ namespace SETUNA.Main.Option
 
         private void button2_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(Cache.CacheManager.Path);
+            ShellUtils.OpenFolder(Cache.CacheManager.Path);
         }
 
         private void lblMenuMisc_Click(object sender, EventArgs e)

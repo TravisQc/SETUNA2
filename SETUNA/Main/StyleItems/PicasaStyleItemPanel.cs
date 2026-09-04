@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows.Forms;
+using SETUNA.Main.Common;
 using SETUNA.Main.Localization;
 
 namespace SETUNA.Main.StyleItems
@@ -100,7 +100,7 @@ namespace SETUNA.Main.StyleItems
         // Token: 0x060004E3 RID: 1251 RVA: 0x00023356 File Offset: 0x00021556
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(linkLabel1.Text);
+            ShellUtils.OpenUrl(linkLabel1.Text);
         }
 
         // Token: 0x060004E4 RID: 1252 RVA: 0x00023369 File Offset: 0x00021569
