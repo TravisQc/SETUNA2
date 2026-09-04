@@ -40,30 +40,19 @@ namespace SETUNA.Main.Window
                 [typeof(global::SETUNA.Main.StyleItems.ImageBmpStyleItemPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.ImageJpegPreviewPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.ImageJpegStyleItemPanel)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.ImagePngPreviewPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.ImagePngStyleItemPanel)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.LayerRenameWindow)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.LoginInput)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.MarginStyleItemPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.MoveStyleItemPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.NothingStyleItemPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.OpacityStyleItemPanel)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.PaintForm)] = DpiPolicy.PhysicalSurface,
                 [typeof(global::SETUNA.Main.StyleItems.PicasaBar)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.PicasaStyleItemPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.RotateStyleItemPanel)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.SaveImageStyleItemPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.ScaleStyleItemPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.ScrapDrawForm)] = DpiPolicy.PhysicalSurface,
-                [typeof(global::SETUNA.Main.StyleItems.ScrapPaintLayer)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.ScrapPaintPenTool)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.ScrapPaintTextTool)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.ScrapPaintToolBar)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.ScrapPaintWindow)] = DpiPolicy.PhysicalSurface,
-                [typeof(global::SETUNA.Main.StyleItems.TimerStyleItemPanel)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.StyleItems.ToolBoxForm)] = DpiPolicy.LogicalUi,
-                [typeof(global::SETUNA.Main.StyleItems.TrimWindow)] = DpiPolicy.PhysicalSurface,
-                [typeof(global::SETUNA.Main.StyleItems.WindowStyleItemPanel)] = DpiPolicy.LogicalUi
+                [typeof(global::SETUNA.Main.StyleItems.TrimWindow)] = DpiPolicy.PhysicalSurface
             };
 
         public static DpiPolicy GetPolicy(Type formType)

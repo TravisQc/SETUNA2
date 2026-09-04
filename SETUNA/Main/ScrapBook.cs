@@ -226,26 +226,6 @@ namespace SETUNA.Main
             }
         }
 
-        // Token: 0x060001C6 RID: 454 RVA: 0x00009DAC File Offset: 0x00007FAC
-        public void ShowAllScrap()
-        {
-            foreach (var obj in _scraps)
-            {
-                var scrapBase = (ScrapBase)obj;
-                scrapBase.Show();
-            }
-        }
-
-        // Token: 0x060001C7 RID: 455 RVA: 0x00009E04 File Offset: 0x00008004
-        public void HideAllScrap()
-        {
-            foreach (var obj in _scraps)
-            {
-                var scrapBase = (ScrapBase)obj;
-                scrapBase.Hide();
-            }
-        }
-
         // Token: 0x060001C8 RID: 456 RVA: 0x00009E5C File Offset: 0x0000805C
         public void CloseAllScrap()
         {
@@ -254,34 +234,6 @@ namespace SETUNA.Main
             {
                 var scrapBase = (ScrapBase)obj;
                 scrapBase.Close();
-            }
-        }
-
-        // Token: 0x17000050 RID: 80
-        // (get) Token: 0x060001C9 RID: 457 RVA: 0x00009EB4 File Offset: 0x000080B4
-        public int ScrapCount
-        {
-            get
-            {
-                if (_scraps == null)
-                {
-                    return 0;
-                }
-                return _scraps.Count;
-            }
-        }
-
-        // Token: 0x17000051 RID: 81
-        // (get) Token: 0x060001CA RID: 458 RVA: 0x00009ECB File Offset: 0x000080CB
-        public int DustCount
-        {
-            get
-            {
-                if (_dustbox == null)
-                {
-                    return 0;
-                }
-                return _dustbox.Count;
             }
         }
 

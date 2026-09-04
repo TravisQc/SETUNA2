@@ -44,23 +44,6 @@ namespace SETUNA.Main.Layer
             FormManager.Deactivated += FormManager_Deactivated;
         }
 
-        public void DeInit()
-        {
-            // 必须与 Init/DelayInit 建立的订阅一一对应：以前漏了 Showed 和 Closed，
-            // DeInit 之后再有窗体显示/关闭就会访问已被置为 null 的 formDic。
-            WindowManager.WindowActived -= WindowManager_WindowActived;
-            WindowManager.TopMostChanged -= WindowManager_TopMostChanged;
-            FormManager.Showed -= FormManager_Showed;
-            FormManager.Closed -= FormManager_Closed;
-            FormManager.Activated -= FormManager_Activated;
-            FormManager.Deactivated -= FormManager_Deactivated;
-
-            windowFilter = null;
-            sortingFormDatas = null;
-            formDic = null;
-        }
-
-
         public void SuspendRefresh()
         {
             isSuspendCount++;

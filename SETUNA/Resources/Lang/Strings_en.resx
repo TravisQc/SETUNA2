@@ -225,14 +225,6 @@
     <value>Use the scrap name</value>
     <comment>使用参考图名</comment>
   </data>
-  <data name="ImagePngPreviewPanel.groupBox1" xml:space="preserve">
-    <value>Settings</value>
-    <comment>设置</comment>
-  </data>
-  <data name="ImagePngPreviewPanel.label3" xml:space="preserve">
-    <value>Quality:</value>
-    <comment>质量：</comment>
-  </data>
   <data name="ImagePngStyleItemPanel.chkCopy" xml:space="preserve">
     <value>Copy the saved file path to the clipboard</value>
     <comment>复制到剪贴板上的文件的保存路径</comment>
@@ -276,22 +268,6 @@
   <data name="ImagePngStyleItemPanel.rdoScrapName" xml:space="preserve">
     <value>Use the scrap name</value>
     <comment>使用参考图名</comment>
-  </data>
-  <data name="LayerRenameWindow.$this" xml:space="preserve">
-    <value>Rename layer</value>
-    <comment>更改图层名称</comment>
-  </data>
-  <data name="LayerRenameWindow.btnCancel" xml:space="preserve">
-    <value>Cancel</value>
-    <comment>取消</comment>
-  </data>
-  <data name="LayerRenameWindow.btnOK" xml:space="preserve">
-    <value>OK</value>
-    <comment>确定</comment>
-  </data>
-  <data name="LayerRenameWindow.label1" xml:space="preserve">
-    <value>Layer name:</value>
-    <comment>图层名称：</comment>
   </data>
   <data name="LoginInput.btnCancel" xml:space="preserve">
     <value>Cancel</value>
@@ -897,34 +873,6 @@ Set transparency to 100% for no fill.</value>
     <value>90 right</value>
     <comment>右转90度</comment>
   </data>
-  <data name="SaveImageStyleItemPanel.checkBox1" xml:space="preserve">
-    <value>Set format and quality when saving</value>
-    <comment>保存时的格式、质量等设置</comment>
-  </data>
-  <data name="SaveImageStyleItemPanel.checkBox2" xml:space="preserve">
-    <value>Ask for the file name when saving</value>
-    <comment>指定保存时的文件名</comment>
-  </data>
-  <data name="SaveImageStyleItemPanel.groupBox1" xml:space="preserve">
-    <value>Settings</value>
-    <comment>设置</comment>
-  </data>
-  <data name="SaveImageStyleItemPanel.label1" xml:space="preserve">
-    <value>Destination:</value>
-    <comment>目的地：</comment>
-  </data>
-  <data name="SaveImageStyleItemPanel.label2" xml:space="preserve">
-    <value>Quality:</value>
-    <comment>质量：</comment>
-  </data>
-  <data name="SaveImageStyleItemPanel.label4" xml:space="preserve">
-    <value>Low</value>
-    <comment>低</comment>
-  </data>
-  <data name="SaveImageStyleItemPanel.label5" xml:space="preserve">
-    <value>High</value>
-    <comment>高</comment>
-  </data>
   <data name="ScaleStyleItemPanel.groupBox1" xml:space="preserve">
     <value>Settings</value>
     <comment>设置</comment>
@@ -944,58 +892,6 @@ Set transparency to 100% for no fill.</value>
   <data name="ScaleStyleItemPanel.rdoIncrement" xml:space="preserve">
     <value>Relative</value>
     <comment>相对值</comment>
-  </data>
-  <data name="ScrapPaintLayer.$this" xml:space="preserve">
-    <value>Layers</value>
-    <comment>层</comment>
-  </data>
-  <data name="ScrapPaintPenTool.$this" xml:space="preserve">
-    <value>Pen</value>
-    <comment>笔工具</comment>
-  </data>
-  <data name="ScrapPaintPenTool.label1" xml:space="preserve">
-    <value>Opacity</value>
-    <comment>不透明度</comment>
-  </data>
-  <data name="ScrapPaintPenTool.label3" xml:space="preserve">
-    <value>Size</value>
-    <comment>尺寸</comment>
-  </data>
-  <data name="ScrapPaintTextTool.$this" xml:space="preserve">
-    <value>Text</value>
-    <comment>文字工具</comment>
-  </data>
-  <data name="ScrapPaintTextTool.label3" xml:space="preserve">
-    <value>Size</value>
-    <comment>尺寸</comment>
-  </data>
-  <data name="ScrapPaintTextTool.label5" xml:space="preserve">
-    <value>Font</value>
-    <comment>字体</comment>
-  </data>
-  <data name="ScrapPaintToolBar.$this" xml:space="preserve">
-    <value>Tools</value>
-    <comment>工具</comment>
-  </data>
-  <data name="ScrapPaintToolBar.chkErase.ToolTip" xml:space="preserve">
-    <value>Eraser tool</value>
-    <comment>橡皮擦工具</comment>
-  </data>
-  <data name="ScrapPaintToolBar.chkPen.ToolTip" xml:space="preserve">
-    <value>Pen tool</value>
-    <comment>笔工具</comment>
-  </data>
-  <data name="ScrapPaintToolBar.chkText.ToolTip" xml:space="preserve">
-    <value>Text tool</value>
-    <comment>文本工具</comment>
-  </data>
-  <data name="ScrapPaintToolBar.picColorA.ToolTip" xml:space="preserve">
-    <value>Foreground color</value>
-    <comment>前景色</comment>
-  </data>
-  <data name="ScrapPaintToolBar.picColorB.ToolTip" xml:space="preserve">
-    <value>Background color</value>
-    <comment>背景色</comment>
   </data>
   <data name="StyleEditForm.btnCancel" xml:space="preserve">
     <value>Cancel</value>
@@ -1093,14 +989,6 @@ Set transparency to 100% for no fill.</value>
     <value>Name for this style.</value>
     <comment>您可以对具体自动操作命名。</comment>
   </data>
-  <data name="TimerStyleItemPanel.groupBox1" xml:space="preserve">
-    <value>Settings</value>
-    <comment>设置</comment>
-  </data>
-  <data name="TimerStyleItemPanel.label1" xml:space="preserve">
-    <value>Delay:</value>
-    <comment>延迟：</comment>
-  </data>
   <data name="ToolBoxForm.cmdCancel" xml:space="preserve">
     <value>Cancel</value>
     <comment>取消</comment>
@@ -1108,18 +996,6 @@ Set transparency to 100% for no fill.</value>
   <data name="ToolBoxForm.cmdOK" xml:space="preserve">
     <value>OK</value>
     <comment>确定</comment>
-  </data>
-  <data name="WindowStyleItemPanel.groupBox1" xml:space="preserve">
-    <value>Settings</value>
-    <comment>设置</comment>
-  </data>
-  <data name="WindowStyleItemPanel.rdoFixed" xml:space="preserve">
-    <value>Scrap size</value>
-    <comment>参考图类型</comment>
-  </data>
-  <data name="WindowStyleItemPanel.rdoIncrement" xml:space="preserve">
-    <value>Window size</value>
-    <comment>窗口类型</comment>
   </data>
   <data name="Capture.Blue" xml:space="preserve">
     <value>B:</value>
@@ -1133,17 +1009,9 @@ Set transparency to 100% for no fill.</value>
     <value>R:</value>
     <comment>红：</comment>
   </data>
-  <data name="Common.No" xml:space="preserve">
-    <value>No</value>
-    <comment>否</comment>
-  </data>
   <data name="Common.None" xml:space="preserve">
     <value>None</value>
     <comment>无</comment>
-  </data>
-  <data name="Common.Yes" xml:space="preserve">
-    <value>Yes</value>
-    <comment>是</comment>
   </data>
   <data name="DefaultStyle.Basic" xml:space="preserve">
     <value>Default style</value>
@@ -1355,10 +1223,6 @@ Using default settings.</value>
     <value>Close all scraps?</value>
     <comment>是否关闭所有截图</comment>
   </data>
-  <data name="Message.ConfirmDeleteLayer" xml:space="preserve">
-    <value>Delete "{0}"?</value>
-    <comment>{0}我如何删除？</comment>
-  </data>
   <data name="Message.ConfirmOverwrite" xml:space="preserve">
     <value>A file with the same name already exists.
 Overwrite?</value>
@@ -1380,10 +1244,6 @@ Overwrite?</value>
   <data name="Message.InvalidFolderName" xml:space="preserve">
     <value>The folder name is not valid.</value>
     <comment>文件夹名无效。</comment>
-  </data>
-  <data name="Message.LayerNameRequired" xml:space="preserve">
-    <value>No layer name was entered.</value>
-    <comment>没有输入图层名</comment>
   </data>
   <data name="Message.NoEncoderFound" xml:space="preserve">
     <value>The image cannot be saved because no usable encoder was found.</value>
@@ -1466,18 +1326,6 @@ Could not save.</value>
   <data name="Option.NewStyleTitle" xml:space="preserve">
     <value>New style</value>
     <comment>新建自动操作</comment>
-  </data>
-  <data name="Paint.EraserToolTitle" xml:space="preserve">
-    <value>Eraser</value>
-    <comment>橡皮擦工具</comment>
-  </data>
-  <data name="Paint.LayerName" xml:space="preserve">
-    <value>Layer {0}</value>
-    <comment>层{0}</comment>
-  </data>
-  <data name="Paint.TextLayerName" xml:space="preserve">
-    <value>Text layer</value>
-    <comment>文字层</comment>
   </data>
   <data name="Picasa.AccountAndPasswordRequired" xml:space="preserve">
     <value>Please enter an account and password.</value>
@@ -1572,14 +1420,6 @@ Sign in at https://picasaweb.google.com/ to review it.</value>
   <data name="Scale.Interpolation.Unchanged" xml:space="preserve">
     <value>Leave unchanged</value>
     <comment>不要更改</comment>
-  </data>
-  <data name="Style.AllHide.Name" xml:space="preserve">
-    <value>Hide all</value>
-    <comment>全部隐藏</comment>
-  </data>
-  <data name="Style.AllShow.Name" xml:space="preserve">
-    <value>Show all</value>
-    <comment>全部显示</comment>
   </data>
   <data name="Style.Capture.Name" xml:space="preserve">
     <value>New scrap</value>
@@ -1737,14 +1577,6 @@ Later actions are not applied.</value>
     <value>Opacity</value>
     <comment>不透明度</comment>
   </data>
-  <data name="StyleItem.Paint.Description" xml:space="preserve">
-    <value>Draw directly on the scrap.</value>
-    <comment>可以直接在参考图上绘制。</comment>
-  </data>
-  <data name="StyleItem.Paint.DisplayName" xml:space="preserve">
-    <value>Draw</value>
-    <comment>绘制</comment>
-  </data>
   <data name="StyleItem.Paste.Description" xml:space="preserve">
     <value>Use the clipboard image as a scrap.</value>
     <comment>将剪贴板内的图像作为参考图。</comment>
@@ -1797,22 +1629,6 @@ Later actions are not applied.</value>
     <value>{0}% smaller</value>
     <comment>{0}% 缩小</comment>
   </data>
-  <data name="StyleItem.Timer.Description" xml:space="preserve">
-    <value>Pause for the given time.</value>
-    <comment>指定的时间内，暂停。</comment>
-  </data>
-  <data name="StyleItem.Timer.DisplayName" xml:space="preserve">
-    <value>Timer</value>
-    <comment>定时器</comment>
-  </data>
-  <data name="StyleItem.ToneReverse.Description" xml:space="preserve">
-    <value>Invert the scrap's tones.</value>
-    <comment>进行灰度等级翻转。</comment>
-  </data>
-  <data name="StyleItem.ToneReverse.DisplayName" xml:space="preserve">
-    <value>Invert tones</value>
-    <comment>灰度等级翻转</comment>
-  </data>
   <data name="StyleItem.Trim.Description" xml:space="preserve">
     <value>Cut away the parts you don't need.</value>
     <comment>您可以删除不需要的部分。</comment>
@@ -1820,13 +1636,5 @@ Later actions are not applied.</value>
   <data name="StyleItem.Trim.DisplayName" xml:space="preserve">
     <value>Trim</value>
     <comment>修剪</comment>
-  </data>
-  <data name="StyleItem.Window.Description" xml:space="preserve">
-    <value>Give the scrap a window frame.</value>
-    <comment>为参考图加上窗口边框。</comment>
-  </data>
-  <data name="StyleItem.Window.DisplayName" xml:space="preserve">
-    <value>Add window frame</value>
-    <comment>窗口化</comment>
   </data>
 </root>

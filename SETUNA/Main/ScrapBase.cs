@@ -122,38 +122,6 @@ namespace SETUNA.Main
             }
         }
 
-        // Token: 0x17000010 RID: 16
-        // (get) Token: 0x0600004E RID: 78 RVA: 0x0000368A File Offset: 0x0000188A
-        // (set) Token: 0x0600004D RID: 77 RVA: 0x00003660 File Offset: 0x00001860
-        public int InactiveMargin
-        {
-            get => _inactiveMargin;
-            set
-            {
-                _inactiveMargin = value;
-                if (ActiveForm != this && !_isMouseEnter)
-                {
-                    Padding = new Padding(_inactiveMargin);
-                }
-            }
-        }
-
-        // Token: 0x17000011 RID: 17
-        // (get) Token: 0x06000050 RID: 80 RVA: 0x000036BC File Offset: 0x000018BC
-        // (set) Token: 0x0600004F RID: 79 RVA: 0x00003692 File Offset: 0x00001892
-        public int RollOverMargin
-        {
-            get => _rolloverMargin;
-            set
-            {
-                _rolloverMargin = value;
-                if (ActiveForm != this && _isMouseEnter)
-                {
-                    Padding = new Padding(_rolloverMargin);
-                }
-            }
-        }
-
         // Token: 0x06000051 RID: 81 RVA: 0x000036C4 File Offset: 0x000018C4
         public ScrapBase()
         {
@@ -454,13 +422,6 @@ namespace SETUNA.Main
             }
 
             return bitmap;
-        }
-
-        // Token: 0x06000064 RID: 100 RVA: 0x00003F58 File Offset: 0x00002158
-        public void ScrapResize()
-        {
-            base.Width = imgView.Width + (Padding.Left + Padding.Right);
-            base.Height = imgView.Height + (Padding.Top + Padding.Bottom);
         }
 
         // Token: 0x06000065 RID: 101 RVA: 0x00003FC4 File Offset: 0x000021C4
@@ -1042,12 +1003,6 @@ namespace SETUNA.Main
         }
 
 
-        // Token: 0x04000021 RID: 33
-        private const int WS_EX_LAYERED = 524288;
-
-        // Token: 0x04000022 RID: 34
-        private const int GWL_EXSTYLE = -20;
-
         // Token: 0x04000023 RID: 35
         public ScrapBook _parent;
 
@@ -1124,12 +1079,6 @@ namespace SETUNA.Main
 
         // Token: 0x04000044 RID: 68
         private int _activeMargin;
-
-        // Token: 0x04000045 RID: 69
-        private int _inactiveMargin;
-
-        // Token: 0x04000046 RID: 70
-        private int _rolloverMargin;
 
         // Token: 0x04000047 RID: 71
         private InterpolationMode _interpolationmode;

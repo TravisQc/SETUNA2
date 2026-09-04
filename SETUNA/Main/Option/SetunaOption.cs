@@ -778,24 +778,6 @@ namespace SETUNA.Main.Option
             return setunaOption;
         }
 
-        // Token: 0x040000F4 RID: 244
-        private const string ConfigFileName = "SetunaConfig.xml";
-
-        // Token: 0x040000F5 RID: 245
-        private const int MOD_ALT = 1;
-
-        // Token: 0x040000F6 RID: 246
-        private const int MOD_CONTROL = 2;
-
-        // Token: 0x040000F7 RID: 247
-        private const int MOD_SHIFT = 4;
-
-        // Token: 0x040000F8 RID: 248
-        public const int WM_HOTKEY = 786;
-
-        // Token: 0x040000F9 RID: 249
-        public const int HOTKEY_ID = 1;
-
         // Token: 0x040000FA RID: 250
         public bool Difficult;
 

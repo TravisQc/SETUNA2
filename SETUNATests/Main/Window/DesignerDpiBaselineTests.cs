@@ -109,9 +109,9 @@ namespace SETUNATests.Main.Window
         /// </para>
         /// <para>
         /// Autoscaling then multiplies the error, because <c>Form.ScaleSize</c> scales
-        /// <c>Size</c> minus the *current* frame: measured at 168 DPI,
-        /// <c>ScrapPaintPenTool</c> was born 808x0 and <c>LayerRenameWindow</c> 382x42 instead
-        /// of 420x150, with its buttons below the bottom edge at every scale factor.
+        /// <c>Size</c> minus the *current* frame: measured at 168 DPI on the paint palettes
+        /// that used to live here, one was born 808x0 and another 382x42 instead of 420x150,
+        /// with its buttons below the bottom edge at every scale factor.
         /// <c>BaseForm.HideControlBoxAfterInitialize</c> is the fix and explains why.
         /// </para>
         /// <para>
@@ -168,7 +168,7 @@ namespace SETUNATests.Main.Window
         /// The logical-designer check above cannot see all of them: it maps
         /// <c>BaseForm</c> subclasses to <c>*.Designer.cs</c>, which misses user controls and
         /// the ones whose <c>InitializeComponent</c> sits inline in the <c>.cs</c> file — that
-        /// is where <c>ScrapPaintLayerItem</c> and <c>ScrapPaintTextLayerItem</c> kept a
+        /// is where the paint layer rows that used to live here kept a
         /// <c>(6F, 12F)</c> font baseline. Under <see cref="AutoScaleMode.Dpi"/> that baseline
         /// is read as a DPI and the tree is scaled by 96/6; under
         /// <see cref="AutoScaleMode.Font"/> the control scales itself by the ambient font,

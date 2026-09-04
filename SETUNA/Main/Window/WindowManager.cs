@@ -14,9 +14,6 @@ namespace SETUNA.Main
 
         public static readonly WindowManager Instance = new WindowManager();
 
-        public WindowInfo CurrentForegroundWindow => foregroundWindow;
-        public WindowInfo TopMostWindow => topMostWindow;
-
         WindowInfo foregroundWindow;
         WindowInfo topMostWindow;
 

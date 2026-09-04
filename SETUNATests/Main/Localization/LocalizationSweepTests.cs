@@ -217,7 +217,6 @@ namespace SETUNA.Main.Localization.Tests
             foreach (var type in new[]
             {
                 typeof(ToolBoxForm),
-                typeof(LayerRenameWindow),
                 typeof(LoginInput),
                 typeof(SETUNA.Main.HotkeyMsg),
             })

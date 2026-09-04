@@ -277,13 +277,13 @@ namespace SETUNA.Main.Localization.Tests
         {
             Lang.SetLanguage(AppLanguage.English);
 
-            using (var form = new SETUNA.Main.StyleItems.LayerRenameWindow())
+            using (var form = new SETUNA.Main.HotkeyMsg())
             {
                 LocalizationApplier.Apply(form);
 
-                Assert.AreEqual("Rename layer", form.Text, "$this must localize the form's own title.");
-                Assert.AreEqual("Layer name:", FindControl(form, "label1").Text);
-                Assert.AreEqual("OK", FindControl(form, "btnOK").Text);
+                Assert.AreEqual("SETUNA Hotkeys", form.Text, "$this must localize the form's own title.");
+                Assert.AreEqual("Hotkeys disabled", FindControl(form, "label1").Text);
+                Assert.AreEqual("Close", FindControl(form, "btnClose").Text);
             }
         }
 
@@ -348,7 +348,7 @@ namespace SETUNA.Main.Localization.Tests
         [TestMethod]
         public void RepeatedSwitchesDoNotDriftTheText()
         {
-            using (var form = new SETUNA.Main.StyleItems.LayerRenameWindow())
+            using (var form = new SETUNA.Main.HotkeyMsg())
             {
                 var label = FindControl(form, "label1");
                 var designerText = label.Text;
@@ -357,7 +357,7 @@ namespace SETUNA.Main.Localization.Tests
                 {
                     Lang.SetLanguage(AppLanguage.English);
                     LocalizationApplier.Apply(form);
-                    Assert.AreEqual("Layer name:", label.Text);
+                    Assert.AreEqual("Hotkeys disabled", label.Text);
 
                     Lang.SetLanguage(AppLanguage.ChineseSimplified);
                     LocalizationApplier.Apply(form);

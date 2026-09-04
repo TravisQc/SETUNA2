@@ -52,13 +52,6 @@ namespace SETUNA.Main
             base.Close();
         }
 
-        // Token: 0x0600030C RID: 780 RVA: 0x000150F5 File Offset: 0x000132F5
-        private void btnOption_Click(object sender, EventArgs e)
-        {
-            base.DialogResult = DialogResult.OK;
-            base.Close();
-        }
-
         // Token: 0x040001C2 RID: 450
         private Keys _key;
     }

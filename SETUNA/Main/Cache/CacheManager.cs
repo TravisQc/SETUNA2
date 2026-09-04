@@ -46,10 +46,6 @@ namespace SETUNA.Main.Cache
             RestoreScraps(scrapBook);
         }
 
-        public void DeInit()
-        {
-        }
-
         void RestoreScraps(ScrapBook mainBook)
         {
             var directoryInfo = new DirectoryInfo(Path);

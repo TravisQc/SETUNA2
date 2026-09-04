@@ -25,12 +25,6 @@ namespace SETUNA.Main.Window
 
         public int DpiY => Monitor.DpiY;
 
-        /// <summary>
-        /// Convenience scale for symmetric-DPI callers. Use <see cref="Monitor.ScaleX"/>
-        /// and <see cref="Monitor.ScaleY"/> when the axes differ.
-        /// </summary>
-        public double ScaleFactor => Monitor.ScaleX;
-
         public static DpiContext FromDpi(int dpiX, int dpiY)
         {
             return new DpiContext(new MonitorSnapshot(

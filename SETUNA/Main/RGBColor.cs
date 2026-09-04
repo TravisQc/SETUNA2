@@ -48,12 +48,6 @@ namespace SETUNA.Main
             set => _green = value;
         }
 
-        // Token: 0x0600033C RID: 828 RVA: 0x00015658 File Offset: 0x00013858
-        public Color GetColor()
-        {
-            return Color.FromArgb(R, G, B);
-        }
-
         // Token: 0x040001D6 RID: 470
         private byte _red;
 

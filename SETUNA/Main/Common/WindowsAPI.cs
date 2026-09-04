@@ -31,9 +31,6 @@ namespace SETUNA.Main
         public static extern int GetWindowTextLength(IntPtr hWnd);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int GetWindowModuleFileName(IntPtr hWnd, StringBuilder lpFilename, int nSize);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern int GetClassName(IntPtr hWnd, StringBuilder lpFilename, int nSize);
 
         public static bool GetWindowZOrder(IntPtr hwnd, out int zOrder)
@@ -75,14 +72,6 @@ namespace SETUNA.Main
             return builder.ToString();
         }
 
-        public static string GetModuleName(IntPtr hwnd)
-        {
-            var builder = new StringBuilder(1024);
-            var len = GetWindowModuleFileName(hwnd, builder, builder.Capacity);
-
-            return builder.ToString();
-        }
-
         public static string GetClassName(IntPtr hwnd)
         {
             var builder = new StringBuilder(1024);
@@ -93,7 +82,6 @@ namespace SETUNA.Main
 
 
         public const int GW_HWNDNEXT = 2;
-        public const int GW_HWNDPREV = 3;
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetTopWindow(IntPtr hWnd);
@@ -251,12 +239,6 @@ namespace SETUNA.Main
             return GetMonitorSnapshot(MonitorFromPoint(new NativePoint { X = point.X, Y = point.Y }, MONITOR_DEFAULTTONEAREST));
         }
 
-        public static bool TryGetMonitorSnapshotAt(Point point, out MonitorSnapshot snapshot)
-        {
-            snapshot = GetMonitorSnapshotAt(point);
-            return snapshot.IsAvailable;
-        }
-
         /// <summary>
         /// 一个矩形归哪块显示器：**重叠面积最大**的那块，而不是最近的那块。判据与理由见
         /// <see cref="MonitorSnapshot.SelectFor"/>；这里只负责枚举当前的显示器。
@@ -276,12 +258,6 @@ namespace SETUNA.Main
             return GetMonitorSnapshotAt(new Point(
                 rectangle.Left + rectangle.Width / 2,
                 rectangle.Top + rectangle.Height / 2));
-        }
-
-        public static bool TryGetMonitorSnapshotFor(Rectangle rectangle, out MonitorSnapshot snapshot)
-        {
-            snapshot = GetMonitorSnapshotFor(rectangle);
-            return snapshot.IsAvailable;
         }
 
         /// <summary>
@@ -316,12 +292,6 @@ namespace SETUNA.Main
                 dpi,
                 dpi,
                 snapshot.IsPrimary);
-        }
-
-        public static bool TryGetMonitorSnapshotForWindow(IntPtr hwnd, out MonitorSnapshot snapshot)
-        {
-            snapshot = GetMonitorSnapshotForWindow(hwnd);
-            return snapshot.IsAvailable;
         }
 
         /// <summary>Enumerates all active monitors without converting their negative origins.</summary>
@@ -382,9 +352,6 @@ namespace SETUNA.Main
             return Rectangle.FromLTRB(rect.Left, rect.Top, rect.Right, rect.Bottom);
         }
 
-        const int GWL_STYLE = -16;
-        const int GWL_EXSTYLE = -20;
-
         [StructLayout(LayoutKind.Sequential)]
         struct NativeRect
         {
@@ -392,57 +359,6 @@ namespace SETUNA.Main
             public int Top;
             public int Right;
             public int Bottom;
-        }
-
-        [DllImport("user32.dll")]
-        static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        /// <summary>按指定 DPI 把客户区矩形放大为窗口矩形。Windows 10 1607 起可用。</summary>
-        [DllImport("user32.dll")]
-        static extern bool AdjustWindowRectExForDpi(ref NativeRect rect, int dwStyle, bool bMenu, int dwExStyle, uint dpi);
-
-        /// <summary>
-        /// 求 <paramref name="clientSize"/> 这个客户区在 <paramref name="dpi"/> 下对应的窗口外框
-        /// 尺寸；参数不可用或调用失败时返回 <see cref="Size.Empty"/>，由调用方决定退路。
-        /// <para>
-        /// 跨显示器重排需要它，而不能用 <c>Form.ClientSize</c> 的 setter：那条路走
-        /// <c>Form.SizeFromClientSize</c>，里面调的是不带 DPI 参数的 <c>AdjustWindowRectEx</c>，
-        /// 用的是系统 DPI 的非客户区厚度。实测系统 DPI 为 168、窗口已经跨到 96 DPI 显示器上时，
-        /// 它按 46 像素的标题栏算外框，而实际只有 29，多出来的 17 像素全落到客户区上——客户区
-        /// 成了 417 而不是原生排版的 400，对话框底部空出一条。这个函数按窗口实际所处显示器的
-        /// DPI 反算，两个方向都与原生排版一致。
-        /// </para>
-        /// <para>
-        /// <c>bMenu</c> 传 <c>false</c>：本程序的窗体没有传统菜单栏，<c>MenuStrip</c> 一类是
-        /// 客户区内的普通控件，不占非客户区。
-        /// </para>
-        /// </summary>
-        public static Size GetOuterSizeForClientSize(IntPtr hwnd, Size clientSize, int dpi)
-        {
-            if (hwnd == IntPtr.Zero || dpi <= 0 || clientSize.Width <= 0 || clientSize.Height <= 0)
-            {
-                return Size.Empty;
-            }
-
-            var rect = new NativeRect
-            {
-                Left = 0,
-                Top = 0,
-                Right = clientSize.Width,
-                Bottom = clientSize.Height
-            };
-
-            if (!AdjustWindowRectExForDpi(
-                ref rect,
-                GetWindowLong(hwnd, GWL_STYLE),
-                false,
-                GetWindowLong(hwnd, GWL_EXSTYLE),
-                (uint)dpi))
-            {
-                return Size.Empty;
-            }
-
-            return new Size(rect.Right - rect.Left, rect.Bottom - rect.Top);
         }
 
 

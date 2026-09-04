@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -27,12 +26,8 @@ namespace DialogRelayoutProbe
             yield return new SETUNA.Main.Option.OptionForm(SETUNA.Main.Option.SetunaOption.GetDefaultOption());
             yield return new SETUNA.Main.Option.StyleEditForm(null, new SETUNA.Main.KeyItems.KeyItemBook());
             yield return new ToolBoxForm();
-            yield return new LayerRenameWindow();
             yield return new LoginInput();
             yield return new SETUNA.Main.HotkeyMsg();
-            yield return new ScrapPaintToolBar(null);
-            yield return new ScrapPaintPenTool(new PenTool(Color.Black, null));
-            yield return new ScrapPaintTextTool(new TextTool(null));
 
             foreach (var panel in StyleItemPanels(buildFailures))
             {

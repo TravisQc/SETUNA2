@@ -421,12 +421,6 @@ namespace SETUNA
             StartCapture();
         }
 
-        // Token: 0x060001FB RID: 507 RVA: 0x0000AE80 File Offset: 0x00009080
-        private void CloseSetuna()
-        {
-            base.Close();
-        }
-
         // Token: 0x060001FC RID: 508 RVA: 0x0000AE88 File Offset: 0x00009088
         public void ScrapKeyPress(object sender, ScrapKeyPressEventArgs e)
         {
@@ -653,24 +647,6 @@ namespace SETUNA
             new ScrapEventArgs();
         }
 
-        // Token: 0x06000201 RID: 513 RVA: 0x0000B0B8 File Offset: 0x000092B8
-        private void miCapture_Click(object sender, EventArgs e)
-        {
-            StartCapture();
-        }
-
-        // Token: 0x06000202 RID: 514 RVA: 0x0000B0C0 File Offset: 0x000092C0
-        private void miOption_Click(object sender, EventArgs e)
-        {
-            Option();
-        }
-
-        // Token: 0x06000203 RID: 515 RVA: 0x0000B0C8 File Offset: 0x000092C8
-        private void miSetunaClose_Click(object sender, EventArgs e)
-        {
-            CloseSetuna();
-        }
-
         // Token: 0x06000204 RID: 516 RVA: 0x0000B0D0 File Offset: 0x000092D0
         public void OnActiveScrapInList(object sender, EventArgs e)
         {
@@ -769,19 +745,6 @@ namespace SETUNA
                 e.scrap.InactiveOpacity = e.scrap.ActiveOpacity;
             }
             var inactiveLineChange = optSetuna.Scrap.InactiveLineChange;
-        }
-
-        // Token: 0x0600020E RID: 526 RVA: 0x0000B2F4 File Offset: 0x000094F4
-        private void button6_Click(object sender, EventArgs e)
-        {
-            optSetuna = SetunaOption.GetDefaultOption();
-            var num = 0;
-            num++;
-        }
-
-        // Token: 0x0600020F RID: 527 RVA: 0x0000B312 File Offset: 0x00009512
-        private void button7_Click(object sender, EventArgs e)
-        {
         }
 
         // Token: 0x06000210 RID: 528 RVA: 0x0000B314 File Offset: 0x00009514

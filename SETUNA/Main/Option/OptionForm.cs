@@ -267,22 +267,6 @@ namespace SETUNA.Main.Option
             }
         }
 
-        // Token: 0x060002D6 RID: 726 RVA: 0x00013D84 File Offset: 0x00011F84
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            try
-            {
-                base.SuspendLayout();
-                var selectedTab = (TabPage)e.Node.Tag;
-                tabControl1.SelectedTab = selectedTab;
-                tabControl1.Update();
-                base.ResumeLayout();
-            }
-            catch
-            {
-            }
-        }
-
         // Token: 0x060002D7 RID: 727 RVA: 0x00013DDC File Offset: 0x00011FDC
         private void Prepare_SetunaAll()
         {
@@ -426,24 +410,6 @@ namespace SETUNA.Main.Option
                 return;
             }
             _wclickStyleId = 0;
-        }
-
-        // Token: 0x060002DE RID: 734 RVA: 0x000142D4 File Offset: 0x000124D4
-        private void PrepareStyle()
-        {
-            Refresh_Style_StyleList();
-        }
-
-        // Token: 0x060002DF RID: 735 RVA: 0x000142DC File Offset: 0x000124DC
-        private void Refresh_Style_StyleList()
-        {
-            listStyles.BeginUpdate();
-            listStyles.Items.Clear();
-            for (var i = 0; i < _so.Styles.Count; i++)
-            {
-                listStyles.Items.Add(_so.Styles[i]);
-            }
-            listStyles.EndUpdate();
         }
 
         // Token: 0x060002E0 RID: 736 RVA: 0x0001434C File Offset: 0x0001254C
@@ -837,11 +803,6 @@ namespace SETUNA.Main.Option
         private void lblMenuMenu_MouseEnter(object sender, EventArgs e)
         {
             lblComment.Text = Lang.T("Option.CommentScrapMenu");
-        }
-
-        // Token: 0x06000305 RID: 773 RVA: 0x00014B91 File Offset: 0x00012D91
-        private void OptionForm_HelpButtonClicked(object sender, CancelEventArgs e)
-        {
         }
 
         // Token: 0x06000306 RID: 774 RVA: 0x00014B94 File Offset: 0x00012D94

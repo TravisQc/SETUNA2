@@ -225,10 +225,16 @@ public class BaseForm : Form
     /// </para>
     /// <para>
     /// 自动缩放会把这个误差乘上倍率：框架缩放的是「<c>Size</c> 减去当前边框」那一部分，
-    /// 而这里它等于「客户区减去边框再加 2」。实测 168 DPI 下 <c>ScrapPaintPenTool</c>
-    /// 的 57px 客户区高度变成 0（57-62 截断到 0），<c>LayerRenameWindow</c> 得到 382×42
+    /// 而这里它等于「客户区减去边框再加 2」。当年在已删除的那几个画笔浮动面板上实测：
+    /// 168 DPI 下一个 57px 的客户区高度变成 0（57-62 截断到 0），另一个得到 382×42
     /// 而不是 420×151——按钮底边 129 落在客户区之外，任何缩放比例下都被裁掉一截。
     /// 96 DPI 下同样成立（客户区 236×59），所以这不是跨显示器缺陷，只是被它放大了。
+    /// </para>
+    /// <para>
+    /// 眼下没有窗体需要它（那几个面板删了），留着是因为
+    /// <c>DesignerDpiBaselineTests.NoDesignerHidesTheControlBoxWhileGivingTheFormACaption</c>
+    /// 仍在源码层禁止「设计器里 <c>ControlBox = false</c> + 非空 <c>Text</c>」这个组合，
+    /// 而这个方法就是它给出的唯一改法。
     /// </para>
     /// <para>
     /// 推到构造之后就没有这个窗口期：整个 <c>InitializeComponent</c> 里 <c>ControlBox</c>

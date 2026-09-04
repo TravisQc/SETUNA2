@@ -71,7 +71,7 @@ namespace SETUNA.Main.Localization.Tests
             var forms = new List<Form>
             {
                 new ToolBoxForm(),
-                new LayerRenameWindow(),
+                new SETUNA.Main.HotkeyMsg(),
                 new LoginInput(),
             };
 

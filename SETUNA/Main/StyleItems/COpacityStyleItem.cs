@@ -97,24 +97,6 @@ namespace SETUNA.Main.StyleItems
             return Resources.Icon_Opacoty;
         }
 
-        // Token: 0x040001E8 RID: 488
-        public const int OpacityRelativeMin = -99;
-
-        // Token: 0x040001E9 RID: 489
-        public const int OpacityRelativeMax = 99;
-
-        // Token: 0x040001EA RID: 490
-        public const int OpacityRelativeDefault = 0;
-
-        // Token: 0x040001EB RID: 491
-        public const int OpacityFixedMin = 1;
-
-        // Token: 0x040001EC RID: 492
-        public const int OpacityFixedMax = 100;
-
-        // Token: 0x040001ED RID: 493
-        public const int OpacityFixedDefault = 100;
-
         // Token: 0x040001EE RID: 494
         protected double _opacity;
 

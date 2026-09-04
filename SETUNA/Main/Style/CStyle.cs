@@ -175,16 +175,6 @@ namespace SETUNA.Main.Style
             _styles.Add(newCi);
         }
 
-        // Token: 0x06000235 RID: 565 RVA: 0x0000BB54 File Offset: 0x00009D54
-        public IEnumerable<CStyleItem> NextStyle()
-        {
-            foreach (object ci in _styles)
-            {
-                yield return (CStyleItem)ci;
-            }
-            yield break;
-        }
-
         // Token: 0x06000236 RID: 566 RVA: 0x0000BB71 File Offset: 0x00009D71
         public void ClearStyle()
         {
@@ -203,26 +193,10 @@ namespace SETUNA.Main.Style
             _styles.Remove(removeCi);
         }
 
-        // Token: 0x06000239 RID: 569 RVA: 0x0000BB9C File Offset: 0x00009D9C
-        public void ReplaceStyle(CStyleItem target, CStyleItem newitem)
-        {
-            var num = _styles.IndexOf(target);
-            if (num >= 0)
-            {
-                _styles[num] = newitem;
-            }
-        }
-
         // Token: 0x0600023A RID: 570 RVA: 0x0000BBC7 File Offset: 0x00009DC7
         public void AddKeyItem(Keys newKey)
         {
             _keys.Add(newKey);
-        }
-
-        // Token: 0x0600023B RID: 571 RVA: 0x0000BBD5 File Offset: 0x00009DD5
-        public void RemoveKeyItem(Keys removeKey)
-        {
-            _keys.Remove(removeKey);
         }
 
         // Token: 0x0600023C RID: 572 RVA: 0x0000BBE4 File Offset: 0x00009DE4
@@ -263,12 +237,6 @@ namespace SETUNA.Main.Style
 
         // Token: 0x040000F0 RID: 240
         protected static int makestyleid;
-
-        // Token: 0x040000F1 RID: 241
-        protected Timer timApply;
-
-        // Token: 0x040000F2 RID: 242
-        protected int _appliidx;
 
         // Token: 0x040000F3 RID: 243
         protected ScrapBase _scrap;

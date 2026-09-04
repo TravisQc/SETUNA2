@@ -102,12 +102,6 @@ namespace SETUNA.Main
         {
         }
 
-        // Token: 0x06000548 RID: 1352
-        protected virtual bool IsExists()
-        {
-            return false;
-        }
-
         // Token: 0x06000549 RID: 1353
         protected virtual ArrayList GetItems()
         {

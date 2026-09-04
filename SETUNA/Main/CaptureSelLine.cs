@@ -9,15 +9,6 @@ namespace SETUNA.Main
     public sealed partial class CaptureSelLine : BaseForm
     {
         protected override DpiPolicy DpiPolicy => DpiPolicy.PhysicalSurface;
-        // Token: 0x060003B3 RID: 947 RVA: 0x00016470 File Offset: 0x00014670
-        public static void AddDashOffset()
-        {
-            CaptureSelLine.DashOffset++;
-            if (CaptureSelLine.DashOffset > 7)
-            {
-                CaptureSelLine.DashOffset = 0;
-            }
-        }
 
         // Token: 0x060003B4 RID: 948 RVA: 0x0001648C File Offset: 0x0001468C
         public CaptureSelLine()
@@ -90,12 +81,7 @@ namespace SETUNA.Main
                     e.Graphics.DrawLine(penWhite, new Point(ptSel.X, 0), new Point(ptSel.X + szSel.Width - 1, 0));
                 }
 
-                e.Graphics.DrawLine(penLine, new Point(ptSel.X + CaptureSelLine.DashOffset, 0), new Point(ptSel.X + szSel.Width - 1, 0));
-                if (CaptureSelLine.DashOffset > 4)
-                {
-                    e.Graphics.DrawLine(penLine, new Point(ptSel.X, 0), new Point(ptSel.X + (CaptureSelLine.DashOffset - 4), 0));
-                    return;
-                }
+                e.Graphics.DrawLine(penLine, new Point(ptSel.X, 0), new Point(ptSel.X + szSel.Width - 1, 0));
             }
             else
             {
@@ -104,11 +90,7 @@ namespace SETUNA.Main
                     e.Graphics.DrawLine(penWhite, new Point(0, ptSel.Y), new Point(0, ptSel.Y + szSel.Height - 1));
                 }
 
-                e.Graphics.DrawLine(penLine, new Point(0, ptSel.Y + CaptureSelLine.DashOffset), new Point(0, ptSel.Y + szSel.Height - 1));
-                if (CaptureSelLine.DashOffset > 4)
-                {
-                    e.Graphics.DrawLine(penLine, new Point(0, ptSel.Y), new Point(0, ptSel.Y + (CaptureSelLine.DashOffset - 4)));
-                }
+                e.Graphics.DrawLine(penLine, new Point(0, ptSel.Y), new Point(0, ptSel.Y + szSel.Height - 1));
             }
         }
 
@@ -167,8 +149,5 @@ namespace SETUNA.Main
 
         // Token: 0x04000214 RID: 532
         private float[] pat;
-
-        // Token: 0x04000215 RID: 533
-        private static int DashOffset;
     }
 }

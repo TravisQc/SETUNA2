@@ -91,15 +91,6 @@ namespace SETUNA.Properties {
         }
         
         /// <summary>
-        ///   查找类似 SetunaConfig.xml 的本地化字符串。
-        /// </summary>
-        internal static string ConfigFile {
-            get {
-                return ResourceManager.GetString("ConfigFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
         internal static System.Drawing.Bitmap icon {
@@ -272,49 +263,9 @@ namespace SETUNA.Properties {
         /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
-        internal static System.Drawing.Bitmap pi_erase {
-            get {
-                object obj = ResourceManager.GetObject("pi_erase", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
-        /// </summary>
-        internal static System.Drawing.Bitmap pi_pen {
-            get {
-                object obj = ResourceManager.GetObject("pi_pen", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
-        /// </summary>
-        internal static System.Drawing.Bitmap pi_text {
-            get {
-                object obj = ResourceManager.GetObject("pi_text", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
-        /// </summary>
         internal static System.Drawing.Bitmap PicasaLogo {
             get {
                 object obj = ResourceManager.GetObject("PicasaLogo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
-        /// </summary>
-        internal static System.Drawing.Bitmap white {
-            get {
-                object obj = ResourceManager.GetObject("white", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

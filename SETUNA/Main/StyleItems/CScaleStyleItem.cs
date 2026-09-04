@@ -169,27 +169,6 @@ namespace SETUNA.Main.StyleItems
             return Resources.Icon_Scale;
         }
 
-        // Token: 0x040001DE RID: 478
-        public const int FixedScaleMin = 10;
-
-        // Token: 0x040001DF RID: 479
-        public const int FixedScaleMax = 200;
-
-        // Token: 0x040001E0 RID: 480
-        public const int FixedScaleDefault = 100;
-
-        // Token: 0x040001E1 RID: 481
-        public const int RelativeScaleMin = -190;
-
-        // Token: 0x040001E2 RID: 482
-        public const int RelativeScaleMax = 190;
-
-        // Token: 0x040001E3 RID: 483
-        public const int RelativeScaleDefault = 0;
-
-        // Token: 0x040001E4 RID: 484
-        public const InterpolationMode DefaultInterpolation = InterpolationMode.HighQualityBicubic;
-
         // Token: 0x040001E5 RID: 485
         protected int _scalevalue;
 

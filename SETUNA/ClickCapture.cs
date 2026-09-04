@@ -255,9 +255,6 @@ namespace SETUNA
         {
         }
 
-        // Token: 0x04000118 RID: 280
-        private const int AREASIZE = 1;
-
         // Token: 0x04000119 RID: 281
         private bool CC7;
 
@@ -295,21 +292,6 @@ namespace SETUNA
             // Token: 0x06000596 RID: 1430
             [DllImport("user32.dll")]
             public static extern bool SetWindowPos(int hWnd, int hWndAfter, int X, int Y, int cx, int cy, uint uFlags);
-
-            // Token: 0x04000376 RID: 886
-            public const uint SWP_NOSIZE = 1U;
-
-            // Token: 0x04000377 RID: 887
-            public const uint SWP_NOMOVE = 2U;
-
-            // Token: 0x04000378 RID: 888
-            public const uint SWP_SHOWWINDOW = 64U;
-
-            // Token: 0x04000379 RID: 889
-            public const uint SWP_NOACTIVATE = 16U;
-
-            // Token: 0x0400037A RID: 890
-            public const int HWND_TOP = 0;
         }
 
         // Token: 0x020000B1 RID: 177

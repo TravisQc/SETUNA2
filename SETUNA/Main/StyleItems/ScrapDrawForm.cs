@@ -128,10 +128,6 @@ namespace SETUNA.Main.StyleItems
             }
         }
 
-        // Token: 0x17000046 RID: 70
-        // (get) Token: 0x0600016A RID: 362 RVA: 0x00008828 File Offset: 0x00006A28
-        protected Point BasePoint => _basepoint;
-
         // Token: 0x0400009F RID: 159
         private const int SRCCOPY = 13369376;
 

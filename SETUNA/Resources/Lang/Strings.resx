@@ -78,14 +78,8 @@
   <data name="Capture.Red" xml:space="preserve">
     <value>红：</value>
   </data>
-  <data name="Common.No" xml:space="preserve">
-    <value>否</value>
-  </data>
   <data name="Common.None" xml:space="preserve">
     <value>无</value>
-  </data>
-  <data name="Common.Yes" xml:space="preserve">
-    <value>是</value>
   </data>
   <data name="DefaultStyle.Basic" xml:space="preserve">
     <value>基本自动操作</value>
@@ -244,9 +238,6 @@
   <data name="Message.ConfirmCloseAllScraps" xml:space="preserve">
     <value>是否关闭所有截图</value>
   </data>
-  <data name="Message.ConfirmDeleteLayer" xml:space="preserve">
-    <value>{0}我如何删除？</value>
-  </data>
   <data name="Message.ConfirmOverwrite" xml:space="preserve">
     <value>相同的文件名已存在。
 覆盖？</value>
@@ -262,9 +253,6 @@
   </data>
   <data name="Message.InvalidFolderName" xml:space="preserve">
     <value>文件夹名无效。</value>
-  </data>
-  <data name="Message.LayerNameRequired" xml:space="preserve">
-    <value>没有输入图层名</value>
   </data>
   <data name="Message.NoEncoderFound" xml:space="preserve">
     <value>因为利用可以的编码器没找到，不能保存图像。</value>
@@ -325,15 +313,6 @@
   </data>
   <data name="Option.NewStyleTitle" xml:space="preserve">
     <value>新建自动操作</value>
-  </data>
-  <data name="Paint.EraserToolTitle" xml:space="preserve">
-    <value>橡皮擦工具</value>
-  </data>
-  <data name="Paint.LayerName" xml:space="preserve">
-    <value>层{0}</value>
-  </data>
-  <data name="Paint.TextLayerName" xml:space="preserve">
-    <value>文字层</value>
   </data>
   <data name="Picasa.AccountAndPasswordRequired" xml:space="preserve">
     <value>请输入帐号和密码。</value>
@@ -403,12 +382,6 @@
   </data>
   <data name="Scale.Interpolation.Unchanged" xml:space="preserve">
     <value>不要更改</value>
-  </data>
-  <data name="Style.AllHide.Name" xml:space="preserve">
-    <value>全部隐藏</value>
-  </data>
-  <data name="Style.AllShow.Name" xml:space="preserve">
-    <value>全部显示</value>
   </data>
   <data name="Style.Capture.Name" xml:space="preserve">
     <value>制作参考图</value>
@@ -526,12 +499,6 @@
   <data name="StyleItem.Opacity.DisplayName" xml:space="preserve">
     <value>不透明度</value>
   </data>
-  <data name="StyleItem.Paint.Description" xml:space="preserve">
-    <value>可以直接在参考图上绘制。</value>
-  </data>
-  <data name="StyleItem.Paint.DisplayName" xml:space="preserve">
-    <value>绘制</value>
-  </data>
   <data name="StyleItem.Paste.Description" xml:space="preserve">
     <value>将剪贴板内的图像作为参考图。</value>
   </data>
@@ -571,28 +538,10 @@
   <data name="StyleItem.Scale.StateShrink" xml:space="preserve">
     <value>{0}% 缩小</value>
   </data>
-  <data name="StyleItem.Timer.Description" xml:space="preserve">
-    <value>指定的时间内，暂停。</value>
-  </data>
-  <data name="StyleItem.Timer.DisplayName" xml:space="preserve">
-    <value>定时器</value>
-  </data>
-  <data name="StyleItem.ToneReverse.Description" xml:space="preserve">
-    <value>进行灰度等级翻转。</value>
-  </data>
-  <data name="StyleItem.ToneReverse.DisplayName" xml:space="preserve">
-    <value>灰度等级翻转</value>
-  </data>
   <data name="StyleItem.Trim.Description" xml:space="preserve">
     <value>您可以删除不需要的部分。</value>
   </data>
   <data name="StyleItem.Trim.DisplayName" xml:space="preserve">
     <value>修剪</value>
-  </data>
-  <data name="StyleItem.Window.Description" xml:space="preserve">
-    <value>为参考图加上窗口边框。</value>
-  </data>
-  <data name="StyleItem.Window.DisplayName" xml:space="preserve">
-    <value>窗口化</value>
   </data>
 </root>

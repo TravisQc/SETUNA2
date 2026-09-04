@@ -431,15 +431,6 @@ namespace SETUNA.Main
             EndCapture();
         }
 
-        // Token: 0x060002A3 RID: 675 RVA: 0x0000E841 File Offset: 0x0000CA41
-        private void LineRefresh()
-        {
-            CaptureForm.selLineVer1.Refresh();
-            CaptureForm.selLineVer2.Refresh();
-            CaptureForm.selLineHor1.Refresh();
-            CaptureForm.selLineHor2.Refresh();
-        }
-
         // Token: 0x060002A5 RID: 677 RVA: 0x0000E894 File Offset: 0x0000CA94
         public new void Hide()
         {
@@ -694,22 +685,6 @@ namespace SETUNA.Main
             }
         }
 
-        // Token: 0x060002B2 RID: 690 RVA: 0x0000F0BC File Offset: 0x0000D2BC
-        private void SelectWindowRect(Point ptMouse)
-        {
-            if (aryHWnd != null)
-            {
-                foreach (var hWnd in aryHWnd)
-                {
-                    if (CaptureForm.GetWindowRect(hWnd, out var rect) && rect.left <= ptMouse.X && ptMouse.X <= rect.right && rect.top <= ptMouse.Y && ptMouse.Y <= rect.bottom)
-                    {
-                        DrawSelectArea(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, BoundsSpecified.All);
-                        break;
-                    }
-                }
-            }
-        }
-
         // Token: 0x060002B3 RID: 691 RVA: 0x0000F19C File Offset: 0x0000D39C
         private void CreateClip(Point pt, Size size)
         {
@@ -754,12 +729,6 @@ namespace SETUNA.Main
             }
         }
 
-
-        // Token: 0x04000127 RID: 295
-        private const int GW_OWNER = 4;
-
-        // Token: 0x04000128 RID: 296
-        private const int GW_HWNDNEXT = 2;
 
         // Token: 0x04000129 RID: 297
         private const int SRCCOPY = 13369376;
@@ -827,16 +796,6 @@ namespace SETUNA.Main
         // Token: 0x0200004E RID: 78
         // (Invoke) Token: 0x060002C9 RID: 713
         public delegate void CaptureClosedDelegate(CaptureForm cform);
-
-        // Token: 0x0200006C RID: 108
-        public struct POINT
-        {
-            // Token: 0x04000205 RID: 517
-            public int x;
-
-            // Token: 0x04000206 RID: 518
-            public int y;
-        }
 
         // Token: 0x0200006D RID: 109
         public struct RECT

@@ -10,12 +10,6 @@ namespace SETUNA.Main
         {
         }
 
-        // Token: 0x0600053D RID: 1341 RVA: 0x000246BB File Offset: 0x000228BB
-        protected override bool IsExists()
-        {
-            return _scrapbook != null && _scrapbook.ScrapCount > 0;
-        }
-
         // Token: 0x0600053E RID: 1342 RVA: 0x000246D8 File Offset: 0x000228D8
         protected override ArrayList GetItems()
         {

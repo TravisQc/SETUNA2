@@ -45,20 +45,6 @@ namespace SETUNA.Main.StyleItems
         // (get) Token: 0x0600002B RID: 43 RVA: 0x00003416 File Offset: 0x00001616
         public virtual string StateText => "";
 
-        // Token: 0x17000009 RID: 9
-        // (get) Token: 0x0600002C RID: 44 RVA: 0x0000341D File Offset: 0x0000161D
-        public virtual string NameAndState
-        {
-            get
-            {
-                if (StateText == "")
-                {
-                    return GetDisplayName();
-                }
-                return GetDisplayName() + " (" + StateText + ")";
-            }
-        }
-
         // Token: 0x1700000A RID: 10
         // (get) Token: 0x0600002D RID: 45 RVA: 0x00003453 File Offset: 0x00001653
         public virtual bool IsTerminate => false;

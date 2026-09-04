@@ -248,21 +248,6 @@ namespace SETUNA.Main.Option
             var setunaListBox = (SetunaListBox)sender;
         }
 
-        // Token: 0x06000453 RID: 1107 RVA: 0x0001C71E File Offset: 0x0001A91E
-        private void hotkey_Validated(object sender, EventArgs e)
-        {
-        }
-
-        // Token: 0x06000454 RID: 1108 RVA: 0x0001C720 File Offset: 0x0001A920
-        private void hotkey_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-        }
-
-        // Token: 0x06000455 RID: 1109 RVA: 0x0001C722 File Offset: 0x0001A922
-        private void hotkey_KeyDown(object sender, KeyEventArgs e)
-        {
-        }
-
         // Token: 0x06000456 RID: 1110 RVA: 0x0001C724 File Offset: 0x0001A924
         private void hotkey_KeyUp(object sender, KeyEventArgs e)
         {
