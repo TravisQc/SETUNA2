@@ -46,6 +46,29 @@ namespace SETUNA.Plugins.Tests
         static string EmbeddedResourceName =>
             IntPtr.Size == 8 ? "SETUNA.Plugins.libwebp_x64.dll" : "SETUNA.Plugins.libwebp_x86.dll";
 
+        static string ForeignEmbeddedResourceName =>
+            IntPtr.Size == 8 ? "SETUNA.Plugins.libwebp_x86.dll" : "SETUNA.Plugins.libwebp_x64.dll";
+
+        /// <summary>
+        /// The other architecture's copy is dead payload: the name above is chosen by
+        /// <c>IntPtr.Size</c>, so a build of this platform can never ask for it. Half a
+        /// megabyte, in every artifact, unreachable — hence the platform condition on the
+        /// <c>EmbeddedResource</c> items. This is the check that keeps it off.
+        /// </summary>
+        [TestMethod]
+        public void OnlyThisArchitecturesNativeLibraryIsEmbedded()
+        {
+            var assembly = typeof(ResourceExtractor).Assembly;
+            var names = assembly.GetManifestResourceNames();
+
+            CollectionAssert.Contains(names, EmbeddedResourceName, "The matching libwebp must be embedded.");
+            CollectionAssert.DoesNotContain(
+                names,
+                ForeignEmbeddedResourceName,
+                ForeignEmbeddedResourceName + " cannot be loaded from this architecture's build, so embedding it "
+                    + "only inflates the artifact. Check the Platform condition on the EmbeddedResource items.");
+        }
+
         static long EmbeddedResourceLength
         {
             get

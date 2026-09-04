@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <!-- No OS version suffix on purpose. A `net8.0-windows10.0.*` target framework pulls in
+         the implicit Windows SDK projection runtime pack, which puts Microsoft.Windows.SDK.NET.dll
+         (22.5 MB) and WinRT.Runtime.dll (0.5 MB) into every artifact. Nothing here calls a
+         WinRT API, so that is 23 MB of payload for nothing — it was 78% of the _Portable
+         bundle. The minimum OS version is declared by app.manifest, which is what the loader
+         actually reads; the TFM never was the runtime gate. -->
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <RootNamespace>SETUNA</RootNamespace>
@@ -10,7 +16,6 @@
     <ApplicationIcon>SETUNA.ico</ApplicationIcon>
     <StartupObject>SETUNA.Program</StartupObject>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
-    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
@@ -34,8 +39,11 @@
          look redundant to the analyzer. Measured with scripts/verify-dpi-awareness.ps1:
          the manifest wins the race and Application.SetHighDpiMode returns false. -->
     <!-- CA1416: Platform compatibility warnings suppressed because the project explicitly
-         targets Windows (net8.0-windows10.0.17763.0) and all Windows-specific APIs used
-         are guaranteed to be available on the minimum supported version. -->
+         targets Windows (net8.0-windows) and all Windows-specific APIs used are guaranteed to
+         be available on the minimum supported version, which app.manifest declares. The TFM
+         carries no OS version suffix, so CA1416 can no longer reason about Windows *versions*
+         at all — that is the one thing given up by dropping the suffix, and it was already
+         suppressed here before. -->
     <NoWarn>$(NoWarn);WFAC010;CA1416</NoWarn>
   </PropertyGroup>
 
@@ -46,21 +54,17 @@
     <EmbeddedResource Include="**\*.resx" Exclude="bin\**;obj\**">
       <WithCulture>false</WithCulture>
     </EmbeddedResource>
-    <EmbeddedResource Include="Plugins\libwebp_x86.dll" />
-    <EmbeddedResource Include="Plugins\libwebp_x64.dll" />
+    <!-- One architecture per artifact. ResourceExtractor picks the file name by IntPtr.Size,
+         so the other copy can never be reached from a build of this platform — an x86 exe
+         under WOW64 still reports a 4-byte pointer and still asks for libwebp_x86.dll. -->
+    <EmbeddedResource Include="Plugins\libwebp_x86.dll" Condition="'$(Platform)' == 'x86'" />
+    <EmbeddedResource Include="Plugins\libwebp_x64.dll" Condition="'$(Platform)' == 'x64'" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Prowl.Aperture" Version="3.3.0" />
     <PackageReference Include="Svg" Version="3.4.8" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-    </None>
   </ItemGroup>
 
   <!--
@@ -70,30 +74,55 @@
     well. They are passed to a nested Publish instead, so `dotnet build` stays
     framework-dependent and fast while `PublishReleaseSingleFile` is the one
     documented way to produce a release artifact.
+
+    Two variants per platform, selected with -p:ReleaseRuntimeMode=
+
+      selfcontained  (default) carries the runtime, so the target machine needs
+                     nothing installed. Keeps the artifact name it has always had,
+                     so links to already-published releases keep working.
+      portable       framework-dependent: needs the .NET 8 Desktop Runtime of the
+                     same architecture, and is roughly a third of the size. Named
+                     with a _Portable suffix.
+
+    Both are single-file bundles with the same output invariant, so one validation
+    target covers both.
   -->
   <PropertyGroup>
     <ReleasePublishDirectory>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '..', 'publish'))</ReleasePublishDirectory>
-    <ReleasePublishStagingDirectory>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', 'bin', 'publish', '$(Configuration)', '$(Platform)'))</ReleasePublishStagingDirectory>
-    <ReleasePublishFile>$(ReleasePublishDirectory)$(AssemblyName)_$(Configuration)_$(Platform).exe</ReleasePublishFile>
+
+    <ReleaseRuntimeMode Condition="'$(ReleaseRuntimeMode)' == ''">selfcontained</ReleaseRuntimeMode>
+    <ReleaseSelfContained>true</ReleaseSelfContained>
+    <ReleaseSelfContained Condition="'$(ReleaseRuntimeMode)' == 'portable'">false</ReleaseSelfContained>
+    <!-- NETSDK1176: compression inside a single-file bundle only exists for
+         self-contained apps, so these two switches are one and the same decision.
+         Asking for it on the portable variant is a hard build error. -->
+    <ReleaseEnableCompression>$(ReleaseSelfContained)</ReleaseEnableCompression>
+    <ReleaseArtifactSuffix Condition="'$(ReleaseRuntimeMode)' == 'portable'">_Portable</ReleaseArtifactSuffix>
+
+    <!-- Staging is per mode as well as per platform: the two variants of one platform
+         both produce SETUNA.exe, and neither may validate or copy the other's. -->
+    <ReleasePublishStagingDirectory>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', 'bin', 'publish', '$(Configuration)', '$(Platform)', '$(ReleaseRuntimeMode)'))</ReleasePublishStagingDirectory>
+    <ReleasePublishFile>$(ReleasePublishDirectory)$(AssemblyName)_$(Configuration)_$(Platform)$(ReleaseArtifactSuffix).exe</ReleasePublishFile>
   </PropertyGroup>
 
   <Target Name="PublishReleaseSingleFile">
     <Error Condition="'$(Platform)' != 'x86' AND '$(Platform)' != 'x64'" Text="PublishReleaseSingleFile needs -p:Platform=x86 or -p:Platform=x64; got '$(Platform)'. The runtime identifier is derived from it." />
+    <Error Condition="'$(ReleaseRuntimeMode)' != 'selfcontained' AND '$(ReleaseRuntimeMode)' != 'portable'" Text="PublishReleaseSingleFile needs -p:ReleaseRuntimeMode=selfcontained or -p:ReleaseRuntimeMode=portable; got '$(ReleaseRuntimeMode)'. An unrecognised mode would otherwise publish a self-contained build under the portable name." />
 
     <!-- A clean staging directory, so validation cannot be fooled by a leftover
          companion file from an earlier publish and cannot pass because of one. -->
     <RemoveDir Directories="$(ReleasePublishStagingDirectory)" />
 
-    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Properties="Configuration=$(Configuration);Platform=$(Platform);SelfContained=true;PublishSingleFile=true;IncludeNativeLibrariesForSelfExtract=true;EnableCompressionInSingleFile=true;PublishDir=$(ReleasePublishStagingDirectory)" />
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Properties="Configuration=$(Configuration);Platform=$(Platform);SelfContained=$(ReleaseSelfContained);PublishSingleFile=true;IncludeNativeLibrariesForSelfExtract=true;EnableCompressionInSingleFile=$(ReleaseEnableCompression);PublishDir=$(ReleasePublishStagingDirectory)" />
 
     <CallTarget Targets="ValidateReleasePublishOutput" />
 
     <MakeDir Directories="$(ReleasePublishDirectory)" />
-    <!-- The artifact is the exe itself, not a ZIP; the name carries configuration and
-         platform so both architectures can sit in one directory. Copy overwrites, so
-         the target is repeatable. -->
+    <!-- The artifact is the exe itself, not a ZIP; the name carries configuration,
+         platform and — for the runtime-dependent build — the _Portable suffix, so all
+         four can sit in one directory. Copy overwrites, so the target is repeatable. -->
     <Copy SourceFiles="$(ReleasePublishStagingDirectory)$(AssemblyName).exe" DestinationFiles="$(ReleasePublishFile)" />
-    <Message Importance="high" Text="Release artifact: $(ReleasePublishFile)" />
+    <Message Importance="high" Text="Release artifact ($(ReleaseRuntimeMode)): $(ReleasePublishFile)" />
   </Target>
 
   <!--
@@ -120,5 +149,67 @@
     <Error Condition="'@(_ReleasePublishNative)' != ''" Text="Loose DLL(s) in the publish output: @(_ReleasePublishNative). Managed code is bundled and libwebp is extracted at runtime, so nothing may sit beside the exe." />
     <Error Condition="'@(_ReleasePublishArchive)' != ''" Text="Archive(s) in the publish output: @(_ReleasePublishArchive). The release artifact is the executable itself." />
     <Error Condition="'@(_ReleasePublishUnexpected)' != ''" Text="Unexpected file(s) in the publish output: @(_ReleasePublishUnexpected). Only $(AssemblyName).exe and its optional $(AssemblyName).pdb may be published." />
+  </Target>
+
+  <!--
+    A self-contained publish carries the WPF half of Microsoft.WindowsDesktop.App, which this
+    application never loads: 44.6 MB of assemblies and native libraries plus 8.85 MB of
+    satellite resources across 13 languages, measured on the x64 layout.
+
+    There is no built-in switch for it. The WindowsDesktop *targeting* pack marks its
+    FrameworkList with WindowsForms/WPF profiles, which is why compiling without UseWpf sees
+    no WPF; the *runtime* pack's RuntimeList.xml carries no Profile attribute at all, so
+    ResolveRuntimePackAssets hands back the whole pack and publish copies all of it. Trimming
+    would remove it, but PublishTrimmed on a WinForms app is a hard NETSDK1175 error — and
+    suppressing that would put this project's XmlSerializer option persistence, its 13 resx
+    language tables and its BinaryFormatter-serialised image resources at the linker's mercy.
+
+    So the list below is a hand-reviewed denylist rather than a computed keep-set. Deriving the
+    keep-set from static references would over-prune: XmlSerializer reaches System.Private.Xml,
+    resx reaches System.Resources.Extensions and encoding fallbacks reach
+    System.Text.Encoding.CodePages, none of which appear in an AssemblyRef closure. Only the
+    WPF family — which nothing here can reach — is listed, and a test asserts the list stays
+    disjoint from the reference closure of what is kept.
+  -->
+  <PropertyGroup>
+    <!-- Leading and trailing ';' so a Contains(';name;') probe cannot match a partial name:
+         'PresentationCore' must not match 'PresentationCore-SystemCore'. -->
+    <ExcludedRuntimePackAssemblies>;PresentationFramework;PresentationCore;WindowsBase;PresentationUI;ReachFramework;System.Printing;System.Xaml;PresentationFramework.Aero;PresentationFramework.Aero2;PresentationFramework.AeroLite;PresentationFramework.Classic;PresentationFramework.Luna;PresentationFramework.Royale;PresentationFramework-SystemCore;PresentationFramework-SystemData;PresentationFramework-SystemDrawing;PresentationFramework-SystemXml;PresentationFramework-SystemXmlLinq;PresentationCore-SystemCore;System.Windows.Controls.Ribbon;System.Windows.Input.Manipulations;System.Windows.Presentation;UIAutomationClient;UIAutomationClientSideProviders;UIAutomationProvider;UIAutomationTypes;WindowsFormsIntegration;Microsoft.VisualBasic.Forms;wpfgfx_cor3;PresentationNative_cor3;D3DCompiler_47_cor3;vcruntime140_cor3;PenImc_cor3;</ExcludedRuntimePackAssemblies>
+
+    <!-- Package references that no static reference reaches, each with the reason it stays.
+         RuntimePackPruningTests fails on any package outside the reference closure, and this
+         is the only way to record a legitimate one — a reflection-only dependency, say. Empty
+         is the healthy state: it means every declared package is actually used. -->
+    <UnreferencedPackageReferences></UnreferencedPackageReferences>
+  </PropertyGroup>
+
+  <Target Name="RemoveExcludedRuntimePackAssets" AfterTargets="ResolveRuntimePackAssets">
+    <ItemGroup>
+      <!-- Assemblies and native libraries: %(Filename) is the name. -->
+      <_ExcludedRuntimePackAsset Include="@(RuntimePackAsset)"
+                                 Condition="$(ExcludedRuntimePackAssemblies.Contains(';%(Filename);'))" />
+      <!-- Satellite resources: %(Filename) is '<owner>.resources', so the owner's name only
+           matches once the suffix is stripped. WinForms' own *.resources.dll are not in the
+           list and stay, which is what keeps framework messages localized in all 13 languages. -->
+      <_ExcludedRuntimePackAsset Include="@(RuntimePackAsset)"
+                                 Condition="'%(AssetType)' == 'resources' AND $(ExcludedRuntimePackAssemblies.Contains(';$([System.IO.Path]::GetFileNameWithoutExtension('%(Filename)'));'))" />
+
+      <!-- Both lists, and for opposite reasons. ResolveRuntimePackAssets copies
+           RuntimePackAsset into ReferenceCopyLocalPaths inside its own body, so removing only
+           RuntimePackAsset cleans deps.json while the files still ship; removing only
+           ReferenceCopyLocalPaths drops the files while deps.json goes on listing them, and a
+           self-contained host fails at startup on a dependency it cannot find. -->
+      <RuntimePackAsset Remove="@(_ExcludedRuntimePackAsset)" />
+      <ReferenceCopyLocalPaths Remove="@(_ExcludedRuntimePackAsset)" />
+    </ItemGroup>
+
+    <!-- Rename a file or reclassify an asset in a future runtime pack and this list stops
+         matching, silently, with nothing but a larger artifact to show for it. That has to be
+         a build failure. Guarded on RuntimePackAsset being non-empty so a framework-dependent
+         publish, which resolves no runtime pack, stays a no-op. -->
+    <Error Condition="'$(SelfContained)' == 'true' AND '@(RuntimePackAsset)' != '' AND '@(_ExcludedRuntimePackAsset)' == ''"
+           Text="ExcludedRuntimePackAssemblies matched no runtime pack asset. The exclusion list has gone stale against this runtime pack, so the self-contained artifact would silently regain the WPF payload it is meant to drop. Compare the list against the assemblies in the resolved runtime pack." />
+
+    <Message Importance="normal" Text="Excluded @(_ExcludedRuntimePackAsset->Count()) unused runtime pack asset(s) from the self-contained layout." />
   </Target>
 </Project>

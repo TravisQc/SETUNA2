@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <!-- Kept in step with SETUNA.csproj: an OS-version-suffixed TFM would drag the 23 MB
+         Windows SDK projection runtime pack into the self-contained test output too. -->
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <IsTestProject>true</IsTestProject>

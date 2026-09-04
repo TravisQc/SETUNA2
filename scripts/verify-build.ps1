@@ -36,7 +36,7 @@ Write-Host "Testing ($Configuration|$Platform)"
 if ($LASTEXITCODE -ne 0) { throw "dotnet test failed with exit code $LASTEXITCODE." }
 
 $rid = if ($Platform -eq 'x86') { 'win-x86' } else { 'win-x64' }
-$tfm = 'net8.0-windows10.0.17763.0'
+$tfm = 'net8.0-windows'
 
 Write-Host 'Build gate passed.'
 Write-Host ("Application artifact: {0}" -f (Join-Path $root ("SETUNA\bin\{0}\{1}\{2}\{3}\SETUNA.exe" -f $Platform, $Configuration, $tfm, $rid)))
