@@ -38,6 +38,9 @@ namespace SETUNA.Main
         public SetunaListBox()
         {
             DrawMode = DrawMode.OwnerDrawFixed;
+            // DPI 缩放会分别更新控件高度和行高。整行取整会在中间状态扣掉一行，
+            // 反复跨屏后列表就会缩成细条；外框尺寸应始终由窗体布局决定。
+            IntegralHeight = false;
             DoubleBuffered = true;
             ItemHeight = 20;
             Font = new Font(Font.FontFamily, 10f);

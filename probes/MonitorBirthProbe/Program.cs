@@ -227,7 +227,8 @@ namespace MonitorBirthProbe
                     Bounds = child.Bounds,
                     FontRatio = formFontSize > 0f ? child.Font.Size / formFontSize : 0f,
                     SizeFollowsContent = child.AutoSize,
-                    HeightFollowsFont = child is UpDownBase || child is ComboBox || child is ListBox
+                    HeightFollowsFont = child is UpDownBase || child is ComboBox
+                        || (child is ListBox list && list.IntegralHeight)
                         || (child is TextBox text && !text.Multiline),
                 };
 

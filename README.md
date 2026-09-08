@@ -19,7 +19,7 @@ A best screenshot small tool (support high dpi screenshots)
 ---
 
 ## 版本说明
-- **SETUNA 3.x 版本的运行要求**（持续更新）([最新版 3.x 下载链接](https://github.com/tylearymf/SETUNA2/releases))
+- **SETUNA 3.x 版本的运行要求**（持续更新）([最新版 3.x 下载链接](https://github.com/TravisQc/SETUNA2/releases))
   
   - Windows 10 17763（1809）及以上
   
