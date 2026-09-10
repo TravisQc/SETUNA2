@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace SETUNA.Main
@@ -14,6 +15,15 @@ namespace SETUNA.Main
 
         /// <summary>窗口边缘与光标之间的间隙（设计像素，高 DPI 下由调用方按缩放折算）。</summary>
         public const int DefaultGap = 24;
+
+        /// <summary>中心标记外框的外环相对中心方块的外扩量，单位是设备像素。</summary>
+        public const int MarkerOuterRingOffset = 2;
+
+        /// <summary>中心标记外框的内环相对中心方块的外扩量，单位是设备像素。</summary>
+        public const int MarkerInnerRingOffset = 1;
+
+        /// <summary>十字线的粗细，单位是设备像素。粗 2px：1px 深色 + 1px 浅色相邻。</summary>
+        public const int MarkerThickness = 2;
 
         /// <summary>
         /// 窗口左上角坐标。优先放在光标右下方；某一维度放不下就翻到光标另一侧；
@@ -131,6 +141,103 @@ namespace SETUNA.Main
         {
             return value < 1 ? 1 : value;
         }
+
+        /// <summary>
+        /// 中心标记的填充矩形集合。标记指示的对象是放大画面的中心像素——也就是
+        /// <see cref="SourceRectangle"/> 用作取景中心的同一个源像素，因此它标记的
+        /// 正是光标实际所指的位置。
+        /// <para>
+        /// 产出规则（全部相对 <paramref name="destination"/>，坐标单位是设备像素）：
+        /// <list type="bullet">
+        /// <item>中心方块本身不产出任何矩形，内部保持画面原样，标记绝不遮盖被指示的像素；</item>
+        /// <item>方块外沿画内浅外深两圈环（各 4 条边），把目标像素圈出来；</item>
+        /// <item>十字线由 1 深 1 浅两条相邻的 1px 线组成，从 <paramref name="destination"/>
+        /// 的边缘延伸到外环为止，因此横竖线在中心断开、不穿过方块；</item>
+        /// <item>所有矩形在返回前与 <paramref name="destination"/> 求交，空的结果丢弃。
+        /// 这一步同时兜住「不画到放大区域之外的余量细边上」和「缓冲区小到装不下标记」
+        /// 两种情况。</item>
+        /// </list>
+        /// 中心方块的下标必须与 <see cref="SourceRectangle"/> 里的 <c>viewport/2</c>
+        /// 共用同一表达式，否则取景尺寸为偶数时标记会差一格。
+        /// </summary>
+        public static CrosshairMark[] CrosshairMarks(Rectangle destination, Size viewport, int magnification)
+        {
+            var factor = AtLeastOne(magnification);
+
+            var centerX = viewport.Width / 2;
+            var centerY = viewport.Height / 2;
+
+            var block = new Rectangle(
+                destination.X + centerX * factor,
+                destination.Y + centerY * factor,
+                factor,
+                factor);
+            var footprint = Rectangle.Inflate(block, MarkerOuterRingOffset, MarkerOuterRingOffset);
+
+            var marks = new List<CrosshairMark>();
+
+            var inner = Rectangle.Inflate(block, MarkerInnerRingOffset, MarkerInnerRingOffset);
+            AddRing(marks, inner, dark: false, destination);
+            AddRing(marks, footprint, dark: true, destination);
+
+            var lineHeight = 1;
+            var top = block.Y + (factor - MarkerThickness) / 2;
+
+            AddSegment(marks, destination.Left, footprint.Left, top, lineHeight, destination, dark: false);
+            AddSegment(marks, destination.Left, footprint.Left, top + 1, lineHeight, destination, dark: true);
+
+            AddSegment(marks, footprint.Right, destination.Right, top, lineHeight, destination, dark: false);
+            AddSegment(marks, footprint.Right, destination.Right, top + 1, lineHeight, destination, dark: true);
+
+            var left = block.X + (factor - MarkerThickness) / 2;
+            var columnWidth = 1;
+
+            AddSegment(marks, destination.Top, footprint.Top, left, columnWidth, destination, dark: false, vertical: true);
+            AddSegment(marks, destination.Top, footprint.Top, left + 1, columnWidth, destination, dark: true, vertical: true);
+
+            AddSegment(marks, footprint.Bottom, destination.Bottom, left, columnWidth, destination, dark: false, vertical: true);
+            AddSegment(marks, footprint.Bottom, destination.Bottom, left + 1, columnWidth, destination, dark: true, vertical: true);
+
+            return marks.ToArray();
+        }
+
+        /// <summary>把 <paramref name="ring"/> 的四条边作为标记矩形加入 <paramref name="marks"/>。</summary>
+        static void AddRing(List<CrosshairMark> marks, Rectangle ring, bool dark, Rectangle destination)
+        {
+            AddIfValid(marks, new Rectangle(ring.X, ring.Y, ring.Width, 1), dark, destination);
+            AddIfValid(marks, new Rectangle(ring.X, ring.Bottom - 1, ring.Width, 1), dark, destination);
+            AddIfValid(marks, new Rectangle(ring.X, ring.Y + 1, 1, ring.Height - 2), dark, destination);
+            AddIfValid(marks, new Rectangle(ring.Right - 1, ring.Y + 1, 1, ring.Height - 2), dark, destination);
+        }
+
+        /// <summary>
+        /// 在主轴方向从 <paramref name="start"/> 延到 <paramref name="end"/> 的一条标记矩形。
+        /// 水平时 <paramref name="offset"/> 是行号、长度取 <paramref name="length"/>；垂直时相反。
+        /// </summary>
+        static void AddSegment(
+            List<CrosshairMark> marks, int start, int end, int offset, int length, Rectangle destination,
+            bool dark, bool vertical = false)
+        {
+            var rectangle = vertical
+                ? new Rectangle(offset, start, length, end - start)
+                : new Rectangle(start, offset, end - start, length);
+
+            AddIfValid(marks, rectangle, dark, destination);
+        }
+
+        /// <summary>标记矩形与 <paramref name="destination"/> 求交，交非空才加入。空结果（缓冲区
+        /// 过小、或矩形落在放大区域之外）丢弃，绘制因此永不越界。</summary>
+        static void AddIfValid(List<CrosshairMark> marks, Rectangle rectangle, bool dark, Rectangle destination)
+        {
+            var clipped = Rectangle.Intersect(rectangle, destination);
+
+            if (clipped.Width <= 0 || clipped.Height <= 0)
+            {
+                return;
+            }
+
+            marks.Add(new CrosshairMark(clipped, dark));
+        }
     }
 
     /// <summary>一次放大绘制的源矩形（快照坐标系）与目标矩形（缓冲区坐标系）。</summary>
@@ -149,5 +256,23 @@ namespace SETUNA.Main
         public bool IsEmpty => Source.Width <= 0 || Source.Height <= 0;
 
         public static MagnifiedRegion Empty => new MagnifiedRegion(Rectangle.Empty, Rectangle.Empty);
+    }
+
+    /// <summary>
+    /// 中心标记的一块填充矩形。<see cref="Bounds"/> 是它在缓冲区坐标系里的位置，
+    /// <see cref="Dark"/> 为 true 时画深色（黑）、false 时画浅色（白）。深浅相邻的
+    /// 两条 1px 线保证任意底色下至少一侧有对比。
+    /// </summary>
+    public struct CrosshairMark
+    {
+        public CrosshairMark(Rectangle bounds, bool dark)
+        {
+            Bounds = bounds;
+            Dark = dark;
+        }
+
+        public Rectangle Bounds { get; }
+
+        public bool Dark { get; }
     }
 }

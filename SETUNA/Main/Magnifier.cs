@@ -23,6 +23,12 @@ namespace SETUNA.Main
         Bitmap buffer;
         Graphics bufferGraphics;
 
+        /// <summary>
+        /// 中心标记。只依赖缓冲区尺寸与倍率、和光标位置无关，因此随后备位图一起算一次
+        /// 作缓存，<see cref="RenderFrom"/> 每帧只做十几次 <c>FillRectangle</c>。
+        /// </summary>
+        CrosshairMark[] crosshairMarks = Array.Empty<CrosshairMark>();
+
         /// <summary>上一次真正重绘时的光标位置。光标没动就整体短路。</summary>
         Point lastCursor = NoCursor;
 
@@ -128,6 +134,17 @@ namespace SETUNA.Main
                 bufferGraphics.DrawImage(snapshot, region.Destination, region.Source, GraphicsUnit.Pixel);
             }
 
+            // 中心标记。画在放大画面之上、而且无论有没有取到内容都画：它指示的是
+            // 「画面中心 = 光标像素」这件几何事实，跟底下有没有内容无关。全部用
+            // 填充矩形 + 系统共享画刷，不新建画笔/画刷/位图，叠加后刷新路径仍然是
+            // 零分配。用填充矩形而不是 Pen + DrawLine，是因为 2px 画笔的实际落点
+            // 取决于画笔对齐与 PixelOffsetMode，钉不住确切像素。
+            foreach (var mark in crosshairMarks)
+            {
+                bufferGraphics.FillRectangle(
+                    mark.Dark ? Brushes.Black : Brushes.White, (RectangleF)mark.Bounds);
+            }
+
             // 必须同步画掉，不能只 Invalidate。WM_PAINT 的优先级低于鼠标输入，快速移动
             // 时它会被源源不断的 WM_MOUSEMOVE 一直挤在后面，画面要等输入停顿才更新一次，
             // 看起来就是「突然切换、中间过程全丢」。辅助线窗口
@@ -187,11 +204,22 @@ namespace SETUNA.Main
             // 不再成立。
             pictureBox1.Image = buffer;
 
+            // 标记跟着后备位图走，随缓冲区重建（尺寸变化）一并重算。复用同一个
+            // viewport/destination 计算，保证标记与取样端的几何同源。
+            var canvas = buffer.Size;
+            var viewport = MagnifierGeometry.ViewportSize(canvas, MagnifierGeometry.Magnification);
+            var destination = MagnifierGeometry.DestinationRectangle(
+                canvas, viewport, MagnifierGeometry.Magnification);
+            crosshairMarks = MagnifierGeometry.CrosshairMarks(
+                destination, viewport, MagnifierGeometry.Magnification);
+
             return true;
         }
 
         void ReleaseBuffer()
         {
+            crosshairMarks = Array.Empty<CrosshairMark>();
+
             if (pictureBox1 != null && !pictureBox1.IsDisposed)
             {
                 pictureBox1.Image = null;
