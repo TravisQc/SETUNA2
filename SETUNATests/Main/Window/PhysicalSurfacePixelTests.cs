@@ -148,24 +148,29 @@ namespace SETUNATests.Main.Window
         }
 
         /// <summary>
-        /// The capture overlay's own decorations, on the same message. It draws 1px lines and a
-        /// text readout at fixed pixel offsets, so it has no bitmap to protect — what would
-        /// break is the window being resized under drawing that is not.
+        /// The capture overlay's own 1px selection guide, on the same message. Unlike a scrap it
+        /// has no bitmap to protect, so what would break is the window being resized under drawing
+        /// whose coordinates are device pixels.
         /// </summary>
         [TestMethod]
-        public void ACaptureReadoutIsPixelIdenticalAcrossATransition()
+        public void ACaptureSelectionGuideIsPixelIdenticalAcrossATransition()
         {
-            using (var info = new CaptureInfo())
+            using (var guide = new CaptureSelLine(SelLineType.Horizon, true, Color.Blue))
             {
-                LayoutSnapshot.ShowOffScreen(info);
+                guide.ClientSize = new Size(137, 1);
+                guide.SetSelSize(0, guide.ClientSize.Width);
+                LayoutSnapshot.ShowOffScreen(guide);
 
-                var before = ClientPixels(info);
+                var before = ClientPixels(guide);
 
-                SyntheticDpiChange.Send(info, HighDpi);
-                AssertPixelsEqual(before, ClientPixels(info), "the capture readout's pixels");
+                SyntheticDpiChange.Send(guide, HighDpi);
+                AssertPixelsEqual(before, ClientPixels(guide), "the capture selection guide's pixels");
 
-                SyntheticDpiChange.Send(info, LowDpi);
-                AssertPixelsEqual(before, ClientPixels(info), "the capture readout's pixels after the return trip");
+                SyntheticDpiChange.Send(guide, LowDpi);
+                AssertPixelsEqual(
+                    before,
+                    ClientPixels(guide),
+                    "the capture selection guide's pixels after the return trip");
             }
         }
 

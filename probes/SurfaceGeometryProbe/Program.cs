@@ -406,7 +406,6 @@ namespace SurfaceGeometryProbe
 
             yield return new KeyValuePair<string, BaseForm>("ScrapBase", scrap);
             yield return new KeyValuePair<string, BaseForm>("Magnifier", new SETUNA.Main.Magnifier());
-            yield return new KeyValuePair<string, BaseForm>("CaptureInfo", new SETUNA.Main.CaptureInfo());
             yield return new KeyValuePair<string, BaseForm>("CaptureSelLine", new SETUNA.Main.CaptureSelLine());
         }
 

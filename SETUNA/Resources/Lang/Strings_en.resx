@@ -997,18 +997,6 @@ Set transparency to 100% for no fill.</value>
     <value>OK</value>
     <comment>确定</comment>
   </data>
-  <data name="Capture.Blue" xml:space="preserve">
-    <value>B:</value>
-    <comment>蓝：</comment>
-  </data>
-  <data name="Capture.Green" xml:space="preserve">
-    <value>G:</value>
-    <comment>绿：</comment>
-  </data>
-  <data name="Capture.Red" xml:space="preserve">
-    <value>R:</value>
-    <comment>红：</comment>
-  </data>
   <data name="Common.None" xml:space="preserve">
     <value>None</value>
     <comment>无</comment>

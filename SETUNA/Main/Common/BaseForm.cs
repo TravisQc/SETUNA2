@@ -67,8 +67,7 @@ public class BaseForm : Form
     /// <c>AutoScaleMode.None</c> 只挡住控件树的缩放，挡不住窗口本身：<c>WM_DPICHANGED</c> 带着
     /// 一个建议矩形，而 <c>DefWindowProc</c> 会直接照它调用 <c>SetWindowPos</c>。实测 168→96 时
     /// 137x89 的贴图窗口变成 78x51，位图却仍是 137x89——窗口比自己的图还小；放大镜
-    /// 250x265→143x151，4 倍放大看到的像素数跟着变了；辅助线窗口 24x24→14x14；
-    /// <c>CaptureInfo</c> 236x131→135x75。
+    /// 250x265→143x151，4 倍放大看到的像素数跟着变了；辅助线窗口 24x24→14x14。
     /// </para>
     /// <para>
     /// <see cref="DpiChangedEventArgs"/> 的 <c>Cancel</c> **挡不住这件事**（实测设了照样变）：

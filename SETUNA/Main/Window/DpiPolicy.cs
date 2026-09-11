@@ -26,7 +26,6 @@ namespace SETUNA.Main.Window
                 [typeof(global::SETUNA.Mainform)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.ClickCapture)] = DpiPolicy.PhysicalSurface,
                 [typeof(global::SETUNA.Main.CaptureForm)] = DpiPolicy.PhysicalSurface,
-                [typeof(global::SETUNA.Main.CaptureInfo)] = DpiPolicy.PhysicalSurface,
                 [typeof(global::SETUNA.Main.CaptureSelLine)] = DpiPolicy.PhysicalSurface,
                 [typeof(global::SETUNA.Main.HotkeyMsg)] = DpiPolicy.LogicalUi,
                 [typeof(global::SETUNA.Main.Magnifier)] = DpiPolicy.PhysicalSurface,

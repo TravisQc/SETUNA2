@@ -46,8 +46,8 @@ namespace SETUNATests.Main.Window
         }
 
         /// <summary>
-        /// A form may also state its policy locally by overriding <c>BaseForm.DpiPolicy</c>,
-        /// and 14 do. The registry wins when they disagree, which would make the local
+        /// A form may also state its policy locally by overriding <c>BaseForm.DpiPolicy</c>.
+        /// The registry wins when they disagree, which would make the local
         /// declaration a lie that reads as the truth — so they are not allowed to disagree.
         /// <para>
         /// Only the constructible forms can be checked: reading a virtual property needs an

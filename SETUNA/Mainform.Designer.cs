@@ -26,10 +26,8 @@
             this.setunaIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.setunaIconMenu = new SETUNA.Main.ContextStyleMenuStrip(this.components);
             this.subMenu = new SETUNA.Main.ContextStyleMenuStrip(this.components);
-            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.delayInitTimer = new System.Windows.Forms.Timer(this.components);
-            this.subMenu.SuspendLayout();
             this.mainActionLayout.SuspendLayout();
             this.SuspendLayout();
             //
@@ -101,17 +99,9 @@
             // subMenu
             // 
             this.subMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.subMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testToolStripMenuItem});
             this.subMenu.Name = "subMenu";
             this.subMenu.Scrap = null;
-            this.subMenu.Size = new System.Drawing.Size(148, 50);
-            // 
-            // testToolStripMenuItem
-            // 
-            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(147, 46);
-            this.testToolStripMenuItem.Text = "test";
+            this.subMenu.Size = new System.Drawing.Size(61, 4);
             // 
             // toolTip1
             // 
@@ -143,7 +133,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Mainform_FormClosing);
             this.Load += new System.EventHandler(this.Mainform_Load);
             this.Shown += new System.EventHandler(this.Mainform_Shown);
-            this.subMenu.ResumeLayout(false);
             this.mainActionLayout.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -169,10 +158,6 @@
 		// Token: 0x040000DD RID: 221
 		private global::SETUNA.Main.ContextStyleMenuStrip subMenu;
 
-		// Token: 0x040000DE RID: 222
-		private global::System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
-
-		// Token: 0x040000DF RID: 223
 		private global::System.Windows.Forms.Timer timPool;
 
 		// Token: 0x040000E0 RID: 224

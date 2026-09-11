@@ -69,15 +69,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Capture.Blue" xml:space="preserve">
-    <value>蓝：</value>
-  </data>
-  <data name="Capture.Green" xml:space="preserve">
-    <value>绿：</value>
-  </data>
-  <data name="Capture.Red" xml:space="preserve">
-    <value>红：</value>
-  </data>
   <data name="Common.None" xml:space="preserve">
     <value>无</value>
   </data>
